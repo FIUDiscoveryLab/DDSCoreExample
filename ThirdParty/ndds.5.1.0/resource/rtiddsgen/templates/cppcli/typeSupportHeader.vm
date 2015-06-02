@@ -1,0 +1,176 @@
+##/* $Id: typeSupportHeader.vm,v 1.6 2013/01/31 02:37:53 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,18mar13,ajm created 
+##
+##------------------------------------------------------------------
+##----------------------------------------------------------------
+##-----------------------------------------------------------------
+##               
+##             Template for the typeSupport header file
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+## ##---------------------------------------------------------------------
+##---------------------------------------------------------------------
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+
+
+${envMap.POUND_CHAR}pragma once
+
+${envMap.POUND_CHAR}include "${envMap.idlFileName}.h"
+
+
+class DDSDataWriter;
+class DDSDataReader;
+
+#foreach($node in $constructMapList)
+#*--*##if($node.constructKind=="directive") ##if it is a directive we print its value
+#*----*##if($node.directiveKind=="copy-c"||$node.directiveKind=="copy") ##we avoid to copy the declaration directives
+$node.value
+#*----*##end
+#*--*##elseif($node.constructKind=="module") ##if the module node is here is because its for c++ and namespace option
+namespace $node.name {
+#*--*##elseif($node.constructKind=="moduleClose") ##if the module node is here is because its for c++ and namespace option
+} /* namespace $node.name  */
+#*--*##elseif($node.constructKind=="struct" || $node.constructKind=="valueType" || $node.constructKind=="union")
+#*----*##if($node.topLevel!="false")    
+// ---------------------------------------------------------------------------
+// ${node.nativeFQNameInModule}TypeSupport
+// ---------------------------------------------------------------------------
+
+ref class ${node.nativeFQNameInModule}Plugin;
+
+/* A collection of useful methods for dealing with objects of type
+ * ${node.nativeFQNameInModule}.
+ */
+public ref class ${node.nativeFQNameInModule}TypeSupport
+        : public DDS::TypedTypeSupport<${node.nativeFQNameInModule}^> {
+    // --- Type name: --------------------------------------------------------
+  public:
+    static System::String^ TYPENAME = "${node.nativeFQNameInModule}";
+
+
+    // --- Public Methods: ---------------------------------------------------
+  public:
+    /* Get the default name of this type.
+     *
+     * An application can choose to register a type under any name, so
+     * calling this method is strictly optional.
+     */
+    static System::String^ get_type_name();
+
+    /* Register this type with the given participant under the given logical
+     * name. This type must be registered before a Topic can be created that
+     * uses it.
+     */
+    static void register_type(
+            DDS::DomainParticipant^ participant,
+            System::String^ type_name);
+
+    /* Unregister this type from the given participant, where it was
+     * previously registered under the given name. No further Topic creation
+     * using this type will be possible.
+     *
+     * Unregistration allows some middleware resources to be reclaimed.
+     */
+    static void unregister_type(
+            DDS::DomainParticipant^ participant,
+            System::String^ type_name);
+
+    /* Create an instance of the ${node.nativeFQNameInModule} type.
+     */
+    static ${node.nativeFQNameInModule}^ create_data();
+
+    /* If instances of the ${node.nativeFQNameInModule} type require any
+     * explicit finalization, perform it now on the given sample.
+     */
+    static void delete_data(${node.nativeFQNameInModule}^ data);
+
+    /* Write the contents of the data sample to standard out.
+     */
+    static void print_data(${node.nativeFQNameInModule}^ a_data);
+
+    /* Perform a deep copy of the contents of one data sample over those of
+     * another, overwriting it.
+     */
+    static void copy_data(
+        ${node.nativeFQNameInModule}^ dst_data,
+        ${node.nativeFQNameInModule}^ src_data);
+
+
+    // --- Implementation: ---------------------------------------------------
+    /* The following code is for the use of the middleware infrastructure.
+     * Applications are not expected to call it directly.
+     */
+public:
+    virtual System::String^ get_type_name_untyped() override;
+    virtual DDS::DataReader^ create_datareaderI(
+        System::IntPtr impl) override;
+    virtual DDS::DataWriter^ create_datawriterI(
+        System::IntPtr impl) override;
+        
+    virtual ${node.nativeFQNameInModule}^ create_data_untyped() override;
+        
+
+public:
+    static ${node.nativeFQNameInModule}TypeSupport^ get_instance();
+
+    ${node.nativeFQNameInModule}TypeSupport();
+
+private:
+    static ${node.nativeFQNameInModule}TypeSupport^ _singleton;
+    ${node.nativeFQNameInModule}Plugin^ _type_plugin;
+};
+
+
+// ---------------------------------------------------------------------------
+// ${node.nativeFQNameInModule}DataReader
+// ---------------------------------------------------------------------------
+
+/**
+ * A reader for the ${node.nativeFQNameInModule} type.
+ */
+public ref class ${node.nativeFQNameInModule}DataReader :
+        public DDS::TypedDataReader<${node.nativeFQNameInModule}^> {
+    /* The following code is for the use of the middleware infrastructure.
+     * Applications are not expected to call it directly.
+     */
+  internal:
+    ${node.nativeFQNameInModule}DataReader(System::IntPtr impl);
+};
+
+
+// ---------------------------------------------------------------------------
+// ${node.nativeFQNameInModule}DataWriter
+// ---------------------------------------------------------------------------
+
+/**
+ * A writer for the ${node.nativeFQNameInModule} user type.
+ */
+public ref class ${node.nativeFQNameInModule}DataWriter :
+        public DDS::TypedDataWriter<${node.nativeFQNameInModule}^> {
+    /* The following code is for the use of the middleware infrastructure.
+     * Applications are not expected to call it directly.
+     */
+  internal:
+    ${node.nativeFQNameInModule}DataWriter(System::IntPtr impl);
+};
+#*----*##end
+#*--*##end
+#end

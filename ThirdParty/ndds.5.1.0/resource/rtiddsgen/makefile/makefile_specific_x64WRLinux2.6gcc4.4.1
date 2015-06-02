@@ -1,0 +1,10 @@
+c_cc_x64WRLinux2.6gcc4.4.1 = i586-wrs-linux-gnu-gcc
+c_cc_flags_x64WRLinux2.6gcc4.4.1 = -B\$(WIND_BASE)/layers/wrll-toolchain-4.4a-341/i586/toolchain/x86-linux2/bin/ -m64 -march=x86-64 -mtune=generic --sysroot=\$(WIND_BASE)/sysroots/x64WRLinux2.6gcc4.4.1/libc
+c_ld_x64WRLinux2.6gcc4.4.1 = i586-wrs-linux-gnu-gcc
+c_ld_flags_x64WRLinux2.6gcc4.4.1 = -B\$(WIND_BASE)/layers/wrll-toolchain-4.4a-341/i586/toolchain/x86-linux2/bin/ -m64 -march=x86-64 -mtune=generic --sysroot=\$(WIND_BASE)/sysroots/x64WRLinux2.6gcc4.4.1/libc -m64 -Xlinker -Bsymbolic-functions
+cxx_cc_x64WRLinux2.6gcc4.4.1 = i586-wrs-linux-gnu-g++
+cxx_cc_flags_x64WRLinux2.6gcc4.4.1 = -B\$(WIND_BASE)/layers/wrll-toolchain-4.4a-341/i586/toolchain/x86-linux2/bin/ -m64 -march=x86-64 -mtune=generic --sysroot=\$(WIND_BASE)/sysroots/x64WRLinux2.6gcc4.4.1/libc
+cxx_ld_x64WRLinux2.6gcc4.4.1 = i586-wrs-linux-gnu-g++
+cxx_ld_flags_x64WRLinux2.6gcc4.4.1 = -B\$(WIND_BASE)/layers/wrll-toolchain-4.4a-341/i586/toolchain/x86-linux2/bin/ -m64 -march=x86-64 -mtune=generic --sysroot=\$(WIND_BASE)/sysroots/x64WRLinux2.6gcc4.4.1/libc
+syslibs_x64WRLinux2.6gcc4.4.1 = -ldl -lnsl -lm -lpthread -lrt
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_LINUX

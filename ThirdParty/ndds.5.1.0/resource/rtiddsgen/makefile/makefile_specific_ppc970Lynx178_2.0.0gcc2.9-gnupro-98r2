@@ -1,0 +1,12 @@
+c_cc_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 = gcc
+c_cc_flags_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 =
+c_ld_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 = gcc
+c_ld_flags_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 =
+cxx_cc_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 = gcc
+cxx_cc_flags_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 =
+cxx_ld_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 = gcc
+cxx_ld_flags_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 =
+syslibs_ppc970Lynx178_2.0.0gcc2.9-gnupro-98r2 = -lbsd -lm -lrpc -lc -mthreads
+DEFINES_ARCH_SPECIFIC = -DRTI_LYNX
+
+#export ENV_PREFIX = /usr/los178/2.0.0/ppc-dev

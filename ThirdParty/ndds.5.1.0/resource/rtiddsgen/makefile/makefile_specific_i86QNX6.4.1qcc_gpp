@@ -1,0 +1,9 @@
+c_cc_i86QNX6.4.1qcc_gpp = qcc -V4.3.3,gcc_ntox86 -Y_gpp -lang-c
+c_ld_i86QNX6.4.1qcc_gpp = qcc -V4.3.3,gcc_ntox86 -Y_gpp -lang-c
+c_ld_flags_i86QNX6.4.1qcc_gpp =
+cxx_cc_i86QNX6.4.1qcc_gpp = qcc -V4.3.3,gcc_ntox86 -Y_gpp -lang-c++
+cxx_ld_i86QNX6.4.1qcc_gpp = qcc -V4.3.3,gcc_ntox86 -Y_gpp -lang-c++
+cxx_ld_flags_i86QNX6.4.1qcc_gpp =
+syslibs_i86QNX6.4.1qcc_gpp = -lm -lsocket
+DEFINES_ARCH_SPECIFIC = -DRTI_QNX
+cxx_DEFINES_ARCH_SPECIFIC =

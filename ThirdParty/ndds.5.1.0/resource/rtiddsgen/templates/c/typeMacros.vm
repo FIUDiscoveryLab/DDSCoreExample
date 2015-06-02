@@ -1,0 +1,1197 @@
+##/* $Id: typeMacros.vm,v 1.23 2013/10/24 13:14:49 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##2.0,24sept13,ajm CODEGENII-92: Code review typedef of strings
+##2.0,24sept13,ajm CODEGENII-92: Code review finalize method
+##2.0,24sept13,ajm CODEGENII-92 Support for optional members.typedef of a string optional
+##2.0,12sep13,ajm CODEGENII-92: Support for optional members
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,01mar13, ajm CODEGENII-59: Updating to generate XTypes Mutable as in IN-Branch
+##10a,16jan13, ajm RRTIDDSGEN-52 Renaming variables and functions for the codereview
+##10a,13dec12, ajm RRTIDDSGEN-53 Support for XTypes (extensible and final)
+##10a,4dec12, ajm Refactoring of the code and variable names.
+##10a,23nov12, ajm RRTIDDSGEN-35 Adding support for pointers
+##10a,8nov12, ajm  RTIDDSGEN-34 support for the copy directives and resolve-name
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCenvMap.typeCode
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,04ene11, ajm Upgrading to Lola (code in C)
+##             ajm Fixing a bug: declaration of constants with an alias type 
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,07nov11, ajm Refactoring code
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,21oct11,ajm Adding a return at the end of the file
+##10a,11oct11, Fixing issues and adding union support for C++
+##10a,10oct11,ajm Adding union support
+##10a,30sep11,ajm Adding noenvMap.typeCode option support
+##10a,29sep11,ajm adding forward declaration and namespace support 
+##10a,26sep11,ajm adding enum support 
+##10a,22sep11,ajm adding valuetypes support
+##10a,19sep11,ajm Fixing const string and wstring  declaration in C++
+##10a,15sep11,ajm Fixing more typedef issues
+##10a,14sep11,ajm Refactor typedef
+##10a,6sep11,ajm Fixing an error when declaring constants outside a module
+##10a,2sep11,ajm Refactoring using a unique list for all elements(typedefs, structs and const)
+##10a,1sep11,ajm Adding typedef support for primitive types and typedef arrays
+##10a,29ag11,ajm Fixing macros consistency by adding the missing parameters
+##10a,29ag11,ajm Refactor of variables and cleaning loops
+##10a,25ag11,ajm adding support for arrays of sequences
+##10a,22ag11,ajm adding support for sequences
+##10a,19ag11,ajm Refactorizing and cleaning the templates code.
+##10a,17ag11,ajm Adding //@key
+##10a,12ag11,jmt Adding functionality for C++
+##10a,11ag11,ajm Refactorizing the templates code.
+##           ajm Adding variable $nativeFQName
+##10a,10ag11,ajm Adding functionality for arrays
+##10a,09ag11,jmt Fixing tabulations and length of the lines 
+##10a,09ag11,ajm Fixing the bug for a struct when without a module
+##10a,05ag11,jmt Adding all the basic type and testing them
+##10a,04ag11,ajm adding modification history header 
+##10a,03ag11,ajm created 
+##-----------------------------------------------------------------
+##               
+##             Macros for TypeBody and TypeHeader
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+## Structure:
+##
+## 
+## To use this template, the structure provided from the main program
+## to the context of the Velocity template must be as indicated here:
+##
+## The context will be feed by a list of the structs ($structList) defined in the 
+## IDL file. Each of the structs will have the following mandatory fields:
+##
+## $packageName (the path of all the modules separated by a .)
+## $structName (the name of the struct)
+## $memberFieldMapList (will be a list of all the members inside the struct)
+## $memberFieldMapList must contain the followin fields:
+##   name (the name of the field)
+##   nativeTypeFQName (the IDL type of the variable)
+##   basic (boolean, it indicates if it is a basic or non basic type)
+##---------------------------------------------------------------------
+##---------------------------------------------------------------------
+
+
+
+##******************************************************************************
+## Declare macros
+##******************************************************************************
+
+
+##------------------------------------------------------------------------------
+## Macro headInit
+##------------------------------------------------------------------------------
+
+#macro(headerInit  $node)
+#*--*##if($node.baseTypeFQName && $envMap.language=="C")
+$node.baseTypeFQName parent;
+#*--*##end
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyAllDirectives($member)
+#*----*##else
+#*----*##declareMember($node $member)
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Auxiliar macros
+##------------------------------------------------------------------------------
+
+#macro(declareMember $node $member)
+#declareTypedef($member) #declareMemberType($member) #declarePointer($member)#*
+*# #if($member.name.equals(""))$node.nativeFQNameInModule#else$member.name#end#*
+*# #declareArraydimensionListsIfNeeded($member);
+#end
+
+#macro(declarePointer $member)
+#*--*##if($member.isPointer || ($member.isOptional && ($member.seqSize || !$member.strSize))) *#end
+#end
+
+#macro (declareTypedef $member)
+#*--*##if($member.name.equals("")) typedef #end
+#end
+
+
+#macro(declareMemberType $member)
+#if($member.seqSize && $envMap.language=="C")    struct #end #*
+*##if($member.seqSize)  $member.nativeTypeSeqFQName#*
+*##else $member.nativeTypeFQName #end#*
+*##end
+
+#macro(declareArraydimensionListsIfNeeded $member)#if(${member.dimensionList})#*
+*##foreach($s in ${member.dimensionList})[$s]#end#end#*
+*##end
+
+
+##------------------------------------------------------------------------------
+## Macro to define alias
+##------------------------------------------------------------------------------
+
+#macro(declareAlias  $node)
+#*--*##declareMember($node $node.firstMember)
+#*--*##declareTypeFunctions ($node)
+#end
+
+
+##------------------------------------------------------------------------------
+## Macro to define constanst
+##------------------------------------------------------------------------------
+#macro(declareConstant $member)
+#*--*##if($envMap.language=="C")
+${envMap.POUND_CHAR}define ${member.nativeFQNameInModule} (${member.value})
+#*--*##elseif($envMap.language=="Cpp")
+static const $member.nativeTypeFQName ${member.nativeFQNameInModule}= ${member.value};
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to define enum
+##------------------------------------------------------------------------------
+#macro (declareEnum $node)
+typedef enum $node.nativeFQNameInModule
+{
+#foreach($member in $node.memberFieldMapList)
+    $member.name #if($member.autoOrdinal=="false") = $member.ordinal#end#*
+*----*##commaIfNeeded($velocityCount $node.memberFieldMapList)
+     
+#end
+} $node.nativeFQNameInModule;
+#end
+
+#macro(declareTypeFunctions $node)
+${envMap.POUND_CHAR}if (defined(RTI_WIN32) || defined (RTI_WINCE)) && defined(NDDS_USER_DLL_EXPORT)
+  /* If the code is building on Windows, start exporting symbols.
+   */
+  ${envMap.POUND_CHAR}undef NDDSUSERDllExport
+  ${envMap.POUND_CHAR}define NDDSUSERDllExport __declspec(dllexport)
+${envMap.POUND_CHAR}endif
+
+#if($envMap.typeCode=="true")
+NDDSUSERDllExport DDS_TypeCode* ${node.nativeFQNameInModule}_get_typecode(void); /* Type code */
+#end
+
+#if($node.constructKind=="alias" && $node.isBaseArray)    
+DDS_SEQUENCE_NO_GET(${node.nativeFQNameInModule}Seq, ${node.nativeFQNameInModule});                                        
+#else
+DDS_SEQUENCE(${node.nativeFQNameInModule}Seq, ${node.nativeFQNameInModule});                                        
+#end
+        
+NDDSUSERDllExport
+RTIBool ${node.nativeFQNameInModule}_initialize(
+        ${node.nativeFQNameInModule}* self);
+        
+NDDSUSERDllExport
+RTIBool ${node.nativeFQNameInModule}_initialize_ex(
+        ${node.nativeFQNameInModule}* self,RTIBool allocatePointers,RTIBool allocateMemory);
+        
+NDDSUSERDllExport
+RTIBool ${node.nativeFQNameInModule}_initialize_w_params(
+        ${node.nativeFQNameInModule}* self,
+        const struct DDS_TypeAllocationParams_t * allocParams);        
+
+NDDSUSERDllExport
+void ${node.nativeFQNameInModule}_finalize(
+        ${node.nativeFQNameInModule}* self);
+                        
+NDDSUSERDllExport
+void ${node.nativeFQNameInModule}_finalize_ex(
+        ${node.nativeFQNameInModule}* self,RTIBool deletePointers);
+        
+NDDSUSERDllExport
+void ${node.nativeFQNameInModule}_finalize_w_params(
+        ${node.nativeFQNameInModule}* self,
+        const struct DDS_TypeDeallocationParams_t * deallocParams);
+        
+
+NDDSUSERDllExport
+void ${node.nativeFQNameInModule}_finalize_optional_members(
+        ${node.nativeFQNameInModule}* self, RTIBool deletePointers);  
+                  
+        
+NDDSUSERDllExport
+RTIBool ${node.nativeFQNameInModule}_copy(
+        ${node.nativeFQNameInModule}* dst,
+        const ${node.nativeFQNameInModule}* src);
+
+#if($node.constructKind=="union")
+NDDSUSERDllExport
+DDS_LongLong ${node.nativeFQNameInModule}_getDefaultDiscriminator();
+#end
+
+${envMap.POUND_CHAR}if (defined(RTI_WIN32) || defined (RTI_WINCE)) && defined(NDDS_USER_DLL_EXPORT)
+  /* If the code is building on Windows, stop exporting symbols.
+   */
+  ${envMap.POUND_CHAR}undef NDDSUSERDllExport
+  ${envMap.POUND_CHAR}define NDDSUSERDllExport
+  ${envMap.POUND_CHAR}endif
+#end
+
+##*****************************************************************************
+## Macro to initialize all the members
+##*****************************************************************************
+
+#macro(initializeWParams $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirectiveNoDeclaration($member)
+#*----*##else
+#*-----*##initializeWParamsMember($member $node)
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to initialize a members
+##------------------------------------------------------------------------------
+
+#macro(initializeWParamsMember $member $node)
+#*--*##if ($member.isOptional)
+if (!allocParams->allocate_optional_members) {
+#if($member.strSize && $member.typeKind.equals("user"))
+        $member.sample=NULL;
+#else
+        $member.sampleRef=NULL;
+#end        
+    } else {   
+#*--*##end
+#*--*##if($member.dimensionList && $member.seqSize) ##array of sequences
+#*----*##initArrayofSeq($member)
+#*--*##elseif($member.dimensionList)
+#*----*##initArray($member)
+#*--*##elseif($member.seqSize)
+#*----*##initSeq($member)
+#*--*##elseif($member.typeKind=="user")
+#*----*##initUser($member)
+#*--*##else
+#*----*##initBuiltin($member)
+#*--*##end
+#if ($member.isOptional)
+}
+#end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to intialize a member not builtin
+##------------------------------------------------------------------------------
+
+#macro (initUser $member)
+#*----*##if($member.isPointer || ($member.isOptional && !$member.strSize))
+if (allocParams->allocate_memory) {
+#*------*##if($member.isPointer)
+    if (allocParams->allocate_pointers) {
+#*------*##end
+        RTIOsapiHeap_allocateStructure(&(${member.sampleRef}),
+            ${member.nativeTypeFQName});        
+        if (${member.sampleRef}==NULL) {
+            return RTI_FALSE;
+        }       
+#*----*##end            
+if (!${member.nativeTypeFQName}_initialize_w_params(${member.sampleRef},
+       allocParams)) {
+       return RTI_FALSE;
+}
+#*----*##if($member.isPointer)                      
+    } else {
+        ${member.sampleRef} = NULL;
+    }
+#*----*##end    
+#*----*##if($member.isPointer || ($member.isOptional && !$member.strSize))
+} else {
+    if (${member.sampleRef}!=NULL) {
+        if (!${member.nativeTypeFQName}_initialize_w_params(${member.sampleRef},
+                allocParams)) {
+                return RTI_FALSE;
+        }        
+     }   
+}
+#*----*##end
+#end
+
+
+##------------------------------------------------------------------------------
+## Macro to intialize arrays or sequences
+##------------------------------------------------------------------------------
+#macro (initArrayofSeq $member)
+#*--*##if($member.isPointer)
+#*----*##initArrayofSeqPointer ($member)
+#*--*##else
+{
+    int i;
+
+    for (i = 0; i < (int) ($member.arrayTotalSize) ; i++) {
+#*----*##initSeq($member)
+    }
+}
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to intialize sequences
+##------------------------------------------------------------------------------
+#macro(initSeq $member)
+#*--*##if ($member.isPointer || $member.isOptional)
+#*----*##initSeqPointer($member)
+#*--*##else
+if (allocParams->allocate_memory) {
+#*----*##if($member.typeKind=="user")
+    ${member.nativeTypeSeqFQName}_initialize(${member.sampleRef} #*
+--*##if($member.dimensionList)[i] #end);
+    ${member.nativeTypeSeqFQName}_set_element_allocation_params(${member.sampleRef} #*
+--*##if($member.dimensionList)[i] #end,allocParams);
+    if (!${member.nativeTypeSeqFQName}_set_maximum(${member.sampleRef}#*
+--*##if($member.dimensionList)[i] #end, ($member.seqSize))) {
+         return RTI_FALSE;
+    }
+#*----*##else
+    ${member.nativeTypeSeqFQName}_initialize(${member.sampleRef} #*
+--*##if($member.dimensionList)[i]#end );
+    if (!${member.nativeTypeSeqFQName}_set_maximum(${member.sampleRef} #*
+--*##if($member.dimensionList)[i]#end, ($member.seqSize))) {
+        return RTI_FALSE;
+    }
+#*------*##if($member.strSize)
+    buffer = ${member.nativeTypeSeqFQName}_get_contiguous_bufferI(
+                 ${member.sampleRef} #if($member.dimensionList)[i]#end);
+
+    if (buffer == NULL) {
+        return RTI_FALSE;
+    } 
+    
+    if (!RTICdrType_initStringArray(buffer, 
+             ($member.seqSize),
+             ($member.strSize)+1,
+             $member.typeEnum)) {
+        return RTI_FALSE;
+    }
+#*------*##end
+#*----*##end
+    } else { 
+         ${member.nativeTypeSeqFQName}_set_length(${member.sampleRef}#*
+--------*##if($member.dimensionList)[i]#end, 0);
+    }
+#*--*##end
+#end
+
+
+
+##------------------------------------------------------------------------------
+## Macro to intialize sequences of pointers or optional members
+##------------------------------------------------------------------------------
+
+#macro(initSeqPointer $member)
+if (allocParams->allocate_memory) {
+#if($member.isPointer)
+    if (allocParams->allocate_pointers) {
+#end    
+        RTIOsapiHeap_allocateStructure(&(${member.sampleRef}),struct ${member.nativeTypeSeqFQName});        
+        if (${member.sampleRef}==NULL) {
+            return RTI_FALSE;
+        }  
+#*--*##if($member.typeKind=="user")
+        ${member.nativeTypeSeqFQName}_initialize(${member.sampleRef} #if($member.dimensionList)[i] #end);
+        ${member.nativeTypeSeqFQName}_set_element_allocation_params(${member.sampleRef}#*
+----*# #if($member.dimensionList)[i] #end,allocParams);
+        if (!${member.nativeTypeSeqFQName}_set_maximum(${member.sampleRef}#*
+    *# #if($member.dimensionList)[i] #end,
+            ($member.seqSize))) {
+            return RTI_FALSE;
+        }
+
+#*--*##else
+        ${member.nativeTypeSeqFQName}_initialize(${member.sampleRef}#*
+----*# #if($member.dimensionList)[i] #end );
+        if (!${member.nativeTypeSeqFQName}_set_maximum(${member.sampleRef}#*
+----*##if($member.dimensionList)[i] #end ,
+            ($member.seqSize))) {
+            return RTI_FALSE;
+        }
+#*----*##if($member.strSize)
+        buffer = ${member.nativeTypeSeqFQName}_get_contiguous_bufferI(
+                     ${member.sampleRef} #if($member.dimensionList)[i] #end);
+
+        if (buffer == NULL) {
+            return RTI_FALSE;
+        } 
+    
+        if (!RTICdrType_initStringArray(buffer, ($member.seqSize),($member.strSize)+1,
+               $member.typeEnum)) {
+            return RTI_FALSE;
+        }
+#*----*##end
+#*--*##end
+#if($member.isPointer)
+    } else {
+        ${member.sampleRef} = NULL;
+    }
+#end    
+} else {
+    if (${member.sampleRef} != NULL) {
+        ${member.nativeTypeSeqFQName}_set_length(${member.sampleRef}#*
+------*# #if($member.dimensionList)[i] #end, 0);
+
+    }
+}
+#end
+##------------------------------------------------------------------------------
+## Macro to intialize array
+##------------------------------------------------------------------------------
+
+#macro(initArray $member)
+#*--*##if($member.isPointer)
+#*----*##initArrayPointer ($member)
+#*--*##else
+#*----*##if($member.typeKind=="user")
+{
+    int i = 0;
+    $member.nativeTypeFQName* elem =
+    ($member.nativeTypeFQName*) ${member.sampleRef}[0];
+
+    for (i = 0; i < (int) ($member.arrayTotalSize); ++i, ++elem) {
+        if (!${member.nativeTypeFQName}_initialize_w_params(elem,allocParams)) {
+            return RTI_FALSE;
+        }
+    }
+}
+#*----*##elseif($member.strSize)
+if (allocParams->allocate_memory) {
+    if (!RTICdrType_initStringArray(${member.sample}, $member.arrayTotalSize,(${member.strSize})+1,
+        $member.typeEnum)) {
+        return RTI_FALSE;
+    }
+
+} else {
+    int i;    
+    ${member.nativeTypeFQName}* elem =
+    (${member.nativeTypeFQName}*)  $member.sampleRef;  
+    for (i=0;i < (int)($member.arrayTotalSize);i++,++elem) {
+        if (*elem != NULL) {
+            *elem[0]   = '\0';
+        }
+    }
+}    
+    
+#*----*##else
+if (!RTICdrType_initArray(
+        ${member.sample}, $member.arrayTotalSize, $member.elementSize)) {
+        return RTI_FALSE;
+}
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to intialize array of pointers
+##------------------------------------------------------------------------------
+
+#macro (initArrayPointer $member)
+{
+
+    int i=0;    
+    $member.nativeTypeFQName** elem =
+    ($member.nativeTypeFQName**) $member.sampleRef;        
+    if (allocParams->allocate_memory){
+        if (allocParams->allocate_pointers) {
+            for (i=0;i < (int)($member.arrayTotalSize);++i,++elem) {
+                RTIOsapiHeap_allocateStructure(elem,$member.nativeTypeFQName);        
+                if (*elem == NULL) {
+                    return RTI_FALSE;
+                }
+#*--*##if($member.typeKind=="user")
+                if (!${member.nativeTypeFQName}_initialize_w_params(*elem,allocParams)) {
+                       return RTI_FALSE;
+                }   
+#*--*##elseif ($member.strSize)
+                **elem = $member.allocMethod (($member.strSize));
+                if (**elem == NULL) {
+                     return RTI_FALSE;
+                } 
+#*--*##else                  
+                memset((void *)*elem,0,sizeof($member.nativeTypeFQName));
+#*--*##end                  
+                                    
+            }        
+        } else {
+            for (i=0;i < (int)($member.arrayTotalSize);i++,++elem) {
+                *elem = NULL;
+            }
+        }
+    } else {
+        
+       
+#*--*##if($member.strSize)
+        if (*elem != NULL && **elem != NULL) {
+            **elem[0] = '\0';
+        }
+        
+#*--*##else
+        for (i=0;i < (int)($member.arrayTotalSize);i++,++elem) {
+            if (*elem != NULL) {
+#*----*##if($member.typeKind=="user")
+                if (!${member.nativeTypeFQName}_initialize_w_params(*elem,allocParams)) {
+                    return RTI_FALSE;
+                }   
+#*----*##else
+                memset((void *)*elem,0,sizeof($member.nativeTypeFQName));
+#*----*##end
+            }
+        }
+#*--*##end
+    }
+}
+#end
+
+##------------------------------------------------------------------------------
+## Macro to intialize array of sequence of pointers
+##------------------------------------------------------------------------------
+
+#macro (initArrayofSeqPointer $member)
+{
+int i;
+#declareMemberType($member)** elem =
+    (#declareMemberType($member)**) $member.sampleRef;
+            
+if (allocParams->allocate_memory){
+    if (allocParams->allocate_pointers) {
+        for (i=0;i < (int)($member.arrayTotalSize);i++,++elem) {
+            RTIOsapiHeap_allocateStructure(elem,#declareMemberType($member));        
+            if (*elem == NULL) {
+                return RTI_FALSE;
+            }
+            ${member.nativeTypeSeqFQName}_initialize(*elem);   
+
+#*--*##if($member.typeKind=="user")
+            ${member.nativeTypeSeqFQName}_set_element_allocation_params(*elem,allocParams);
+            if (!${member.nativeTypeSeqFQName}_set_maximum(*elem,
+                     $member.arrayTotalSize)) {
+                return RTI_FALSE;
+            }                
+        }
+    } else {
+       for (i=0;i < (int)($member.arrayTotalSize);i++,++elem) {
+           *elem=NULL;
+       }
+    }
+} else { 
+    if (*elem != 0) {
+       ${member.nativeTypeSeqFQName}_set_length(*elem,0);
+    }
+}
+}
+
+#*--*##else
+            if (!${member.nativeTypeSeqFQName}_set_maximum(*elem,
+                     $member.arrayTotalSize)) {
+                return RTI_FALSE;
+            }
+#*----*##if($member.strSize)
+            buffer = ${member.nativeTypeSeqFQName}_get_contiguous_bufferI(*elem);                
+            if (buffer == NULL) {
+                return RTI_FALSE;
+            }                         
+            if (!RTICdrType_initStringArray(buffer,$member.arrayTotalSize,
+                     ($member.strSize)+1, $member.typeEnum)) {
+                return RTI_FALSE;
+            }  
+#*----*##end              
+        }    
+    } else {
+        for (i=0;i < (int)($member.arrayTotalSize);i++,++elem) {
+            *elem=NULL;
+        }
+    }
+} else {
+    if (*elem != NULL) {
+        ${member.nativeTypeSeqFQName}_set_length(*elem,0);
+    }
+}
+}
+
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to intialize basic
+##------------------------------------------------------------------------------
+
+#macro(initBuiltin $member)
+
+#*--*##if($member.strSize)
+#*----*##if($member.isPointer)
+if (allocParams->allocate_memory){
+    if (allocParams->allocate_pointers) {
+        RTIOsapiHeap_allocateStructure(&($member.sampleRef), $member.nativeTypeFQName);        
+        if ($member.sampleRef==NULL) {
+            return RTI_FALSE;
+        }                                                                                           
+        $member.sample = $member.allocMethod ((${member.strSize}));
+        if ($member.sample == NULL) {
+            return RTI_FALSE;
+        }        
+    } else {
+        $member.sampleRef = NULL;
+    }
+} else {
+    if ($member.sampleRef != NULL && 
+           $member.sample != NULL )   {
+           ${member.sample}[0] = '\0';
+    }
+}
+#*----*##else
+if (allocParams->allocate_memory){
+    $member.sampleRef= $member.allocMethod ((${member.strSize}));
+    if ($member.sampleRef == NULL) {
+        return RTI_FALSE;
+    }
+
+} else {
+    if ($member.sampleRef!= NULL) { 
+        ${member.sampleRef}[0] = '\0';
+    }
+}
+#*----*##end        
+#*--*##elseif($member.isPointer || $member.isOptional)
+if (allocParams->allocate_memory){
+#*----*##if($member.isPointer)
+    if (allocParams->allocate_pointers) {
+#*----*##end    
+        RTIOsapiHeap_allocateStructure(&($member.sampleRef), $member.nativeTypeFQName);        
+        if ($member.sampleRef==NULL) {
+            return RTI_FALSE;
+        }                                                                                       
+        if (!${member.elementInitMethod}($member.sampleRef)) {
+             return RTI_FALSE;
+        }
+#*----*##if($member.isPointer)           
+    } else {
+        $member.sampleRef = NULL;
+    }
+#*----*##end      
+} else {
+    if ($member.sampleRef != NULL) {
+        if (!${member.elementInitMethod}($member.sampleRef)) {
+            return RTI_FALSE;
+        }
+     
+    }
+  
+}
+
+#*--*##else
+if (!${member.elementInitMethod}(${member.sampleRef})) {
+    return RTI_FALSE;
+}     
+#*--*##end
+
+
+#end
+
+
+
+##******************************************************************************
+## Macro finalize
+##******************************************************************************
+#macro(finalize $memberFieldMapList)
+#*--*##foreach($member in $memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirectiveNoDeclaration($member)
+#*----*##else
+#*--*##if ($member.isOptional)
+ if (deallocParams->delete_optional_members) {
+#*--*##end      
+#*----*##finalizeMember($member)
+#*--*##if ($member.isOptional)
+}
+#*--*##end
+#*----*##end
+#*--*##end
+#end 
+
+##------------------------------------------------------------------------------
+## Macro finalizeMember
+##------------------------------------------------------------------------------
+
+#macro (finalizeMember $member)
+#*--*##if($member.isPointer)
+if (deallocParams->delete_pointers) {
+#*--*##end
+#*--*##if(($member.isPointerOrOptional || ($member.strSize && !$member.seqSize  && !$member.typeKind.equals("user")))
+          && !($member.dimensionList))
+if ($member.sampleRef != NULL) {
+#*--*##end
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*##finalizeArrayofSequences($member)
+#*--*##elseif($member.dimensionList)
+#*----*##finalizeArray($member)
+#*--*##elseif($member.seqSize)
+#*----*##finalizeSeq($member)
+#*--*##elseif($member.typeKind=="user")
+#*----*##finalizeUser($member)
+#*--*##else
+#*----*##if($member.strSize)
+#*----*##finalizeString($member)
+#*----*##end     
+#*--*##end
+#*--*##if(($member.isPointerOrOptional)
+         && (!$member.dimensionList)
+         && (!$member.strSize||$member.seqSize))
+    RTIOsapiHeap_freeStructure($member.sampleRef);
+   $member.sampleRef=NULL;
+#*--*##end
+#*--*##if(($member.isPointerOrOptional || ($member.strSize && !$member.seqSize  && !$member.typeKind.equals("user")))
+          && !($member.dimensionList))
+}
+#*--*##end
+#*--*##if($member.isPointer)
+}
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro finalizeString
+##------------------------------------------------------------------------------
+#macro (finalizeString $member)
+${member.finalizeMethod}(#if($member.isPointer)*#end$member.sampleRef);
+#*--*##if($member.isPointer)
+RTIOsapiHeap_freeStructure($member.sampleRef);
+#*--*##end
+$member.sampleRef=NULL;
+#end
+
+##------------------------------------------------------------------------------
+## Macro finalizeUser
+##------------------------------------------------------------------------------
+#macro (finalizeUser $member)
+${member.nativeTypeFQName}_finalize_w_params(${member.sampleRef},deallocParams);
+#end
+##------------------------------------------------------------------------------
+## Macro finalizeArrayofSequences
+##------------------------------------------------------------------------------
+#macro(finalizeArrayofSequences $member)
+#*--*##if($member.isPointer)
+#*----*##finalizeArrayOfPointers ($member)
+#*--*##else  
+{
+    int i;
+    for (i = 0; i < (int) ($member.arrayTotalSize); i++) {
+#*----*##finalizeSeq($member)
+    }
+}
+#*--*##end
+#end
+##------------------------------------------------------------------------------
+## Macro finalizeArray
+##------------------------------------------------------------------------------
+#macro(finalizeArray $member)
+#*--*##if($member.isPointer)
+#*----*##finalizeArrayOfPointers ($member)
+#*--*##elseif($member.typeKind=="user")
+{
+    int i = 0;
+    $member.nativeTypeFQName* elem =
+        ($member.nativeTypeFQName*) ${member.sampleRef}[0];
+
+    for (i = 0; i < (int) ($member.arrayTotalSize); ++i, ++elem) {
+        ${member.nativeTypeFQName}_finalize_w_params(elem,deallocParams);
+    }
+}
+
+#*--*##elseif($member.strSize)
+RTICdrType_finalizeStringArray($member.sample, $member.arrayTotalSize, $member.typeEnum);
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro finalizeArray
+##------------------------------------------------------------------------------
+#macro(finalizeArrayOfPointers $member)
+
+    int i=0;
+    #declareMemberType($member)** elem =
+        (#declareMemberType($member) **) $member.sampleRef;
+    
+        for (i=0;i < (int)($member.arrayTotalSize);++i,++elem) {
+            if (*elem != NULL) {
+#*--*##if($member.seqSize)
+#*----*##if($member.typeKind=="user")
+#*----*#${member.nativeTypeSeqFQName}_set_element_deallocation_params(
+                        *elem,deallocParams);
+ #*----*##end
+                ${member.nativeTypeSeqFQName}_finalize(*elem);
+#*--*##elseif($member.typeKind=="user")
+                ${member.nativeTypeFQName}_finalize_w_params(*elem,deallocParams);
+#*--*##elseif($member.strSize)
+               ${member.finalizeMethod}(**elem);
+#*--*##end
+                RTIOsapiHeap_freeStructure(*elem);   
+                *elem=NULL;
+            }
+    }   
+                
+#end
+
+##------------------------------------------------------------------------------
+## Macro finalize sequences
+##------------------------------------------------------------------------------
+#macro(finalizeSeq $member)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeSeqFQName}_set_element_deallocation_params(
+    ${member.sampleRef}#if($member.dimensionList)[i]#end,deallocParams);
+#*--*##end  
+${member.nativeTypeSeqFQName}_finalize(${member.sampleRef}#if($member.dimensionList)[i]#end);
+#end
+
+
+
+##******************************************************************************
+## Macro finalize
+##******************************************************************************
+#macro(finalizeOptional $memberFieldMapList)
+#*--*##foreach($member in $memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirectiveNoDeclaration($member)
+#*----*##else
+#*------*##if($node.constructKind=="union")
+#*--------*##initCases($member)
+#*------*##end
+#*----*##finalizeOptionalMember($member)
+#*------*##if($node.constructKind=="union")
+} #if($member.labelList.get(0)!="(default)")break #end;
+#*------*##end
+#*----*##end
+#*--*##end
+#end 
+
+##------------------------------------------------------------------------------
+## Macro finalizeMember
+##------------------------------------------------------------------------------
+
+#macro (finalizeOptionalMember $member)
+#*--*##if ($member.isOptional)
+#finalizeMember($member)
+
+#*--*##elseif(($member.seqSize) && ($member.dimensionList) && ($member.typeKind=="user"))
+{
+        int i;
+        DDS_UnsignedLong j, length;
+
+        for (i = 0; i < (int)($member.arrayTotalSize); i++) {
+            length = ${member.nativeTypeSeqFQName}_get_length(
+                ${member.sampleRef}[i]);
+    
+            for (j = 0; j < length; j++) {
+                ${member.nativeTypeFQName}_finalize_optional_members(
+                    ${member.nativeTypeSeqFQName}_get_reference(
+                      ${member.sampleRef}[i], j), deallocParams->delete_pointers);
+            }
+        }
+    }
+
+#*--*##elseif(($member.seqSize) &&($member.typeKind=="user"))
+{
+        DDS_UnsignedLong i, length;
+        length = ${member.nativeTypeSeqFQName}_get_length(
+            ${member.sampleRef});
+
+        for (i = 0; i < length; i++) {
+             ${member.nativeTypeFQName}_finalize_optional_members(
+                ${member.nativeTypeSeqFQName}_get_reference(
+                    ${member.sampleRef}, i), deallocParams->delete_pointers);
+        }
+}  
+
+#*--*##elseif(($member.dimensionList) &&($member.typeKind=="user"))
+ {
+       int i = 0;
+    $member.nativeTypeFQName* elem =
+        ($member.nativeTypeFQName*) ${member.sampleRef}[0];
+
+    for (i = 0; i < (int) ($member.arrayTotalSize); ++i, ++elem) {
+        ${member.nativeTypeFQName}_finalize_optional_members(elem, deallocParams->delete_pointers);
+        }
+    }
+#*--*##elseif($member.typeKind=="user")
+${member.nativeTypeFQName}_finalize_optional_members(${member.sampleRef}, deallocParams->delete_pointers);
+#*--*##end 
+#end
+
+##******************************************************************************
+## Macro copy
+##******************************************************************************
+
+#macro(copy $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*------*##copyDirectiveNoDeclaration($member)
+#*----*##else
+#*------*##if($node.constructKind=="union")
+#*--------*##initCases($member)
+#*------*##end
+#*--------*##copyMember($member)
+#*------*##if($node.constructKind=="union")
+} #if($member.labelList.get(0)!="(default)")break #end;
+#*------*##end
+#*--*##end
+#*--*##end
+#end
+
+
+##------------------------------------------------------------------------------
+## Macro copyMember
+##------------------------------------------------------------------------------
+
+#macro(copyMember $member)
+#*--*##if ($member.isOptional)
+#*----*##copyInitOptionalMember($member)
+#*--*##end
+#*--*##if($member.isPointer && !$member.dimensionList)
+if ($member.srcRef == NULL || $member.dstRef==NULL) {
+        return RTI_FALSE;
+}
+#*--*##end
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*##copyArrayofSeq($member)
+#*--*##elseif($member.dimensionList)
+#*----*##copyArray($member) 
+#*--*##elseif($member.seqSize)
+#*----*##copySeq($member)
+#*--*##elseif($member.typeKind=="user")
+#*----*##copyUser($member)
+#*--*##else
+#*----*##copyBuiltin($member)
+#*--*##end
+#*--*##if ($member.isOptional )
+#*----*##copyFinishOptionalMember($member)
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to copy User
+##------------------------------------------------------------------------------
+#macro(copyUser $member)
+if (!${member.nativeTypeFQName}_copy(
+       $member.dstRef, $member.srcRef)) {
+    return RTI_FALSE;
+} 
+#end    
+
+##------------------------------------------------------------------------------
+## Macro to copy Basic types NonCollection
+##------------------------------------------------------------------------------
+#macro(copyBuiltin $member)
+#*--*##if($member.strSize)
+if (!$member.elementCopyMethod (
+       #if($member.isPointer)*#end$member.dstRef, #if($member.isPointer)*#end$member.srcRef, (${member.strSize}) + 1)) {
+    return RTI_FALSE;
+}
+#*--*##else
+if (!$member.elementCopyMethod (
+       $member.dstRef, $member.srcRef)) { 
+    return RTI_FALSE;
+}
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to copy Array of sequences
+##------------------------------------------------------------------------------
+#macro(copyArrayofSeq $member)
+    {
+        int i;
+
+        for (i = 0; i < (int) ($member.arrayTotalSize); i++) {
+#*--*##copySeq($member)
+        }
+    }
+#end
+
+##------------------------------------------------------------------------------
+## Macro to copy Arrays of basic types
+##------------------------------------------------------------------------------
+#macro(copyArray $member)
+#*--*##if($member.isPointer)
+#*----*##copyArrayPointers($member)
+#*--*##elseif($member.typeKind=="user")
+{
+    int i = 0;
+    ${member.nativeTypeFQName}* elemOut = (${member.nativeTypeFQName}*) ${member.dstRef}[0];
+    const ${member.nativeTypeFQName}* elemIn = (const ${member.nativeTypeFQName}*) ${member.srcRef}[0];
+    for (i = 0; i < (int) ($member.arrayTotalSize);++i, ++elemOut, ++elemIn) {
+        if (!$member.elementCopyMethod (elemOut,(const ${member.nativeTypeFQName}*)elemIn)) {
+                return RTI_FALSE;
+        }
+    }
+}
+
+#*--*##elseif($member.strSize)
+if (!RTICdrType_copyStringArray(
+    $member.dstSample,  $member.srcSample,        
+    $member.arrayTotalSize,($member.strSize) + 1 ,
+    $member.typeEnum)) {
+    return RTI_FALSE;
+}
+#*--*##else
+if (!RTICdrType_copyArray(
+   $member.dstSample ,$member.srcSample,$member.arrayTotalSize, $member.elementSize)) {
+   return RTI_FALSE;
+}
+#*--*##end 
+#end  
+
+##------------------------------------------------------------------------------
+## Macro to copy Arrays Pointers of basic types
+##------------------------------------------------------------------------------
+
+#macro (copyArrayPointers $member)
+{
+    int i = 0;
+    ${member.nativeTypeFQName}** elemOut = (${member.nativeTypeFQName}**) $member.dstRef;
+    ${member.nativeTypeFQName}** elemIn = (${member.nativeTypeFQName}**) $member.srcRef;
+
+    for (i = 0; i < (int)($member.arrayTotalSize);
+         ++i, ++elemOut, ++elemIn) {
+#*--*##if($member.typeKind=="user") 
+        if (*elemIn==NULL || *elemOut==NULL) {
+            return RTI_FALSE;
+        }            
+        if (!$member.elementCopyMethod (*elemOut,*elemIn)) {
+            return RTI_FALSE;
+        } 
+#*--*##elseif($member.strSize)
+        if (*elemIn==NULL || *elemOut==NULL) {
+            return RTI_FALSE;
+        }
+        if (!$member.elementCopyMethod (**elemOut,**elemIn,
+            ($member.strSize) + 1)){
+            return RTI_FALSE;
+        }
+#*--*##else 
+        if (!$member.elementCopyMethod (*elemOut,*elemIn)) {
+             return RTI_FALSE;
+        }
+#*--*##end
+    }
+}     
+#end
+
+##------------------------------------------------------------------------------
+## Macro to copy Sequences
+##------------------------------------------------------------------------------
+#macro(copySeq $member)
+if (!${member.nativeTypeSeqFQName}_copy($member.dstRef #if($member.dimensionList)[i]#end,
+    $member.srcRef #if($member.dimensionList)[i]#end)) {
+        return RTI_FALSE;
+}
+#end
+
+
+##------------------------------------------------------------------------------
+## Macro to init copy Optional
+##------------------------------------------------------------------------------
+#macro (copyInitOptionalMember $member)
+#if($member.strSize && $member.typeKind=="user")
+if ($member.srcSample!=NULL) {
+      if ($member.dstSample==NULL) {
+
+#else
+if ($member.srcRef!=NULL) {
+      if ($member.dstRef==NULL) {
+#end      
+#*----*##if($member.strSize && $member.typeKind.equals("user"))      
+       if (!${member.nativeTypeFQName}_initialize_ex($member.dstRef, RTI_TRUE, RTI_TRUE)) {
+            return RTI_FALSE;
+        }
+      }      
+#*--*##elseif($member.seqSize)
+#*----*##if($member.strSize) 
+ {
+            void * buffer;     
+#*----*##end
+        RTIOsapiHeap_allocateStructure(&($member.dstRef),struct ${member.nativeTypeSeqFQName});        
+        if ($member.dstRef==NULL) {
+            return RTI_FALSE;
+        }                                                                                           
+        ${member.nativeTypeSeqFQName}_initialize($member.dstRef);
+#*----*##if($member.typeKind.equals("user"))
+        ${member.nativeTypeSeqFQName}_set_element_pointers_allocation($member.dstRef,RTI_TRUE);
+#*----*##end                
+        if (!${member.nativeTypeSeqFQName}_set_maximum($member.dstRef,
+            ($member.seqSize))) {
+            return RTI_FALSE;
+        }      
+#*----*##if($member.strSize)      
+      buffer = ${member.nativeTypeSeqFQName}_get_contiguous_bufferI($member.dstRef);
+            if (buffer == NULL) {
+                return RTI_FALSE;
+            }
+            if (!RTICdrType_initStringArray(buffer, ($member.seqSize),($member.strSize)+1,
+                $member.typeEnum)) {
+                return RTI_FALSE;
+            }
+        }
+#*----*##end  
+      }    
+#*--*##elseif($member.strSize)
+          $member.dstRef= $member.allocMethod ((${member.strSize}));
+          if ($member.dstRef == NULL) {
+              return RTI_FALSE;
+          }       
+      }
+#*--*##else
+        RTIOsapiHeap_allocateStructure(&($member.dstRef),$member.nativeTypeFQName);
+        if ($member.dstRef==NULL) {
+            return RTI_FALSE;
+        }
+#*----*##if($member.typeKind.equals("user"))
+        if (!${member.nativeTypeFQName}_initialize_ex($member.dstRef, RTI_TRUE, RTI_TRUE)) {
+#*----*##else                                                                                               
+        if (!${member.elementInitMethod}($member.dstRef)) {
+#*----*##end        
+            return RTI_FALSE;
+        }
+      }
+#*--*##end
+#end
+
+#macro (copyFinishOptionalMember $member)
+} else {
+#if($member.strSize && $member.typeKind=="user")
+    if ($member.dstSample != NULL) {
+#else
+if ($member.dstRef != NULL) {
+#end    
+    
+#*----*##if($member.strSize && $member.typeKind.equals("user"))      
+       ${member.nativeTypeFQName}_finalize_w_params($member.dstRef, deallocParams);
+#*----*##elseif($member.seqSize)
+#*------*##if($member.typeKind.equals("user"))
+        ${member.nativeTypeSeqFQName}_set_element_deallocation_params($member.dstRef,deallocParams);
+#*------*##end       
+        ${member.nativeTypeSeqFQName}_finalize($member.dstRef);  
+        RTIOsapiHeap_freeStructure($member.dstRef);
+        $member.dstRef=NULL;    
+#*----*##elseif($member.strSize && !$member.typeKind.equals("user"))    
+        ${member.finalizeMethod}($member.dstRef);   
+        $member.dstRef = NULL;     
+#*----*##else
+#*----*##if($member.typeKind.equals("user"))
+        ${member.nativeTypeFQName}_finalize_w_params($member.dstRef, deallocParams);
+ #*----*##end  
+        RTIOsapiHeap_freeStructure($member.dstRef);
+        $member.dstRef=NULL;        
+#*--*##end        
+    }
+            
+}
+#end
+

@@ -1,0 +1,196 @@
+##/* $Id: utils.vm,v 1.10 2013/06/10 15:56:58 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,28may13, ajm CODEGENII-104 reviewing ADA code
+##10a,08mar13, ajm CODEGENII-30: Code reviews
+##10a,16jan13, ajm RRTIDDSGEN-52 Renaming variables and functions for the codereview
+##10a,4dec12, ajm Refactoring of the code and variable names.
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCenvMap.typeCode
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,30sep11,ajm Adding noenvMap.typeCode option support
+##10a,26sep11,ajm adding enum support 
+##10a,16sep11,ajm  fixing detected bugs in typedefs
+##10a,15sep11,ajm Refactor typedefs
+##10a,07sep11, ajm Adding support for typedef
+##10a,29ag11,ajm Fixing macros consistency by adding the missing parameters
+##10a,22ag11,ajm adding support for arrays of sequences
+##10a,22ag11,ajm adding support for sequences
+##10a,19ag11,ajm checking if the members have a dimension field
+##10a,16ag11,jmt Adding funcionality for basic types, const and arrays
+##10a,15ag11,jmt created 
+##
+##========================================================================*/
+
+##******************************************************************************
+## Macro to create the constants
+##******************************************************************************
+#macro(initConstant $node)
+#if($node.nativeTypeFQName=="Standard.DDS.String")
+$node.name : constant $node.nativeTypeFQName := Standard.DDS.To_DDS_String (${node.value});
+#elseif($node.nativeTypeFQName=="Standard.DDS.Wide_String")
+$node.name : constant $node.nativeTypeFQName := Standard.DDS.To_DDS_Wide_String (${node.value});
+#else
+$node.name : constant $node.nativeTypeFQName := ${node.value};
+#end
+#end
+
+##******************************************************************************
+## Macro to initialize the variables of an struct
+##******************************************************************************
+
+#macro(initializeAdaVariables $struct $memberFieldMapList)
+#*--*##foreach($member in $memberFieldMapList)
+#*----*##if($member.directive)
+#*----*#$member.value
+#*----*##elseif($member.dimensionList)
+#*------*##initializeAdaArray($struct $member)
+#*----*##elseif($member.seqSize)
+#*------*##initializeAdaSeq($member)
+#*----*##elseif($member.isPointer)
+#*------*#    $member.name : access $member.nativeTypeFQName;#*
+---------*##if(($member.nativeTypeFQName=="Standard.DDS.String") 
+                 ||($member.nativeTypeFQName=="Standard.DDS.Wide_String"))-- maximum length = ($member.strSize)#end
+
+#*----*##else
+#*------*#    $member.name : aliased $member.nativeTypeFQName;#*
+---------*##if(($member.nativeTypeFQName=="Standard.DDS.String") 
+                 ||($member.nativeTypeFQName=="Standard.DDS.Wide_String"))-- maximum length = ($member.strSize)#end
+    
+#*----*##end
+#*--*##end
+#end
+
+##******************************************************************************
+## Macro to initialize an array
+##******************************************************************************
+
+#macro(initializeAdaArray $node  $member)
+#if($member.dimensionList.size()==1 && !$member.seqSize)
+#*----*##if($member.isPointer)
+    $member.name : access  ${member.nativeTypeFQName}_Array(#arrayIndexInitialization(${member}));
+#*----*##else
+    $member.name : aliased  ${member.nativeTypeFQName}_Array(#arrayIndexInitialization(${member}));
+#*----*##end
+#else
+#*----*##if($member.isPointer)
+    $member.name : access ${node.name}_${member.name}_Array;
+#*----*##else
+    $member.name : aliased ${node.name}_${member.name}_Array;
+#*----*##end    
+#end    
+#end
+
+##******************************************************************************
+## Macro to initialize a sequence
+##******************************************************************************
+
+#macro (initializeAdaSeq $member)
+#*----*##if($member.isPointer)
+#*------*#    $member.name : access  ${member.nativeTypeFQName}_Seq.Sequence;
+#*----*##else
+#*------*#    $member.name : aliased  ${member.nativeTypeFQName}_Seq.Sequence;
+#*------*##end
+#end
+##******************************************************************************
+## Macro to insert commas when needed for the dimension of the arrays
+##******************************************************************************
+
+
+#macro(commaIfNeededDimension $index $member)
+#set ( $lastone = $member.dimensionList.size() - 1 )
+#if( $index <= $lastone), #end
+#end
+
+
+##******************************************************************************
+## Macro to insert commas when needed for the size of the list of members
+##*****************************************************************************f*
+
+
+#macro(commaIfNeededMembers $index $member)
+#set ( $lastone = $member.memberFieldMapList.size() - 1 )
+#if( $index <= $lastone), #end
+#end
+
+##******************************************************************************
+## Macro to initialize the index of an array
+##******************************************************************************
+
+#macro(arrayIndexInitialization $member)
+#foreach($element in $member.dimensionList)1..${element}#commaIfNeededDimension($velocityCount $member)#end
+#end
+
+##******************************************************************************
+## Macro to initialize all the array members in an struct
+##******************************************************************************
+
+#macro(initializeAdaArrays $memberFieldMapList $node)
+#foreach($member in $memberFieldMapList)
+#intializeAdaArrayMember ($node $member)
+#end
+#end
+
+##******************************************************************************
+## Macro to initialize a member which is an array
+##******************************************************************************
+
+#macro(intializeAdaArrayMember $node $member)
+#*----*##if($member.dimensionList && $member.seqSize)
+#*------*#   type ${node.name}_${member.name}_Array is array (#arrayIndexInitialization(${member})#*
+*#) of aliased ${member.nativeTypeFQName}_Seq.Sequence;
+#*----*##elseif(($member.dimensionList)&& ($member.dimensionList.size()>1))
+#*--------*#   type ${node.name}_${member.name}_Array is array (#arrayIndexInitialization(${member})#*
+*#) of aliased ${member.nativeTypeFQName};  
+#*----*##end
+#*---*##end
+
+
+##******************************************************************************
+## Macro to initialize a typedef of an array
+##******************************************************************************
+
+#macro(intializeAdaArrayTypedefMember $member $node)
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*#   type ${node.name} is array (#arrayIndexInitialization(${member})#*
+*#) of ${member.nativeTypeFQName}_Seq.Sequence; 
+#*--*##elseif($member.dimensionList)
+#*----*#   type ${node.name} is array (#arrayIndexInitialization(${member})#*
+*#) of $member.nativeTypeFQName;  
+#*--*##end
+#end
+
+##******************************************************************************
+## Macro to initialize an struct
+##******************************************************************************
+
+#macro(initStruct $node) 
+   type ${node.name}_Access is access all ${node.name};
+   type ${node.name}_Array is array (Natural range <>) of aliased ${node.name};
+   pragma Convention (C, ${node.name}_Array);
+ 
+#if($envMap.typeCode=="true")
+   function ${node.name}_Get_TypeCode return Standard.DDS.TypeCode_Access;
+   pragma Import (C, ${node.name}_Get_TypeCode, "${node.nativeCFQNameInModule}_get_typecode");
+#end
+   procedure Initialize (This : in out ${node.name});
+   procedure Finalize (This : in out ${node.name});
+   procedure Copy (Dst : in out ${node.name};
+                   Src : in ${node.name});
+                 
+   package ${node.name}_Seq is new Standard.DDS.Sequences_Generic
+   (${node.nativeFQName},
+    ${node.nativeFQName}_Access,
+    Natural,
+    1,
+    ${node.nativeFQName}_Array);               
+#end
+

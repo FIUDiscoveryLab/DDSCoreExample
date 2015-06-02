@@ -1,0 +1,7 @@
+#!gbuild
+[INTEGRITY Application]
+	-I.
+	:sourceDir=.
+	-no_kernel
+%%IDLFileBaseName%%_%%ProjectName%%dd_as1.gpj		[Program]
+%%IDLFileBaseName%%_%%ProjectName%%dd.int

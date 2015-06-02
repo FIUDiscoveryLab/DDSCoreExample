@@ -1,0 +1,21 @@
+// (c) Copyright, Real-Time Innovations, 2006.  All rights reserved.
+// No duplications, whole or partial, manual or electronic, may be made
+// without express written permission.  Any such copies, or
+// revisions thereof, must display this notice unaltered.
+// This code contains trade secrets of Real-Time Innovations, Inc.
+
+
+// MAX_DATA_SEQUENCE_LENGTH 
+// To test the shared memory transport plugin's capability to
+// send messages larger than UDP's packet size limit of 64K, 
+// increase the data-portion of the packet by increasing 
+// MAX_DATA_SEQUENCE_LENGTH.
+// Note that user-option of maxSize should account for 
+// the single sequenceNumber as well as the data.
+
+const short MAX_DATA_SEQUENCE_LENGTH = 8192; 
+
+struct Latency {
+    long sequence_number;
+    sequence<octet, MAX_DATA_SEQUENCE_LENGTH> data;
+};

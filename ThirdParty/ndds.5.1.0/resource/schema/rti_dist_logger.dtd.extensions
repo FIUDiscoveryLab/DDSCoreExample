@@ -1,0 +1,15 @@
+<!-- 
+ (c) Copyright, Real-Time Innovations, $Date: 2012/10/26 14:32:49 $.
+ All rights reserved.
+ Permission to modify and use for internal purposes granted.
+ This software is provided "as is", without warranty, express or implied.
+-->
+
+<!-- distributed_logger -->
+<!ELEMENT distributed_logger (filter_level?,enabled,thread?,queue_size?)>
+
+<!-- filter_level -->
+<!ELEMENT filter_level (#PCDATA)> 
+
+<!-- queue_size -->
+<!ELEMENT queue_size (#PCDATA)> 

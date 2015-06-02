@@ -1,0 +1,10 @@
+c_cc_sparc64Sol2.9gcc3.2 = gcc
+c_cc_flags_sparc64Sol2.9gcc3.2 = -m64
+c_ld_sparc64Sol2.9gcc3.2 = gcc
+c_ld_flags_sparc64Sol2.9gcc3.2 = -m64
+cxx_cc_sparc64Sol2.9gcc3.2 = g++
+cxx_cc_flags_sparc64Sol2.9gcc3.2 = -m64
+cxx_ld_sparc64Sol2.9gcc3.2 = g++
+cxx_ld_flags_sparc64Sol2.9gcc3.2 = -m64 -static-libgcc
+syslibs_sparc64Sol2.9gcc3.2 = -ldl -lnsl -lsocket -lgen -lposix4 -lpthread -lm -lc
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_64BIT

@@ -1,0 +1,10 @@
+c_cc_cell64Linux2.6gcc4.5.1 = powerpc64-ngc-linux-gcc
+c_cc_flags_cell64Linux2.6gcc4.5.1 = -O3 -mminimal-toc -mcpu=cell -mtune=cell
+c_ld_cell64Linux2.6gcc4.5.1 = powerpc64-ngc-linux-gcc
+c_ld_flags_cell64Linux2.6gcc4.5.1 = 
+cxx_cc_cell64Linux2.6gcc4.5.1 = powerpc64-ngc-linux-g++
+cxx_cc_flags_cell64Linux2.6gcc4.5.1 = -O3 -mminimal-toc -mcpu=cell -mtune=cell
+cxx_ld_cell64Linux2.6gcc4.5.1 = powerpc64-ngc-linux-g++
+cxx_ld_flags_cell64Linux2.6gcc4.5.1 = -static-libgcc 
+syslibs_cell64Linux2.6gcc4.5.1 = -ldl -lnsl -lm -lpthread -lrt
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_LINUX -DRTI_64BIT

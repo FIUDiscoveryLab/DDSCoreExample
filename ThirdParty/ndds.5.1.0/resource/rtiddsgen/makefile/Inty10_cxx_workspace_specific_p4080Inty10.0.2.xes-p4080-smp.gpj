@@ -1,0 +1,30 @@
+#!gbuild
+macro __BSP_DIR=$__OS_DIR/%%INTY_BSPTYPE%%
+macro __BUILD_DIR=%expand_path(.)
+macro __OS_DIR= # place here the path to your integrity distribution
+primaryTarget=ppc_integrity.tgt
+customization=$__OS_DIR/target/integrity.bod
+[Project]
+	-bsp %%INTY_BSPTYPE%%
+	-G
+	:sourceDir=.
+        -os_dir $__OS_DIR
+	:outputDir=objs
+	-object_dir=objs
+	--discretionary_errors
+	-nounknownpragmawarn
+	--std
+	-nowantprototype
+	-tnone
+	-directive_dir=src
+	-DRTI_INTY
+	-Isrc
+	:sourceDir=src
+	-I%%NDDSHOME%%/include
+	:sourceDir=%%NDDSHOME%%/include
+	-I%%NDDSHOME%%/include/ndds
+	:sourceDir=%%NDDSHOME%%/include/ndds
+	-L%%NDDSHOME%%/lib/%%archName%%
+%%IDLFileBaseName%%_%%Project1Name%%dd.gpj		[INTEGRITY Application]
+%%IDLFileBaseName%%_%%Project2Name%%dd.gpj		[INTEGRITY Application]
+posix_shm_manager.gpj		[INTEGRITY Application]

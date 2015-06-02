@@ -1,0 +1,165 @@
+##/* $Id: typeHeader.vm,v 1.9 2013/03/01 16:44:20 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##10a,28oct13,ajm CODEGENII-143 nddsgen1.0 fixes for CODEGEN-564 CODEGEN-494 CODEGEN-632
+##10a,19sep13,fcs CODEGENII-140: Union forward declaration
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,26mar13,ajm Adding support for unions in .Net
+##10a,25mar13,ajm Adding support for enums and inheritance 
+##10a,19mar13,ajm Adding support for typedefs and const 
+##10a,18mar13,ajm created 
+##-----------------------------------------------------------------
+##               
+##             Template for the main CPP/CLI header file
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+
+##---------------------------------------------------------------------
+##---------------------------------------------------------------------
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+
+${envMap.POUND_CHAR}pragma once
+
+
+struct DDS_TypeCode;
+    
+
+using namespace System;
+using namespace DDS;
+
+    
+#*--*##foreach($node in $constructMapList)
+#*----*##if($node.constructKind=="directive") ##if it is a directive we print its value
+$node.value 
+#*----*##elseif($node.constructKind=="module") ##if the module node is here is because its for c++ and namespace option
+namespace $node.name {
+#*----*##elseif($node.constructKind=="moduleClose") ##if the moduleClose node is here is because its for c++ and namespace option
+} /* namespace $node.name  */
+#*----*##elseif($node.constructKind=="enum")
+#*------*##declareEnum ($node)
+
+${node.name} ${node.name}_get_default_value();
+public ref class ${node.name}Seq
+        : public DDS::UserValueSequence<${node.name}> {
+public:
+    ${node.name}Seq() :
+            DDS::UserValueSequence<${node.name}>() {
+        // empty
+    }
+   ${node.name}Seq(System::Int32 max) :
+            DDS::UserValueSequence<${node.name}>(max) {
+        // empty
+    }
+    ${node.name}Seq(${node.name}Seq^ src) :
+            DDS::UserValueSequence<${node.name}>(src) {
+        // empty
+    }
+};
+
+#*----*##elseif($node.constructKind=="include")
+${envMap.POUND_CHAR}include "${node.file}.h"
+#*----*##elseif($node.constructKind=="const")
+#*------*##assignMemberVariables($node $node)
+#*------*##declareConstant( $node)
+#*----*##elseif($node.constructKind=="structFwd" ||$node.constructKind=="valueTypeFwd" || $node.constructKind=="unionFwd")
+ref struct  ${node.nativeFQNameInModule};
+#*----*##elseif(($node.isAggregationType)
+               ||(($node.constructKind=="alias") 
+                  && (($node.firstMember.typeKind.equals("user") && !$node.firstMember.isEnum ) 
+                       ||($node.firstMember.dimensionList) 
+                       || ($node.firstMember.seqSize))))
+
+public ref struct ${node.nativeFQNameInModule}
+        : #if($node.baseTypeFQName) public $node.baseTypeFQName,#end#*
+---------*# public DDS::ICopyable<${node.nativeFQNameInModule}^> {
+    // --- Declared members: -------------------------------------------------
+  public: 
+#*------*##if($node.constructKind.equals("union"))
+#*--------*##assignMemberVariables($node.unionDiscriminatorMap $node)
+    $node.unionDiscriminatorMap.nativeTypeFQName _d;
+
+    ref struct ${node.nativeFQNameInModule}_u {  
+#*------*##end          
+#*------*##assignTypeVariables($node)
+#*------*##declareMembers($node)
+
+#*------*##if($node.constructKind.equals("union"))
+  };
+    initonly ${node.nativeFQNameInModule}_u^ _u;
+#*------*##end 
+
+    // --- Static constants: -------------------------------------    
+public:
+    
+
+
+    // --- Constructors and destructors: -------------------------------------
+  public:
+    ${node.nativeFQNameInModule}();
+
+    // --- Utility methods: --------------------------------------------------
+  public:
+  
+    virtual void clear() #if($node.baseTypeFQName) override #end;
+    
+    virtual System::Boolean copy_from(${node.nativeFQNameInModule}^ src);
+
+    virtual System::Boolean Equals(System::Object^ other) override;
+#*----*##if($node.constructKind.equals("alias"))
+    virtual System::String^ ToString() override;
+#*----*##elseif($node.constructKind.equals("union"))
+    $node.unionDiscriminatorMap.nativeTypeFQName get_default_discriminator();
+#*----*##end    
+#*----*##if($envMap.typeCode)   
+    static DDS::TypeCode^ get_typecode();
+
+  private:
+    static DDS::TypeCode^ _typecode;
+#*----*##end    
+
+}; // class ${node.nativeFQNameInModule}
+
+
+
+
+public ref class ${node.nativeFQNameInModule}Seq sealed
+        : public DDS::UserRefSequence<${node.nativeFQNameInModule}^> {
+public:
+    ${node.nativeFQNameInModule}Seq() :
+            DDS::UserRefSequence<${node.nativeFQNameInModule}^>() {
+        // empty
+    }
+    ${node.nativeFQNameInModule}Seq(System::Int32 max) :
+            DDS::UserRefSequence<${node.nativeFQNameInModule}^>(max) {
+        // empty
+    }
+    ${node.nativeFQNameInModule}Seq(${node.nativeFQNameInModule}Seq^ src) :
+            DDS::UserRefSequence<${node.nativeFQNameInModule}^>(src) {
+        // empty
+    }
+};
+
+#*------*##end
+
+#*------*##if(($envMap.typeCode) &&($node.isAggregationType ||$node.constructKind=="alias" ||$node.constructKind=="enum")) 
+#*----*##assignTypeVariables($node) ##it is needed for alias that have not entered in the previous if
+${envMap.POUND_CHAR}define NDDSUSERDllExport
+NDDSUSERDllExport DDS_TypeCode* ${node.nativeFQNameInModule}_get_typecode();
+#*------*##end
+#*--*##end

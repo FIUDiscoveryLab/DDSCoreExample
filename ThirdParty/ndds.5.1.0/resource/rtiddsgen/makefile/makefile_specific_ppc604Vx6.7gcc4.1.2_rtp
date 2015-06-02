@@ -1,0 +1,8 @@
+c_cc_ppc604Vx6.7gcc4.1.2_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccppc
+c_ld_ppc604Vx6.7gcc4.1.2_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccppc
+c_ld_flags_ppc604Vx6.7gcc4.1.2_rtp = -mrtp
+cxx_cc_ppc604Vx6.7gcc4.1.2_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++ppc
+cxx_ld_ppc604Vx6.7gcc4.1.2_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++ppc
+cxx_ld_flags_ppc604Vx6.7gcc4.1.2_rtp = -mrtp
+syslibs_ppc604Vx6.7gcc4.1.2_rtp = -L\$(WIND_BASE)/target/usr/lib/ppc/PPC32/common  -lstlstd
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -mcpu=604 -fno-builtin -mlongcall -DTOOL=gnu -DCPU=PPC32 

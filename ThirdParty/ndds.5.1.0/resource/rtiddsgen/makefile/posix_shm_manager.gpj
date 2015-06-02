@@ -1,0 +1,7 @@
+#!gbuild
+[INTEGRITY Application]
+	-I.
+	:sourceDir=.
+	-no_kernel
+posix_shm_manager_as1.gpj		[Program]
+posix_shm_manager.int

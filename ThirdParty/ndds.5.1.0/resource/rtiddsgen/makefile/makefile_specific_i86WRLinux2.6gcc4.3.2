@@ -1,0 +1,10 @@
+c_cc_i86WRLinux2.6gcc4.3.2 = i586-wrs-linux-gnu-gcc
+c_cc_flags_i86WRLinux2.6gcc4.3.2 = -m32 -march=i686 -mtune=generic -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/i586/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/common_pc-glibc_std/sysroot/ 
+c_ld_i86WRLinux2.6gcc4.3.2 = i586-wrs-linux-gnu-gcc
+c_ld_flags_i86WRLinux2.6gcc4.3.2 = -m32 -march=i686 -mtune=generic -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/i586/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/common_pc-glibc_std/sysroot/ -static-libgcc
+cxx_cc_i86WRLinux2.6gcc4.3.2 = i586-wrs-linux-gnu-g++
+cxx_cc_flags_i86WRLinux2.6gcc4.3.2 = -m32 -march=i686 -mtune=generic -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/i586/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/common_pc-glibc_std/sysroot/
+cxx_ld_i86WRLinux2.6gcc4.3.2 = i586-wrs-linux-gnu-g++
+cxx_ld_flags_i86WRLinux2.6gcc4.3.2 = -m32 -march=i686 -mtune=generic -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/i586/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/common_pc-glibc_std/sysroot/ -static-libgcc
+syslibs_i86WRLinux2.6gcc4.3.2 = -ldl -lnsl -lm -lpthread -lrt
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_LINUX

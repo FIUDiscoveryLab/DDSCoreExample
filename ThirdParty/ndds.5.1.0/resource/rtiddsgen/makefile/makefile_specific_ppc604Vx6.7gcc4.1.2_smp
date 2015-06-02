@@ -1,0 +1,8 @@
+c_cc_ppc604Vx6.7gcc4.1.2_smp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccppc
+c_ld_ppc604Vx6.7gcc4.1.2_smp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ldppc
+c_ld_flags_ppc604Vx6.7gcc4.1.2_smp =
+cxx_cc_ppc604Vx6.7gcc4.1.2_smp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccppc
+cxx_ld_ppc604Vx6.7gcc4.1.2_smp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ldppc
+cxx_ld_flags_ppc604Vx6.7gcc4.1.2_smp =
+syslibs_ppc604Vx6.7gcc4.1.2_smp =
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -mcpu=604 -fno-builtin -mlongcall -DTOOL=gnu -DCPU=PPC32

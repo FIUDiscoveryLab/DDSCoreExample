@@ -1,0 +1,8 @@
+c_cc_ppc405Vx6.6gcc4.1.2_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/ccppc
+c_ld_ppc405Vx6.6gcc4.1.2_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/ccppc
+c_ld_flags_ppc405Vx6.6gcc4.1.2_rtp = -mrtp -msoft-float -mstrict-align
+cxx_cc_ppc405Vx6.6gcc4.1.2_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/c++ppc
+cxx_ld_ppc405Vx6.6gcc4.1.2_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/c++ppc
+cxx_ld_flags_ppc405Vx6.6gcc4.1.2_rtp = -mrtp -msoft-float -mstrict-align
+syslibs_ppc405Vx6.6gcc4.1.2_rtp = -L\$(WIND_BASE)/target/usr/lib/ppc/PPC32/sfcommon  -lstdc++
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -mcpu=405 -fno-builtin -mlongcall -msoft-float -DTOOL=sfgnu -DCPU=PPC405 

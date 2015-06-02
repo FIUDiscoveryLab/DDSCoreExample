@@ -1,0 +1,8 @@
+c_cc_ppce500v2Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccppc
+c_ld_ppce500v2Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccppc
+c_ld_flags_ppce500v2Vx6.9gcc4.3.3_rtp = -mrtp
+cxx_cc_ppce500v2Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++ppc
+cxx_ld_ppce500v2Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++ppc
+cxx_ld_flags_ppce500v2Vx6.9gcc4.3.3_rtp = -mrtp
+syslibs_ppce500v2Vx6.9gcc4.3.3_rtp = -L\$(WIND_BASE)/target/lib/usr/lib/ppc/PPC32/e500v2common  -lstlstd
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -fno-builtin -mlongcall -DTOOL=gnu -DCPU=PPC32 -te500v2 -mcpu=8548 -mfloat-gprs=double -mspe=yes -mabi=spe 

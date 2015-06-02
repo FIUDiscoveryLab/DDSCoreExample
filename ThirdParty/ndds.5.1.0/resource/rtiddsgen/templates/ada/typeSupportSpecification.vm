@@ -1,0 +1,93 @@
+##/* $Id: typeSupportSpecification.vm,v 1.6 2013/06/27 15:59:42 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##modification history:
+##---------------------
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,25oct12, ajm Refactorizing code and variable constructMap.names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,11nov11, ajm Changing the constructMap.name of the templates to camelCase
+##10a,04nov11, ajm Refactoring code. Variable constructMap.name changed
+##10a,16ag11,ajm Adding funcionality for basic types, const and arrays
+##10a,15ag11,ajm created 
+##
+##========================================================================*/
+##-----------------------------------------------------------------
+##               
+##       Template for type Suppport Specification file
+## 
+##------------------------------------------------------------------
+--  ============================================================================
+--
+--         WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+--
+--  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+--  The rtiddsgen tool is part of the RTI Connext distribution.
+--  For more information, type 'rtiddsgen -help' at a command shell
+--  or consult the RTI Connext manual.
+--
+--  ============================================================================
+
+with DDS;
+with DDS.DomainParticipant;
+with DDS.TypeSupport;
+with DDS.DataReader;
+with DDS.DataWriter;
+
+with  ${constructMap.packageName}; use  ${constructMap.packageName};
+
+package ${constructMap.nativeFQName}_TypeSupport is
+
+   type Ref is new Standard.DDS.TypeSupport.Ref with null record;
+   type Ref_Access is access all Ref'Class;
+
+   function Create_TypedDataReaderI
+     (Self : access Ref) return Standard.DDS.DataReader.Ref_Access;
+
+   procedure Destroy_TypedDataReaderI
+     (Self   : access Ref;
+      Reader : in out Standard.DDS.DataReader.Ref_Access);
+
+   function Create_TypedDataWriterI
+     (Self : access Ref) return Standard.DDS.DataWriter.Ref_Access;
+
+   procedure Destroy_TypedDataWriterI
+     (Self   : access Ref;
+      Writer : in out Standard.DDS.DataWriter.Ref_Access);
+
+   --  static methods
+
+   procedure Register_Type
+     (Participant :  not null access Standard.DDS.DomainParticipant.Ref'Class;
+      Type_Name   : in Standard.DDS.String);
+
+   function Get_Type_Name return Standard.DDS.String;
+
+   function Create_Data (AllocatePointers : in Boolean := True)
+     return not null ${constructMap.name}_Access;
+
+   procedure Delete_Data
+     (A_Data : in out ${constructMap.name}_Access; DeletePointers : in Boolean := True);
+
+   procedure Print_Data (A_Data : not null access constant ${constructMap.name});
+
+   procedure Copy_Data
+     (Dest   : not null access ${constructMap.name};
+      Source : not null access constant ${constructMap.name});
+
+   procedure Initialize_Data
+     (Dest             : not null access ${constructMap.name};
+      AllocatePointers : in Boolean := True);
+
+   procedure Finalize_Data
+     (Dest           : not null access ${constructMap.name};
+      DeletePointers : in Boolean := True);
+
+   procedure Finalize;
+
+end  ${constructMap.nativeFQName}_TypeSupport;

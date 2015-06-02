@@ -1,0 +1,132 @@
+##/* $Id: typeSupportHeader.vm,v 1.11 2013/10/02 14:23:28 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a, 02oct13 ajm CODEGENII-143 and CODEGEN-349 and CODGEN-499 Filenames with periods or hypthens
+##2.0,12sep13,ajm CODEGENII-92: Support for optional members
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,25mar13,ajm Adding support for enums and inheritance in .Net. We do check now
+## it we are working with namespaces because we introduce always the module in the list of nodes
+##10a,16jan13, ajm RRTIDDSGEN-52 Renaming variables and functions for the codereview
+##10a,8nov12, ajm  RRTIDDSGEN-34 support for the copy directives and resolve-name
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,21oct11,ajm Adding a return at the end of the file
+##10a,10oct11,ajm Adding union support 
+##10a,29sep11,ajm adding forward declaration and namespace support 
+##10a,22sep11,ajm adding valuetypes support
+##10a,2sep11,ajm Refactoring using a unique list for all elements(typedefs, structs and const)
+##10a,19ag11,ajm Adding support for @top-level 
+##10a,11ag11,ajm Refactorizing the templates code.
+##           ajm Adding variable $nativeFQNameInModule
+##10a,09ag11,jmt Fixing tabulations and length of the lines
+##10a,09ag11,ajm Fixing the bug for a struct without a module
+##10a,05ag11,ajm fixing bug, now using the structName name instead of the envMap.idlFileName 
+##10a,04ag11,ajm adding modificatin history header
+##10a,03ag11,ajm created 
+##----------------------------------------------------------------
+##-----------------------------------------------------------------
+##               
+##             Template for the typeSupport header file
+## 
+##------------------------------------------------------------------
+##---------------------------------------------------------------------
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+
+${envMap.POUND_CHAR}ifndef ${envMap.idlFileName.replace(".","_").replace("-","_")}Support_${envMap.executionID}_h
+${envMap.POUND_CHAR}define ${envMap.idlFileName.replace(".","_").replace("-","_")}Support_${envMap.executionID}_h
+
+/* Uses */
+${envMap.POUND_CHAR}include "${envMap.idlFileName}.h"
+
+
+
+${envMap.POUND_CHAR}ifdef __cplusplus
+${envMap.POUND_CHAR}ifndef ndds_cpp_h
+  ${envMap.POUND_CHAR}include "ndds/ndds_cpp.h"
+${envMap.POUND_CHAR}endif
+${envMap.POUND_CHAR}else
+${envMap.POUND_CHAR}ifndef ndds_c_h
+  ${envMap.POUND_CHAR}include "ndds/ndds_c.h"
+${envMap.POUND_CHAR}endif
+${envMap.POUND_CHAR}endif
+
+        
+#foreach($node in $constructMapList)
+#*--*##if($node.constructKind=="directive") ##if it is a directive we print its value
+#*----*##if($node.directiveKind=="copy-c"||$node.directiveKind=="copy") ##we avoid to copy the declaration directives
+$node.value
+#*----*##end
+#*--*##elseif($node.constructKind=="module" && ${envMap.namespace}) 
+namespace $node.name {
+#*--*##elseif($node.constructKind=="moduleClose" && ${envMap.namespace})
+} /* namespace $node.name  */
+#*--*##elseif($node.constructKind=="struct" || $node.constructKind=="valueType" || $node.constructKind=="union")
+#*----*##if($node.topLevel!="false")
+/* ========================================================================= */
+/**
+   Uses:     T
+
+   Defines:  TTypeSupport, TDataWriter, TDataReader
+
+   Organized using the well-documented "Generics Pattern" for
+   implementing generics in C and C++.
+*/
+
+${envMap.POUND_CHAR}if (defined(RTI_WIN32) || defined (RTI_WINCE)) && defined(NDDS_USER_DLL_EXPORT)
+  /* If the code is building on Windows, start exporting symbols.
+   */
+  ${envMap.POUND_CHAR}undef NDDSUSERDllExport
+  ${envMap.POUND_CHAR}define NDDSUSERDllExport __declspec(dllexport)
+
+
+${envMap.POUND_CHAR}endif
+
+${envMap.POUND_CHAR}ifdef __cplusplus
+
+#*------*##if($node.constructKind=="valueType")
+${envMap.POUND_CHAR}define RTI_VALUETYPE
+#*------*##end
+DDS_TYPESUPPORT_CPP(${node.nativeFQNameInModule}TypeSupport, ${node.nativeFQNameInModule});
+
+DDS_DATAWRITER_CPP(${node.nativeFQNameInModule}DataWriter, ${node.nativeFQNameInModule});
+DDS_DATAREADER_CPP(${node.nativeFQNameInModule}DataReader, ${node.nativeFQNameInModule}Seq, ${node.nativeFQNameInModule});
+
+#*------*##if($node.constructKind=="valueType")
+${envMap.POUND_CHAR}undef RTI_VALUETYPE
+#*------*##end
+
+${envMap.POUND_CHAR}else
+
+DDS_TYPESUPPORT_C(${node.nativeFQNameInModule}TypeSupport, ${node.nativeFQNameInModule});
+DDS_DATAWRITER_C(${node.nativeFQNameInModule}DataWriter, ${node.nativeFQNameInModule});
+DDS_DATAREADER_C(${node.nativeFQNameInModule}DataReader, ${node.nativeFQNameInModule}Seq, ${node.nativeFQNameInModule});
+
+${envMap.POUND_CHAR}endif
+
+${envMap.POUND_CHAR}if (defined(RTI_WIN32) || defined (RTI_WINCE)) && defined(NDDS_USER_DLL_EXPORT)
+  /* If the code is building on Windows, stop exporting symbols.
+   */
+  ${envMap.POUND_CHAR}undef NDDSUSERDllExport
+  ${envMap.POUND_CHAR}define NDDSUSERDllExport
+${envMap.POUND_CHAR}endif
+#*----*##end
+#*--*##end
+#end
+
+${envMap.POUND_CHAR}endif  /* ${envMap.idlFileName.replace(".","_").replace("-","_")}Support_${envMap.executionID}_h */
+

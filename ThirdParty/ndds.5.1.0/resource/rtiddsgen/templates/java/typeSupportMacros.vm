@@ -1,0 +1,1072 @@
+##/* $Id: typeSupportMacros.vm,v 1.19 2013/10/30 16:53:17 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##2.0,29oct13,ajm CODEGENII-143 fixing nddsgen1 issues CODEGEN-624
+##2.0,24sept13,ajm Code review
+##2.0,24sept13,ajm CODEGENII-92 Support for optional members.
+##10a,13jun13,ajm CODEGENII-109 joining the type variables in the constructMap 
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,8mar13, ajm CODEGENII-30 and CODEGENII-87 Code reviews and Xtypes in Java
+##10a,6feb12,ajm CODEGENII-30 Starting review of the templates to match the
+## guidelines we are following for C/C++
+##10a,16jan13, ajm RRTIDDSGEN-52 Renaming variables and functions for the codereview
+##10a,4dec12, ajm Refactoring of the code and variable names.
+##                 Support from constant inside a type in Java
+##10a,8nov12, ajm  RRTIDDSGEN-34 support for the copy directives and resolve-name
+##10a,31oct12, ajm RTIDDSGEN-34 support for the first set of copy directives (java ones)
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,15oct12, ajm Support for the -noCopyable option
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,04jan12, jmt Upgrade to LOLA
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,12oc11,jmt finished union support
+##10a,10oc11,jmt adding union support
+##10a,26sep11,jmt adding enum support
+##10a,22sep11,jmt adding valuetypes support
+##10a,19sep11,jmt Adding non-primitive support
+##10a,16sep11,jmt Fixing detected bugs in typedefs
+##10a,15sep11,jmt Fixing more typedef issues
+##10a,14sep11,jmt Refactor typedef
+##10a,7sep11,jmt Adding typedef for arrays, sequences and arrays of sequences
+##10a,2sep11,jmt Adding typedef support for primitive types
+##10a,29ag11,jmt Fixing macros consistency by adding the missing parameters
+##10a,29ag11,jmt Refactor of variables and cleaning loops
+##10a,25ag11,jmt Adding support for arrays of sequences.
+##10a,22ag11,jmt Adding support for sequences.
+##10a,18ag11,jmt Adding //@key for strings and arrays
+##10a,17ag11,jmt Adding //@key
+##10a,10ag11,jmt Adding support for arrays of basic types
+##10a,08ag11,jmt Adding support for constant types
+##10a,04ag11,jmt Adding all the basic type and testing them
+##10a,04ag11,jmt adding modification history header
+##10a,02ag11,jmt Moved to be under the path "resource/templates/java/"
+##10a,02ag11,jmt New dessing using auxiliary files for the macros
+##10a,02ag11,jmt created
+##========================================================================*/*#
+##-----------------------------------------------------------------
+##               
+##            Auxiliary template for the Java TypeSupport file
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+## Contains a macro for each loop for required in the code
+##
+
+##***********************************************************************
+## Macro for alignmentMaxSize 
+##***********************************************************************
+
+#macro(alignmentMaxSize $serializeSuffix $constructMap $currentAlignment)
+#*--*##if($constructMap.constructKin.equals("union"))
+#*----*##alignmentMaxSizeUnion ($serializeSuffix $constructMap $currentAlignment)
+#*--*##else
+#*----*##foreach($member in $constructMap.memberFieldMapList)
+#*------*##if($member.directive)
+#*---------*##copyDirective ($member)
+#*------*##elseif(!$member.constructKind.equals("const"))
+#*---------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") || $member.isOptional)
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#*---------*##end
+#*---------*##if($member.isOptional)
+currentAlignment += #alignmentMaxSizeMember($serializeSuffix $member "0"));
+#*---------*##else
+currentAlignment += #alignmentMaxSizeMember($serializeSuffix $member $currentAlignment));
+#*---------*##end
+#*------*##end
+#*----*##end ## for
+#*--*##end ## if
+#end ## macro
+
+##------------------------------------------------------------------------
+## Macro for alignmentMaxSize of an union
+##------------------------------------------------------------------------
+#macro (alignmentMaxSizeUnion $serializeSuffix $constructMap $currentAlignment)
+#*---------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#*---------*##end
+#*--*##if($constructMap.unionDiscriminatorMap.typeKind=="enum")
+currentAlignment +=  ${constructMap.unionDiscriminatorMap.nativeTypeFQName}TypeSupport.get_instance()#*
+*#.get_serialized_sample_max_size(endpoint_data,false, encapsulation_id,$currentAlignment);
+#*--*##else
+currentAlignment += #alignmentMaxSizeMember($serializeSuffix $constructMap.unionDiscriminatorMap $currentAlignment));
+#*--*##end
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*------*##copyDirective ($member)
+#*----*##else
+#*---------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#*---------*##end
+maxSerialized = Math.max(#alignmentMaxSizeMember($serializeSuffix $member $currentAlignment)), maxSerialized);
+#*----*##end
+#*--*##end 
+#end
+
+##------------------------------------------------------------------------
+## Macro for MaxSerialize or MinSerialize of an element
+##------------------------------------------------------------------------
+
+#macro(alignmentMaxSizeMember $serializeSuffix $member $currentAlignment)
+#*--*##if($member.seqSize && $member.dimensionList)
+#arraydimensionListWithMultiplication ($member)* #alignmentMaxSizeSeq($member $currentAlignment)#*
+---*##elseif($member.seqSize)
+#alignmentMaxSizeSeq($member $currentAlignment)#*
+---*##elseif($member.dimensionList)
+#alignmentMaxSizeArray($member $currentAlignment)#*
+---*##elseif($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().get_serialized_${serializeSuffix}_max#*
+       *#_size(endpoint_data,false, encapsulation_id,$currentAlignment#*
+---*##elseif($member.strSize)
+${member.elementSizeMethod}#*
+       *#($currentAlignment, (($member.strSize))+1#*
+---*##else
+${member.elementSizeMethod}($currentAlignment #*
+---*##end#end
+
+
+
+##------------------------------------------------------------------------
+## Macro for MaxSerialize of a Seq 
+##------------------------------------------------------------------------
+
+#macro (alignmentMaxSizeSeq  $member $currentAlignment)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().get_sequence_max_size_serialized(#*
+        *#endpoint_data, $currentAlignment, ($member.seqSize)#*         
+---*##elseif($member.strSize)
+${member.sequenceSizeMethod}(
+    $currentAlignment, (($member.strSize))+1,((${member.seqSize}))#*
+---*##else
+${member.sequenceSizeMethod}($currentAlignment, ($member.seqSize)#*
+---*##end
+#end
+
+##------------------------------------------------------------------------
+## Macro for MaxSerialize  an array of element
+##------------------------------------------------------------------------
+
+#macro(alignmentMaxSizeArray $member $currentAlignment)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().get_array_#*
+   *#max_size_serialized(endpoint_data, $currentAlignment, #arraydimensionListWithMultiplication ($member)#*
+---*##elseif($member.strSize)
+${member.arraySizeMethod}(
+    $currentAlignment,(($member.strSize))+1,
+    #arraydimensionListWithMultiplication ($member)#*
+---*##else
+${member.arraySizeMethod}($currentAlignment, #arraydimensionListWithMultiplication ($member)#*
+---*##end
+#end
+#*----------------------------------------------------------------------*#
+
+##------------------------------------------------------------------------
+## Macro for  MinSerialize 
+##------------------------------------------------------------------------
+
+#macro(alignmentMinSize $constructMap $currentAlignment)
+#*--*##if($constructMap.constructKind.equals("union"))
+#*----*##alignmentMinSizeUnion($constructMap $currentAlignment)
+#*--*##else
+#*----*##foreach($member in $constructMap.memberFieldMapList)
+#*------*##if($member.directive)
+#*-------*##copyDirective ($member)
+#*------*##elseif(!$member.constructKind.equals("const"))
+#*--------*##if(($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") && !$member.isOptional)
+||(!$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") && $member.isOptional))               
+#*----------*##if (!$member.needExtendedId.equals("no"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#*----------*##else
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#*----------*##end
+#*--------*##end
+#*---------*##if(!$member.isOptional)
+currentAlignment += #alignmentMinSizeMember($member $currentAlignment));
+#*---------*##end
+#*------*##end
+#*----*##end ## for
+#*--*##end ## if
+#end ## macro
+
+##------------------------------------------------------------------------
+## Macro for  MinSerialize a union
+##------------------------------------------------------------------------
+
+#macro (alignmentMinSizeUnion $constructMap $currentAlignment)
+#*---------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#*---------*##end
+#*--*##if($constructMap.unionDiscriminatorMap.typeKind=="enum")
+currentAlignment +=  ${constructMap.unionDiscriminatorMap.nativeTypeFQName}TypeSupport.get_instance()#*
+-*#.get_serialized_sample_min_size(endpoint_data,false, encapsulation_id,$currentAlignment);
+#*--*##else
+currentAlignment += #alignmentMinSizeMember( $constructMap.unionDiscriminatorMap  $currentAlignment));
+#*--*##end
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective ($member)
+#*----*##else
+#*---------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#*---------*##end
+#*----*#minSerialized = Math.min(#alignmentMinSizeMember($member  $currentAlignment)), minSerialized);
+#*----*##end
+#*--*##end 
+#end
+
+##------------------------------------------------------------------------
+## Macro for  MinSerialize of an element
+##------------------------------------------------------------------------
+
+#macro(alignmentMinSizeMember $member $currentAlignment)
+#*--*##if($member.seqSize && $member.dimensionList)
+#arraydimensionListWithMultiplication ($member)* #alignmentMinSizeSeq( $member  $currentAlignment)#*
+----*##elseif($member.seqSize)
+#alignmentMinSizeSeq( $member $currentAlignment)#*
+----*##elseif($member.dimensionList)
+#alignmentMinSizeArray($member $currentAlignment)#*
+----*##elseif($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().get_serialized_sample_min#*
+       *#_size(endpoint_data,false, encapsulation_id,$currentAlignment#*
+----*##elseif($member.strSize)
+${member.elementSizeMethod}($currentAlignment, 1#*
+----*##else
+${member.elementSizeMethod}($currentAlignment #*
+*##end#end
+
+##------------------------------------------------------------------------
+## Macro for  MinSerialize of a Seq of element
+##------------------------------------------------------------------------
+
+#macro (alignmentMinSizeSeq $member $currentAlignment)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().get_sequence_max_size_serialized(#*
+   *#endpoint_data, $currentAlignment, 0#*         
+----*##elseif($member.strSize)
+${member.sequenceSizeMethod}(
+    $currentAlignment, 1,0#*
+----*##else
+${member.sequenceSizeMethod}($currentAlignment,  0#*
+----*##end
+#end
+
+##------------------------------------------------------------------------
+## Macro for MinSerialize of an array of element
+##------------------------------------------------------------------------
+
+#macro(alignmentMinSizeArray $member $currentAlignment)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().get_array_#*
+   *#max_size_serialized(endpoint_data, $currentAlignment, #arraydimensionListWithMultiplication ($member)#*
+---*##elseif($member.strSize)
+${member.arraySizeMethod}(
+       $currentAlignment, 1,
+       #arraydimensionListWithMultiplication ($member)#*
+---*##else
+${member.arraySizeMethod}($currentAlignment, #arraydimensionListWithMultiplication ($member)#*
+--*##end
+#end
+
+##***********************************************************************
+## Macro for alignmentSample
+##***********************************************************************
+
+#macro(alignmentSample $constructMap $currentAlignment)
+
+#if($constructMap.constructKind.equals("union"))
+#alignmentSampleUnion($constructMap $currentAlignment)
+#else
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective ($member)
+#*----*##elseif(!$member.constructKind.equals("const"))
+#*---------*##if($member.isOptional)
+#if(!$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY")) 
+#if ($member.needExtendedId.equals("no"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#else
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#end
+#end
+if (typedSrc.${member.name} != null) {
+#end
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY")) 
+#if ($member.needExtendedId.equals("no"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#else
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#end
+#end
+#*---------*##if($member.isOptional)
+#*-------------*##alignmentSampleMember($member 0)
+}
+#*---------*##else
+#*-------------*##alignmentSampleMember($member $currentAlignment)
+#*---------*##end
+#*----*##end ## if
+#*--*##end ## for
+#end ## if
+#end ## macro
+
+##------------------------------------------------------------------------
+## Macro for alignmentSample for an union
+##------------------------------------------------------------------------
+
+#macro (alignmentSampleUnion $constructMap $currentAlignment)
+#*---------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#*---------*##end
+#*--*##if($constructMap.unionDiscriminatorMap.typeKind=="enum")
+currentAlignment += ${constructMap.unionDiscriminatorMap.nativeTypeFQName}TypeSupport.get_instance().get_serialized_sample_size(
+                        endpoint_data,false,encapsulation_id,$currentAlignment,typedSrc._d);
+#*--*##else
+#*----*##alignmentSampleMember($constructMap.unionDiscriminatorMap $currentAlignment)
+#*--*##end
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##set($loopNumber = $velocityCount)
+#*----*##if($member.directive)
+#*------*##copyDirective ($member)
+#*----*##else
+#*------*##foreach($element in $member.labelList)
+#*--------*##if($loopNumber==1 && $velocityCount==1)
+if (typedSrc._d == ($element)){
+#*--------*##elseif(!$element.contains("default"))
+} else if (typedSrc._d == ($element)){
+#*--------*##elseif($element.contains("default"))
+} else {
+#*------*##end
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#if ($member.needExtendedId.equals("no"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#else
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#end
+#end
+#*------*##alignmentSampleMember($member $currentAlignment)
+#*------*##end ## for
+#*----*##end ## if
+#*--*##end ## for
+}
+#end
+
+##------------------------------------------------------------------------
+## Macro for serialized_Sample_size of an element
+##------------------------------------------------------------------------
+
+#macro(alignmentSampleMember $member $currentAlignment)
+#*--*##if($member.seqSize)
+#*----*##alignmentSampleSeq ($member $currentAlignment)
+#*--*##else
+#*----*##alignmentSampleBasic ($member $currentAlignment)
+#*--*##end
+#end 
+
+##------------------------------------------------------------------------
+## Macro for serialized_Sample_size of a seq
+##------------------------------------------------------------------------
+#macro(alignmentSampleSeq $member $currentAlignment)
+#*--*##openForLoopIfArray($member)
+#*--*##if($member.typeKind=="user")
+currentAlignment += ${member.nativeTypeFQName}TypeSupport.get_instance().get_sequence_serialized_size(
+                       endpoint_data, $currentAlignment, typedSrc.${member.name}#arraydimensionListsWithIndex($member));
+#*--*##elseif($member.strSize)
+currentAlignment  +=  ${member.sequenceActualSizeMethod}(
+                           $currentAlignment , typedSrc.$member.name #arraydimensionListsWithIndex($member));
+#*--*##else
+currentAlignment  +=   ${member.sequenceActualSizeMethod}(
+                            $currentAlignment , typedSrc.$member.name #arraydimensionListsWithIndex($member));      
+#*--*##end            
+#*--*##closeForLoopIfArray($member)
+#end
+
+##Review why the method used for strings is different here
+##------------------------------------------------------------------------
+## Macro for serialized_Sample_size of an array or basic type
+##------------------------------------------------------------------------
+#macro(alignmentSampleBasic $member $currentAlignment)
+#*--*##if($member.typeKind=="user")
+#*----*##openForLoopIfArray($member)
+currentAlignment += ${member.nativeTypeFQName}TypeSupport.get_instance().get_serialized_sample_size(
+            endpoint_data,false,encapsulation_id,$currentAlignment,typedSrc.${member.name}#arraydimensionListsWithIndex($member));
+#*----*##closeForLoopIfArray($member)
+#elseif($member.strSize)
+#*----*##openForLoopIfArray($member)
+currentAlignment  +=  ${member.elementSize}($currentAlignment , typedSrc.$member.name #arraydimensionListsWithIndex($member));
+#*----*##closeForLoopIfArray($member)
+#*--*##elseif($member.dimensionList)
+currentAlignment  +=  ${member.arraySizeMethod}($currentAlignment, #arraydimensionListWithMultiplication ($member));
+#*--*##else
+currentAlignment  +=  ${member.elementSizeMethod}($currentAlignment);
+#*--*##end
+#end
+
+
+##***********************************************************************
+## Macro for serialize
+##***********************************************************************
+
+#macro(serialize $constructMap)
+#*--*##if($constructMap.unionDiscriminatorMap)
+#*----*##serializeUnion($constructMap)
+#*--*##else
+#*----*##foreach($member in $constructMap.memberFieldMapList)
+#*------*##if($member.directive)
+#*--------*##copyDirective ($member)
+#*------*##elseif(!$member.constructKind.equals("const"))
+
+#*--------*##if(($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") && !$member.isOptional)
+||(!$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") && $member.isOptional))    
+memberId = $member.id;
+#*----------*##if($member.needExtendedId=="yes")
+memberLengthPosition = dst.writeMemberId((int)memberId);
+#*----------*##elseif($member.needExtendedId=="no")
+memberLengthPosition = dst.writeMemberId((short)memberId);
+#*----------*##else      
+if (dst.useExtendedMemberId == true) {
+    memberLengthPosition = dst.writeMemberId((int)memberId);
+} else {
+    memberLengthPosition = dst.writeMemberId((short)memberId);
+}
+#*----------*##end
+#*--------*##end
+#*--------*##if($member.isOptional)
+if (typedSrc.${member.name} != null) {
+#*----------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+memberId = $member.id;
+#*------------*##if($member.needExtendedId=="yes")
+memberLengthPosition = dst.writeMemberId((int)memberId);
+#*------------*##elseif($member.needExtendedId=="no")
+memberLengthPosition = dst.writeMemberId((short)memberId);
+#*------------*##else      
+if (dst.useExtendedMemberId == true) {
+    memberLengthPosition = dst.writeMemberId((int)memberId);
+} else {
+    memberLengthPosition = dst.writeMemberId((short)memberId);
+}
+
+#*-----------*##end 
+#*---------*##end 
+#*------*##end 
+#*------*##serializeMember($member "")
+#*---------*##if($member.isOptional && ! $constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+}
+#*---------*##end
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY")  || $member.isOptional)     
+#*----------*##if($member.needExtendedId=="yes")
+dst.writeMemberLength(memberLengthPosition, true);
+#*----------*##elseif($member.needExtendedId=="no")
+dst.writeMemberLength(memberLengthPosition, false);
+#*----------*##else  
+if (dst.useExtendedMemberId == true) {
+    dst.writeMemberLength(memberLengthPosition, true);
+} else {
+    dst.writeMemberLength(memberLengthPosition, false);
+}
+#*----------*##end 
+#*--------*##end
+#*---------*##if($member.isOptional &&  $constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+}
+#*---------*##end    
+#*------*##end ## if
+#*----*##end ## for
+#*--*##end ## if
+#end ## macro
+
+
+##------------------------------------------------------------------------
+## Macro for serialize
+##------------------------------------------------------------------------
+#macro (serializeUnion $constructMap)
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))    
+memberId = $constructMap.unionDiscriminatorMap.id;
+memberLengthPosition = dst.writeMemberId((short)memberId);
+#*----------*##end
+#if($constructMap.unionDiscriminatorMap.typeKind=="enum")
+${constructMap.unionDiscriminatorMap.nativeTypeFQName}TypeSupport.get_instance().serialize(endpoint_data,#*
+*#  typedSrc._d, dst, false, encapsulation_id,true,endpoint_plugin_qos);            
+#else
+dst.${constructMap.unionDiscriminatorMap.elementSerializeMethod}(typedSrc._d);
+#end
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+dst.writeMemberLength(memberLengthPosition, false);
+#*----------*##end
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective ($member)
+#*----*##else
+#*--*##set($loopNumber = $velocityCount)
+#*------*##foreach($element in $member.labelList)
+#*------*##if($loopNumber==1 && $velocityCount==1)
+if (typedSrc._d == ($element)){
+#*------*##elseif(!$element.contains("default"))
+} else if (typedSrc._d == ($element)){
+#*------*##elseif($element.contains("default"))
+} else {
+#*------*##end
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+memberId = $member.id;
+#*--------*##if($member.needExtendedId=="yes")
+memberLengthPosition = dst.writeMemberId((int)memberId);
+#*--------*##elseif($member.needExtendedId=="no")
+memberLengthPosition = dst.writeMemberId((short)memberId);
+#*--------*##else      
+    if (dst.useExtendedMemberId == true) {
+        memberLengthPosition = dst.writeMemberId((int)memberId);
+    } else {
+        memberLengthPosition = dst.writeMemberId((short)memberId);
+    }
+#*--------*##end 
+#*------*##end   
+#*------*##serializeMember($member "" )
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))     
+#*----------*##if($member.needExtendedId=="yes")
+dst.writeMemberLength(memberLengthPosition, true);
+#*----------*##elseif($member.needExtendedId=="no")
+dst.writeMemberLength(memberLengthPosition, false);
+#*----------*##else  
+if (dst.useExtendedMemberId == true) {
+    dst.writeMemberLength(memberLengthPosition, true);
+} else {
+    dst.writeMemberLength(memberLengthPosition, false);
+}
+#*----------*##end 
+#*--------*##end  
+#*------*##end ## for
+#*--*##end ## if
+#*--*##end ## for
+}
+#end               
+
+##------------------------------------------------------------------------
+## Macro for serialized_Sample_size an element
+##------------------------------------------------------------------------
+#macro(serializeMember $member $serializeSuffix)
+#*--*##openForLoopIfArray($member)
+#*--*##if($member.seqSize)
+#*----*##serializeSeq ($member)
+#*--*##else 
+#*----*##serializeBasic($member $serializeSuffix)
+#*--*##end ##if
+#*--*##closeForLoopIfArray($member)
+#end
+##------------------------------------------------------------------------
+## Macro for serialized_Sample_size of a sequence 
+##------------------------------------------------------------------------
+
+#macro(serializeSeq $member)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().serialize_sequence(endpoint_data,#*
+*# dst, typedSrc.${member.name}#arraydimensionListsWithIndex($member),($member.seqSize), endpoint_plugin_qos);
+#*--*##elseif($member.strSize)
+dst.${member.sequenceSerializeMethod}(typedSrc.$member.name#arraydimensionListsWithIndex($member),($member.strSize),($member.seqSize));
+#*--*##else
+dst.${member.sequenceSerializeMethod}(typedSrc.$member.name#arraydimensionListsWithIndex($member),($member.seqSize));
+#end
+#end
+
+##------------------------------------------------------------------------
+## Macro for serialized_Sample_size of a basic element 
+##------------------------------------------------------------------------
+#macro(serializeBasic $member $serializeSuffix)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().serialize${serializeSuffix}(endpoint_data,#*
+*# typedSrc.${member.name}#arraydimensionListsWithIndex($member), dst, false, encapsulation_id,true,endpoint_plugin_qos);
+#*--*##elseif($member.strSize)
+dst.${member.elementSerializeMethod}(typedSrc.$member.name#arraydimensionListsWithIndex($member),($member.strSize));
+#*--*##else
+dst.${member.elementSerializeMethod}(typedSrc.$member.name#arraydimensionListsWithIndex($member));
+#*--*##end ##if
+#end ##macro
+
+##***********************************************************************
+## Macro for deserialize memberFieldMapList 
+##***********************************************************************
+
+#macro(deserialize $constructMap)
+#*--*##if($constructMap.constructKind.equals("union"))
+#*----*##deserializeUnion($constructMap)
+#*--*##else
+#*----*##foreach($member in $constructMap.memberFieldMapList)
+#*------*##if($member.directive)
+#*--------*##copyDirective ($member)
+#*------*##elseif(!$member.constructKind.equals("const"))
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##preDeserializeBufferLength()
+    if (tmpLength > 0) {
+     #allocMember($member)
+#*----*##end
+#*--------*##deserializeMember($member "deserialize_sample")
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+   }
+   else {
+        typedDst.${member.name} = null;
+   }
+   #*------*##postDeserializeBufferLength()
+#*----*##end
+#*------*##end ## if
+#*----*##end ## for
+#*--*##end ## if
+#end ## macro
+
+#macro (deserializeUnion $constructMap)
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+case $constructMap.unionDiscriminatorMap.id:
+#*------*##end
+#*--*##if($constructMap.unionDiscriminatorMap.typeKind=="enum")
+typedDst._d = (${constructMap.unionDiscriminatorMap.nativeTypeFQName})${constructMap.unionDiscriminatorMap.nativeTypeFQName}TypeSupport.get_instance().#*
+*#deserialize_sample(endpoint_data, typedDst._d, src, false, true, endpoint_plugin_qos);            
+#*--*##else
+typedDst._d = src.${constructMap.unionDiscriminatorMap.elementDeserializeMethod}();
+#*--*##end
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+break;
+#*------*##end
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective ($member)
+#*----*##else
+#*--*##set($loopNumber = $velocityCount)
+#*------*##foreach($element in $member.labelList)
+#*------*##if(!$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##if($loopNumber==1 && $velocityCount==1 )
+if (typedDst._d == ($element)){
+#*------*##elseif(!$element.contains("default"))
+} else if (typedDst._d == ($element)){
+#*------*##elseif($element.contains("default"))
+} else {
+#*------*##end
+#*------*##end
+#*------*##deserializeMember($member "deserialize_sample")
+#*------*##end
+#*------*##end ## for
+#*--*##end ## for
+#*------*##if(!$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+               }
+#*--*##end              
+
+#end
+
+##------------------------------------------------------------------------
+## Macro for deserialize an Element (or Array of elements)
+##------------------------------------------------------------------------
+
+#macro(deserializeMember $member $deserializeSuffix)
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+case $member.id:
+#if($member.isOptional)
+     #allocMember($member)
+#end     
+#end
+#*--*##openForLoopIfArray($member)
+#*--*##if($member.seqSize)
+#*----*##deserializeSeq($member)
+#*--*##else
+#*----*##deserializeBasic($member $deserializeSuffix)
+#*--*##end ##if
+#*----*# #closeForLoopIfArray($member)
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+break;
+#end
+#end ##macro
+
+##------------------------------------------------------------------------
+## Macro for deserialize a sequence
+##------------------------------------------------------------------------
+
+#macro (deserializeSeq $member)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().deserialize_sequence(endpoint_data,#*
+*# typedDst.${member.name}#arraydimensionListsWithIndex($member), src, ($member.seqSize), endpoint_plugin_qos);            
+#*--*##else
+src.${member.sequenceDeserializeMethod}(typedDst.${member.name}#arraydimensionListsWithIndex($member), ($member.seqSize));
+#*--*##end
+#end
+
+##------------------------------------------------------------------------
+## Macro for deserialize a basic element
+##------------------------------------------------------------------------
+#macro(deserializeBasic $member $deserializeSuffix)
+#*--*##if($member.typeKind=="user")
+typedDst.${member.name}#arraydimensionListsWithIndex($member) = ($member.nativeTypeFQName)${member.nativeTypeFQName}TypeSupport.#*
+*#get_instance().${deserializeSuffix}(endpoint_data, typedDst.${member.name}#arraydimensionListsWithIndex($member),#*
+*# src, false, true, endpoint_plugin_qos);     
+#*--*##elseif($member.strSize)
+typedDst.$member.name#arraydimensionListsWithIndex($member) = src.${member.elementDeserializeMethod}(($member.strSize));
+#*--*##else
+typedDst.$member.name#arraydimensionListsWithIndex($member) = src.${member.elementDeserializeMethod}();
+#*--*##end ##if
+#end
+
+##***********************************************************************
+## Macro for skip memberFieldMapList 
+##***********************************************************************
+
+#macro(skip $constructMap)
+#if($constructMap.constructKind.equals("union"))
+#skipUnion($constructMap)
+#else
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective ($member)
+#*----*##else
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##preDeserializeBufferLength()
+    if (tmpLength > 0) {
+#*----*##end
+#*--------*##skipMember($member)
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+}
+#*------*##postDeserializeBufferLength()
+#*----*##end
+
+#*--*##end ##if
+#*--*##end ## for
+#end ##if
+#end ## macro
+
+##------------------------------------------------------------------------
+## Macro for skipUnion
+##------------------------------------------------------------------------
+
+#macro (skipUnion $constructMap)
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+case $constructMap.unionDiscriminatorMap.id:
+#*------*##end
+#*--*##if($constructMap.unionDiscriminatorMap.typeKind=="enum")
+disc = (${constructMap.unionDiscriminatorMap.nativeTypeFQName})${constructMap.unionDiscriminatorMap.nativeTypeFQName}TypeSupport.get_instance().deserialize_sample(#*
+*#endpoint_data, disc, src, false, true, endpoint_plugin_qos);            
+#*--*##else
+disc = src.${constructMap.unionDiscriminatorMap.elementDeserializeMethod}();
+#*--*##end  
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+break;
+#*------*##end
+          
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective ($member)
+#*----*##else
+#*--*##set($loopNumber = $velocityCount)
+#*------*##foreach($element in $member.labelList)
+#*------*##if(!$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##if($loopNumber==1 && $velocityCount==1)
+if (disc == ($element)){
+#*------*##elseif(!$element.contains("default"))
+} else if (disc == ($element)){
+#*------*##elseif($element.contains("default"))
+} else {
+#*------*##end
+#*------*##end
+#*------*##skipMember($member)
+#*------*##end ## for
+#*----*##end ## if
+#*--*##end ## for
+#*------*##if(!$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+}
+#*------*##end ## 
+#end
+
+##------------------------------------------------------------------------
+## Macro for skip a member 
+##------------------------------------------------------------------------
+#macro(skipMember $member)
+#*--*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+case $member.id:
+#*--*##end
+#*--*##openForLoopIfArray($member)
+#*--*##if($member.seqSize)
+#*----*##skipSeq($member)
+#*--*##else
+#*----*##skipBasic($member)
+#*--*##end
+#*----*##closeForLoopIfArray($member)
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+break;
+#*--*##end
+#end ##macro
+
+##------------------------------------------------------------------------
+## Macro for skip Seq 
+##------------------------------------------------------------------------
+#macro (skipSeq $member)
+#*--*##if ($member.typeKind=="user") 
+${member.nativeTypeFQName}TypeSupport.get_instance().skip_sequence(endpoint_data, src, endpoint_plugin_qos);
+#*--*##else 
+src.${member.sequenceSkipMethod}();
+#*--*##end
+#end
+
+##------------------------------------------------------------------------
+## Macro for skip an element
+##------------------------------------------------------------------------
+#macro (skipBasic $member)
+#*--*##if($member.typeKind=="user")
+${member.nativeTypeFQName}TypeSupport.get_instance().skip(endpoint_data, src, false, true, endpoint_plugin_qos);
+#*--*##else
+src.${member.elementSkipMethod}();
+#*--*##end ##if
+#end
+
+
+##***********************************************************************
+## Macro for serialized_key_max_size
+##***********************************************************************
+
+#macro(serializeKeyMaxSize $constructMap)
+#foreach($member in $constructMap.memberFieldMapList)
+#if($member.isKey)
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#end
+currentAlignment += #alignmentMaxSizeMember("key" $member $constructMap.currentAlignment));
+#end ##if
+#end ##for
+#end ##macro
+
+
+##***********************************************************************
+## Macro for serializeKeyTypeSupport
+##***********************************************************************
+
+#macro(serializeKeyTypeSupport $constructMap)
+#foreach($member in $constructMap.memberFieldMapList)
+#if($member.isKey)
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+    memberId = $member.id;
+    memberLengthPosition = dst.writeMemberId((short)memberId);
+#end    
+#serializeMember($member "_key")
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+dst.writeMemberLength(memberLengthPosition, false);
+#end
+#end ##if
+#end ##for
+#end ##macro
+
+##***********************************************************************
+## Macro for serializeKeyTypeSupport
+##***********************************************************************
+
+
+#macro(deserializeKeyAndSkip $constructMap)
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##preDeserializeBufferLength()
+    if (tmpLength > 0) {
+#*----*##end
+
+#*----*##if($member.isKey)
+#*------*##deserializeMember($member "serialized_sample_to_key")
+#*----*##elseif(!$member.constructKind.equals("const"))
+#*------*##skipMember($member)
+#*----*##end ##if
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+}
+#*------*##postDeserializeBufferLength()
+#*----*##end
+#*--*##end ##for
+#end ##macro
+
+##***********************************************************************
+## Macro for serializeKeyTypeSupport
+##***********************************************************************
+
+#macro(copyKeyMembers $constructMap)
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.isKey)
+#*------*##if($envMap.noCopyable)
+#*------*##copyMember($member "coypyData")
+#*------*##else
+#*------*##copyMember($member " ")
+#*------*##end
+#*----*##end ##if
+#*--*##end ##for
+#end
+
+##***********************************************************************
+## Macro readKeyElements 
+##***********************************************************************
+
+#macro(deserializeKey $constructMap)
+#foreach($member in $constructMap.memberFieldMapList)
+#if($member.isKey)
+#deserializeMember($member "deserialize_key_sample")
+#end
+#end
+#end
+
+
+##***********************************************************************
+## Macro serializedToKeyHash (read the key elements and skip the others that are
+##between them until we have all the keys serialized) 
+##***********************************************************************
+
+#macro(serializedToKeyHash $constructMap)
+#*--*##set($keysFound=0)
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*------*##copyDirective ($member)
+#*----*##elseif(!$member.constructKind.equals("const"))
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##preDeserializeBufferLength()
+    if (tmpLength > 0) {
+#*----*##end
+#*------*##if($member.isKey)
+#*------*##deserializeMember($member "serialized_sample_to_key")
+#*------*##set($keysFound=$keysFound+1)      
+#*------*##elseif($keysFound!=$constructMap.hasKey)
+#*------*##skipMember($member)
+#*----*##if($member.isOptional && !$constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+}
+#*------*##postDeserializeBufferLength()
+#*----*##end
+#*------*##end##member.isKey
+#*----*##end##member.directive
+#*--*##end##for
+#end
+
+
+##***********************************************************************
+## Macro copyData similar to copy_from, this one is only used with the
+## -noCopyable flag
+##***********************************************************************
+#macro (coypyData $constructMap.memberFieldMapList)
+#if($constructMap.constructKind.equals("union"))
+#copyUnion($constructMap.memberFieldMapList "coypyData")
+#else
+#*--*##foreach($member in $constructMap.memberFieldMapList)
+#*----*##if($member.directive)
+#*------*##copyDirective ($member)
+#*----*##elseif(!$member.constructKind.equals("const"))
+#*-----*##copyMember($member "coypyData")
+#*----*##end ## if
+#*--*##end ## for
+#end ## if
+#end ## macro
+
+
+
+##-----------------------------------------------------------------------------
+##  Macro to original Alignment
+##-----------------------------------------------------------------------------
+
+#macro (originalAligment)
+        long origAlignment = currentAlignment;
+#*--*##if(!$envMap.rtidds42e)
+        long encapsulation_size = currentAlignment;
+#*--*##end
+
+        if(include_encapsulation) {
+          if (!CdrEncapsulation.isValidEncapsulationKind(encapsulation_id)) {
+              throw new RETCODE_ERROR("Unsupported encapsulation");
+          }
+
+#*--*##if($envMap.rtidds42e)
+          currentAlignment += CdrPrimitiveType.SHORT.getMaxSizeSerialized(currentAlignment);
+          currentAlignment += CdrPrimitiveType.SHORT.getMaxSizeSerialized(currentAlignment);
+#*--*##else
+          encapsulation_size += CdrPrimitiveType.SHORT.getMaxSizeSerialized(encapsulation_size);
+          encapsulation_size += CdrPrimitiveType.SHORT.getMaxSizeSerialized(encapsulation_size);
+          encapsulation_size -= currentAlignment;
+          currentAlignment = 0;
+          origAlignment = 0;
+          
+#*--*##end      
+         } 
+        
+#end
+
+
+##-----------------------------------------------------------------------------
+##  Macro for the Alignment in ndds42
+##-----------------------------------------------------------------------------
+
+#macro (rtidds42Alignmet $method)
+#if($envMap.rtidds42e)
+#if($method=="serialize")        
+            topLevel = !dst.isDirty();
+            dst.setDirtyBit(true);
+
+            if (!${method}_encapsulation && topLevel) {
+                position = dst.resetAlignmentWithOffset(4);
+            }
+#else                           
+            topLevel = !src.isDirty();
+            src.setDirtyBit(true);
+
+            if (!${method}_encapsulation && topLevel) {
+                position = src.resetAlignmentWithOffset(4);
+            }
+#end
+#end  
+#end
+
+#macro (serializeHeaderMutable $constructMap)
+        boolean skipListEndId_tmp = false;
+        long maxLength = 0;
+         
+        if (!dst.isDirty()) {
+            dst.setDirtyBit(true);
+
+            maxLength = get_serialized_sample_max_size(endpoint_data, false, encapsulation_id,0);
+
+            if (maxLength > 65535) {
+                dst.useExtendedMemberId = true;
+            }
+            else{
+                dst.useExtendedMemberId = false;
+            }
+        }
+
+#if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+        skipListEndId_tmp =  dst.skipListEndId;
+        dst.skipListEndId = false;
+#end       
+
+#end
+
+#macro (serializeEndMutable)
+        if (!(skipListEndId_tmp)) {
+            memberLengthPosition = 
+                dst.writeMemberId(
+                    (short)CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_LIST_END);
+            dst.writeMemberLength(memberLengthPosition, false);
+        }
+        dst.skipListEndId = skipListEndId_tmp;
+
+
+#end
+
+
+#macro (encapsulationMutable)
+  if (encapsulation_id == CdrEncapsulation.CDR_ENCAPSULATION_ID_CDR_BE) {
+                encapsulation_id = CdrEncapsulation.CDR_ENCAPSULATION_ID_PL_CDR_BE;
+            } else if (encapsulation_id == CdrEncapsulation.CDR_ENCAPSULATION_ID_CDR_LE) {
+                encapsulation_id = CdrEncapsulation.CDR_ENCAPSULATION_ID_PL_CDR_LE;
+            }
+        
+#end
+
+#macro(preDeserializeBufferLength)
+
+    memberInfo = src.readMemberInfo();
+    tmpPosition = src.getBuffer().currentPosition();
+    tmpSize = src.getBuffer().getSize(); 
+    tmpLength = memberInfo.length;
+    src.getBuffer().setDesBufferSize((int)(tmpPosition + memberInfo.length));
+#end
+
+#macro (postDeserializeBufferLength)
+    src.getBuffer().setDesBufferSize(tmpSize);
+    src.getBuffer().setCurrentPosition((int)(tmpPosition + tmpLength));
+
+#end                

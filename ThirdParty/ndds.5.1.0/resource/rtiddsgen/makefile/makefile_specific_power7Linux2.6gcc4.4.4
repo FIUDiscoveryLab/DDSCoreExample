@@ -1,0 +1,10 @@
+c_cc_power7Linux2.6gcc4.4.4 = gcc
+c_cc_flags_power7Linux2.6gcc4.4.4 =  -m64 -mcpu=powerpc64 -mtune=powerpc64 -Wall
+c_ld_power7Linux2.6gcc4.4.4 = gcc
+c_ld_flags_power7Linux2.6gcc4.4.4 =  -m64 -mcpu=powerpc64 -mtune=powerpc64 -Wall
+cxx_cc_power7Linux2.6gcc4.4.4 = g++
+cxx_cc_flags_power7Linux2.6gcc4.4.4 = -m64 -mcpu=powerpc64 -mtune=powerpc64 -Wall
+cxx_ld_power7Linux2.6gcc4.4.4 = g++
+cxx_ld_flags_power7Linux2.6gcc4.4.4 = -m64
+syslibs_power7Linux2.6gcc4.4.4 = -ldl -lnsl -lm -lpthread -lrt
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_LINUX -DRTI_64BIT

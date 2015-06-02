@@ -1,0 +1,57 @@
+
+<!--
+RTI Data Distribution Service Deployment
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="../../../resource/qos_profiles_5.1.0/schema/rti_dds_profiles.xsd" 
+     version="5.1.0">
+         
+    <!-- Qos Library -->
+    <qos_library name="qosLibrary">
+        <qos_profile name="DefaultProfile">
+        </qos_profile>
+    </qos_library>
+
+
+    <!-- Domain Library -->
+    <domain_library name="MyDomainLibrary" >
+
+        <domain name="HelloWorldDomain" domain_id="0">
+
+            <register_type name="HelloWorldType" kind="userGenerated"/>                    
+
+            <topic name="HelloWorldTopic" 
+                   register_type_ref="HelloWorldType">
+                       
+                <topic_qos name="HelloWorld_qos" 
+                           base_name="qosLibrary::DefaultProfile"/>
+            </topic>
+        </domain>                	
+    </domain_library>
+
+    <!-- Participant library -->
+    <participant_library name="MyParticipantLibrary">
+
+        <domain_participant name="PublicationParticipant" 
+                            domain_ref="MyDomainLibrary::HelloWorldDomain">
+
+            <publisher name="MyPublisher">
+                <data_writer name="HelloWorldWriter" topic_ref="HelloWorldTopic"/>
+            </publisher>
+        </domain_participant>
+        
+        <domain_participant name="SubscriptionParticipant" 
+                             domain_ref="MyDomainLibrary::HelloWorldDomain">                        
+                     
+            <subscriber name="MySubscriber">
+
+                <data_reader name="HelloWorldReader" topic_ref="HelloWorldTopic">
+                    <datareader_qos name="HelloWorld_reader_qos" 
+                                    base_name="qosLibrary::DefaultProfile"/>                                    
+                </data_reader>
+            </subscriber>
+        </domain_participant>
+
+    </participant_library>
+
+</dds>

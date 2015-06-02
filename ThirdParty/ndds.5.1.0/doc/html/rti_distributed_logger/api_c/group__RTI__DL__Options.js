@@ -1,0 +1,26 @@
+var group__RTI__DL__Options =
+[
+    [ "RTI_DL_Options", "structRTI__DL__Options.html", null ],
+    [ "RTI_DL_Options_createDefault", "group__RTI__DL__Options.html#ga68f375ac40749b225812b734afcae332", null ],
+    [ "RTI_DL_Options_getDomainParticipant", "group__RTI__DL__Options.html#gaf8f4a0228340796ceab22f54e1f0d166", null ],
+    [ "RTI_DL_Options_setDomainParticipant", "group__RTI__DL__Options.html#gabf8a7d8c7a896cca3f20229b4a70c9f5", null ],
+    [ "RTI_DL_Options_isRemoteAdministrationEnabled", "group__RTI__DL__Options.html#ga41808f0139b7f541264dea357bfda503", null ],
+    [ "RTI_DL_Options_setRemoteAdministrationEnabled", "group__RTI__DL__Options.html#ga50a9668a278918248fb41a07e12cc8bb", null ],
+    [ "RTI_DL_Options_getFilterLevel", "group__RTI__DL__Options.html#ga8f7195956156c8a5d658a2e03e71a634", null ],
+    [ "RTI_DL_Options_setFilterLevel", "group__RTI__DL__Options.html#gac023d76dd1479b642b6bf7c5c153595a", null ],
+    [ "RTI_DL_Options_getDomainId", "group__RTI__DL__Options.html#ga44f09ef5e1cc097cfaabfc87969cd974", null ],
+    [ "RTI_DL_Options_setDomainId", "group__RTI__DL__Options.html#ga84ba2bb1c60effc7de0b6ee1bb56b8d7", null ],
+    [ "RTI_DL_Options_getQosLibrary", "group__RTI__DL__Options.html#ga3aeb2a69889d82591c531175ef71bf7e", null ],
+    [ "RTI_DL_Options_setQosLibrary", "group__RTI__DL__Options.html#ga92a4d87132ea41477f73064c7b03cd99", null ],
+    [ "RTI_DL_Options_getQosProfile", "group__RTI__DL__Options.html#gaf13b76484a83f1c8492e991dcb2f7b62", null ],
+    [ "RTI_DL_Options_setQosProfile", "group__RTI__DL__Options.html#gaba129f81d25377371e111e5973825f7f", null ],
+    [ "RTI_DL_Options_getQueueSize", "group__RTI__DL__Options.html#ga14edb2f094a3eff81a8fef2e01c315de", null ],
+    [ "RTI_DL_Options_setQueueSize", "group__RTI__DL__Options.html#ga6e3a0ad6503e112966665de8cd79ef6a", null ],
+    [ "RTI_DL_Options_getThreadSettings", "group__RTI__DL__Options.html#ga661cbe9f4c66823797b186f4b1fb7766", null ],
+    [ "RTI_DL_Options_setThreadSettings", "group__RTI__DL__Options.html#ga22716391896abd5fc15af417b0229278", null ],
+    [ "RTI_DL_Options_getApplicationKind", "group__RTI__DL__Options.html#ga4ce1d3b827fdac5be77c7a0e9d0ca9c8", null ],
+    [ "RTI_DL_Options_setApplicationKind", "group__RTI__DL__Options.html#gaf05d2a34dd7665c0e1801f01c898e71a", null ],
+    [ "RTI_DL_Options_getEchoToStdout", "group__RTI__DL__Options.html#ga968df3532439b51dede85f76aab38bde", null ],
+    [ "RTI_DL_Options_setEchoToStdout", "group__RTI__DL__Options.html#ga8162b9098856957271d66dd8be843415", null ],
+    [ "RTI_DL_Options_delete", "group__RTI__DL__Options.html#gaab9491dea308a586bc56054ac6ecaf3f", null ]
+];

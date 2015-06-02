@@ -1,0 +1,36 @@
+var group__NDDS__Transport__UDPv6__Plugin =
+[
+    [ "NDDS_Transport_UDPv6_Property_t", "structNDDS__Transport__UDPv6__Property__t.html", [
+      [ "parent", "structNDDS__Transport__UDPv6__Property__t.html#a4d5b6c414c527410f1eb5790561823d6", null ],
+      [ "send_socket_buffer_size", "structNDDS__Transport__UDPv6__Property__t.html#a6357009ec696b2fafb93510964fd9e42", null ],
+      [ "recv_socket_buffer_size", "structNDDS__Transport__UDPv6__Property__t.html#a00da7fe0a40645d52864d91b1554c8a5", null ],
+      [ "unicast_enabled", "structNDDS__Transport__UDPv6__Property__t.html#a423d55dac2537c8cbdedcabd26d644d4", null ],
+      [ "multicast_enabled", "structNDDS__Transport__UDPv6__Property__t.html#a901962012774ff31a11a188ee402f50a", null ],
+      [ "multicast_ttl", "structNDDS__Transport__UDPv6__Property__t.html#aab65f6ab0c21172ff233389b49fc5547", null ],
+      [ "multicast_loopback_disabled", "structNDDS__Transport__UDPv6__Property__t.html#a26f5565a333f6d61812cbb9a7279a376", null ],
+      [ "ignore_loopback_interface", "structNDDS__Transport__UDPv6__Property__t.html#a032b0e119dbb669056cca5e8f6858390", null ],
+      [ "ignore_nonrunning_interfaces", "structNDDS__Transport__UDPv6__Property__t.html#af34f95b839d60fbf10469c42200ea647", null ],
+      [ "no_zero_copy", "structNDDS__Transport__UDPv6__Property__t.html#aba60da079070e98b18036f44bf6689a4", null ],
+      [ "send_blocking", "structNDDS__Transport__UDPv6__Property__t.html#aa5164dd6782181ff7f63752c58c9d00d", null ],
+      [ "enable_v4mapped", "structNDDS__Transport__UDPv6__Property__t.html#aa61d4ff6c732c9cbeb84b6f35e6f697a", null ],
+      [ "transport_priority_mask", "structNDDS__Transport__UDPv6__Property__t.html#a300d65c0a3f8adfb9ad8416d49b2e006", null ],
+      [ "transport_priority_mapping_low", "structNDDS__Transport__UDPv6__Property__t.html#aa1bb5f930b7d612b9e1044f067a58102", null ],
+      [ "transport_priority_mapping_high", "structNDDS__Transport__UDPv6__Property__t.html#a49f387a6f55a83cf9a3ff9ee1df34db0", null ]
+    ] ],
+    [ "NDDS_TRANSPORT_CLASSID_UDPv6", "group__NDDS__Transport__UDPv6__Plugin.html#ga004554cf2b01c232a1ef3c1bb098a6c4", null ],
+    [ "NDDS_TRANSPORT_UDPV6_ADDRESS_BIT_COUNT", "group__NDDS__Transport__UDPv6__Plugin.html#gaa859beb339ce51eecad562e710cc1a50", null ],
+    [ "NDDS_TRANSPORT_UDPV6_PROPERTIES_BITMAP_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#gaac585139e9495a77605c986caad1735d", null ],
+    [ "NDDS_TRANSPORT_UDPV6_GATHER_SEND_BUFFER_COUNT_MAX_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#gaf6621d4d965eea3c429690c1a6d82b14", null ],
+    [ "NDDS_TRANSPORT_UDPV6_SOCKET_BUFFER_SIZE_OS_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#gada1885fcf4b44be38f5e2ebf553f24f0", null ],
+    [ "NDDS_TRANSPORT_UDPV6_SEND_SOCKET_BUFFER_SIZE_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#gaedff34929be9f611877e133c74238d68", null ],
+    [ "NDDS_TRANSPORT_UDPV6_RECV_SOCKET_BUFFER_SIZE_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#ga8c9f6a74336af5885ff34fc72701d469", null ],
+    [ "NDDS_TRANSPORT_UDPV6_MESSAGE_SIZE_MAX_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#gab06690762fd722e0885e7d3f1151a837", null ],
+    [ "NDDS_TRANSPORT_UDPV6_MULTICAST_TTL_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#gaddbf125ade0e33e5c60e0b953452d591", null ],
+    [ "NDDS_TRANSPORT_UDPV6_BLOCKING_NEVER", "group__NDDS__Transport__UDPv6__Plugin.html#gab601035adf6fa11b207897f88afe4119", null ],
+    [ "NDDS_TRANSPORT_UDPV6_BLOCKING_ALWAYS", "group__NDDS__Transport__UDPv6__Plugin.html#gabb5064864b34809c954a44b4a277c2e9", null ],
+    [ "NDDS_TRANSPORT_UDPV6_PROPERTY_DEFAULT", "group__NDDS__Transport__UDPv6__Plugin.html#gad8528636a325708010826a4cdd532bda", null ],
+    [ "NDDS_Transport_UDPv6_new", "group__NDDS__Transport__UDPv6__Plugin.html#gad2a0af107bfda142d1b03f6f97b2c482", null ],
+    [ "NDDS_Transport_UDPv6_string_to_address_cEA", "group__NDDS__Transport__UDPv6__Plugin.html#ga4b8dbba12b59f3c7e73e57de7f0e9f43", null ],
+    [ "NDDS_Transport_UDPv6_get_receive_interfaces_cEA", "group__NDDS__Transport__UDPv6__Plugin.html#gae7ded9461bec0b980ee7b76438e9fc75", null ],
+    [ "NDDS_Transport_UDPv6_create", "group__NDDS__Transport__UDPv6__Plugin.html#ga9184ab6998417410b61f1a29298542ab", null ]
+];

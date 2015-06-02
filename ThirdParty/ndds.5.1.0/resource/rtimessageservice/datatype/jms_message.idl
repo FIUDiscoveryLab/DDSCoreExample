@@ -1,0 +1,164 @@
+/*
+ (c) Copyright, Real-Time Innovations, $Date: 2008/10/31 18:43:20 $.
+ All rights reserved.
+
+ No duplications, whole or partial, manual or electronic, may be made
+ without express written permission.  Any such copies, or
+ revisions thereof, must display this notice unaltered.
+ This code contains trade secrets of Real-Time Innovations, Inc.
+
+ Modification history
+ --------------------
+ 1.0a,18jul08,rbw Reduced size/alignment requirements for union disciminators
+                  to reduce on-the-wire message size
+ 1.0a,16jul08,rbw Simplified keyed/unkeyed message distinction.
+                  Clarified organization.
+ 1.0a,25jun08,lrb Created. Used IDL from jms_cpp.1.0 project as a base.
+=========================================================================== */
+
+// ***************************************************************************
+// ** Resource Limits                                                       **
+// ***************************************************************************
+
+// String limits.
+const long NAME_MAX = 255;
+const long STRING_MAX = 255;
+const long TEXT_MAX = 255;
+const long JMS_CORRELATION_ID_MAX = 255;
+const long JMS_REPLY_TO_MAX = 255;
+const long JMS_TYPE_MAX = 255;
+const long JMS_RTI_KEY_MAX = 255;
+
+// Maximum sequence sizes.
+const long BYTES_MESSAGE_MAX = 63020;
+const long OBJECT_MESSAGE_MAX = 63020;
+const long PROPERTIES_MAX = 32;
+const long BYTES_MAX = 255;
+const long VALUES_MAX = 255;
+const long ITEMS_MAX = 255;
+
+
+// ***************************************************************************
+// ** Typed Values                                                          **
+// ***************************************************************************
+
+typedef char ValueKind;
+
+const ValueKind BOOLEAN_TYPE = 0x01;
+const ValueKind BYTE_TYPE    = 0x02;
+const ValueKind BYTES_TYPE   = 0x03;
+const ValueKind CHAR_TYPE    = 0x04;
+const ValueKind DOUBLE_TYPE  = 0x05;
+const ValueKind FLOAT_TYPE   = 0x06;
+const ValueKind INT_TYPE     = 0x07;
+const ValueKind LONG_TYPE    = 0x08;
+const ValueKind SHORT_TYPE   = 0x09;
+const ValueKind STRING_TYPE  = 0x0A;
+
+
+// A strongly typed value such as occurs in a StreamMessage or MapMessage.
+union TypedValue switch (ValueKind) {
+    case BOOLEAN_TYPE:
+        boolean booleanValue;
+    case BYTE_TYPE:
+        octet byteValue;
+    case BYTES_TYPE:
+        sequence<octet, BYTES_MAX> bytesValue;
+    case CHAR_TYPE:
+        char charValue;
+    case DOUBLE_TYPE:
+        double doubleValue;
+    case FLOAT_TYPE:
+        float floatValue;
+    case INT_TYPE:
+        long intValue;
+    case LONG_TYPE:
+        long long longValue;
+    case SHORT_TYPE:
+        short shortValue;
+    case STRING_TYPE:
+        string<STRING_MAX> stringValue;
+}; //@top-level false
+
+
+/* A strongly typed value associated with a name string, such as in a
+ * MapMessage.
+ */
+struct NameValuePair {
+    /* Put the TypedValue first, because it only requires single-byte
+     * alignment (because of its single-byte discriminator) instead of
+     * four-byte alignment, as strings do (because of their four-byte on-the-
+     * wire length prefix).
+     */
+    TypedValue value;
+    string<NAME_MAX> name;
+}; //@top-level false
+
+
+// ***************************************************************************
+// ** Message Body                                                          **
+// ***************************************************************************
+
+typedef char MessageKind;
+
+const MessageKind MESSAGE        = 0x00;
+const MessageKind BYTES_MESSAGE  = 0x01;
+const MessageKind STREAM_MESSAGE = 0x02;
+const MessageKind MAP_MESSAGE    = 0x03;
+const MessageKind TEXT_MESSAGE   = 0x04;
+const MessageKind OBJECT_MESSAGE = 0x05;
+
+const MessageKind MAX_MESSAGE_TYPE = OBJECT_MESSAGE;
+
+
+/* The body of a Message, including a discriminator that identifies the
+ * concrete Message subclass.
+ */
+union Body switch (MessageKind) {
+    case MESSAGE:
+        char dummy;
+    case BYTES_MESSAGE:
+        sequence<octet, BYTES_MESSAGE_MAX> bytes;
+    case STREAM_MESSAGE:
+        sequence<TypedValue, VALUES_MAX> values;
+    case MAP_MESSAGE:
+        sequence<NameValuePair, ITEMS_MAX> items;
+    case TEXT_MESSAGE:
+        string<TEXT_MAX> text;
+    case OBJECT_MESSAGE:
+        sequence<octet, OBJECT_MESSAGE_MAX> object;
+}; //@top-level false
+
+
+// ***************************************************************************
+// ** Message                                                               **
+// ***************************************************************************
+
+const string UNKEYED_TYPE_NAME = "JMS Message";
+const string KEYED_TYPE_NAME   = "Keyed JMS Message";
+
+
+struct JmsMessage {
+    /* Put the string fields first, even though they have to be 4-byte
+     * aligned, because the user could content filter on them, and we want
+     * to minimize the amount of data that needs to be traversed before
+     * coming to the field we want to evaluate.
+     */
+  #if defined(KEYED)
+    string<JMS_RTI_KEY_MAX> JMS_RTIKey; //@key
+  #elif defined(UNKEYED)
+    string<JMS_RTI_KEY_MAX> JMS_RTIKey; // not a key
+  #else
+    #error "Please specify whether to generate a keyed or unkeyed type by defining 'KEYED' or 'UNKEYED'."
+  #endif
+    string<JMS_CORRELATION_ID_MAX> JMSCorrelationID;
+    string<JMS_TYPE_MAX> JMSType;
+    string<JMS_REPLY_TO_MAX> JMSReplyTo;
+    /* Put the Body first, because it only requires single-byte alignment
+     * (because of its single-byte discriminator) instead of four-byte
+     * alignment, as sequences do (because of their four-byte on-the- wire
+     * length prefix).
+     */
+    Body body;
+    sequence<NameValuePair, PROPERTIES_MAX> properties;
+};

@@ -1,0 +1,187 @@
+##/* $Id: typeHeader.vm,v 1.15 2013/10/02 14:23:28 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a, 02oct13 ajm CODEGENII-143 and CODEGEN-349 and CODGEN-499 Filenames with periods or hypthens
+##10a,19sep13,fcs CODEGENII-140: Union forward declaration
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,25mar13,ajm Adding support for enums and inheritance in .Net. We do check now
+## it we are working with namespaces because we introduce always the module in the list of nodes
+##10a,01mar13, ajm CODEGENII-59: Updating to generate XTypes Mutable as in IN-Branch
+##10a,16jan13, ajm RRTIDDSGEN-52 Renaming variables and functions for the codereview
+##10a,4dec12, ajm Refactoring of the code and variable names.
+##10a,8nov12, ajm  RTIDDSGEN-34 support for the copy directives and resolve-name
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,07nov11, ajm Refactoring code
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,21oct11,ajm Adding a return at the end of the file
+##10a,11oct11, Fixing issues and adding union support for C++
+##10a,10oct11,ajm Adding union support
+##10a,29sep11,ajm adding forward declaration and namespace support 
+##10a,26sep11,ajm adding enum support 
+##10a,22sep11,ajm adding valuetypes support
+##10a,14sep11,ajm Refactor typedef
+##10a,2sep11,ajm Refactoring using a unique list for all elements(typedefs, structs and const)
+##10a,1sep11,ajm Adding typedef support for primitive types and typedef arrays
+##10a,29ag11,ajm Fixing macros consistency by adding the missing parameters
+##10a,29ag11,ajm Refactor of variables and cleaning loops
+##10a,19ag11,ajm Refactorizing and cleaning the templates code.
+##10a,12ag11,jmt Adding functionality for C++
+##10a,11ag11,ajm Refactorizing the templates code.
+##           ajm Adding variable $nativeFQName
+##10a,09ag11,jmt Fixing tabulations and length of the lines 
+##10a,08ag11,jmt adding support for constant types
+##10a,04ag11,ajm adding modification history header
+##10a,03ag11,ajm created 
+##-----------------------------------------------------------------
+##               
+##             Template for the main C header file
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+
+${envMap.POUND_CHAR}ifndef ${envMap.idlFileName.replace(".","_").replace("-","_")}_${envMap.executionID}_h
+${envMap.POUND_CHAR}define ${envMap.idlFileName.replace(".","_").replace("-","_")}_${envMap.executionID}_h
+
+${envMap.POUND_CHAR}ifndef NDDS_STANDALONE_TYPE
+    ${envMap.POUND_CHAR}ifdef __cplusplus
+        ${envMap.POUND_CHAR}ifndef ndds_cpp_h
+            ${envMap.POUND_CHAR}include "ndds/ndds_cpp.h"
+        ${envMap.POUND_CHAR}endif
+    ${envMap.POUND_CHAR}else
+        ${envMap.POUND_CHAR}ifndef ndds_c_h
+            ${envMap.POUND_CHAR}include "ndds/ndds_c.h"
+        ${envMap.POUND_CHAR}endif
+    ${envMap.POUND_CHAR}endif
+${envMap.POUND_CHAR}else
+    ${envMap.POUND_CHAR}include "ndds_standalone_type.h"
+${envMap.POUND_CHAR}endif
+
+#foreach($node in $constructMapList)
+#*--*##if($node.constructKind=="directive") ##if it is a directive we print its value
+$node.value 
+#*--*##elseif($node.constructKind=="module" && $envMap.namespace)
+namespace $node.name {
+#*--*##elseif($node.constructKind=="moduleClose" && $envMap.namespace) 
+} /* namespace $node.name  */
+#*--*##elseif($node.constructKind=="enum")
+#*----*##declareEnum ($node)
+#*----*##declareTypeFunctions($node)
+#*--*##elseif($node.constructKind=="include")
+${envMap.POUND_CHAR}include "${node.file}.h"
+#*--*##elseif($node.constructKind=="const")
+#*----*##assignMemberVariables($node)
+#*----*##declareConstant( $node)
+#*--*##elseif($node.constructKind=="alias")
+#*----*##assignTypeVariables($node.memberFieldMapList $node)
+#*----*##declareAlias($node)
+#*--*##elseif($node.constructKind=="structFwd" ||$node.constructKind=="valueTypeFwd" || $node.constructKind=="unionFwd")
+#*----*##if($envMap.language=="C")
+struct ${node.nativeFQNameInModule};
+#*----*##else
+#*------*##if($node.constructKind=="unionFwd")
+struct ${node.nativeFQNameInModule};
+#*------*##else
+class ${node.nativeFQNameInModule};
+#*------*##end
+#*----*##end
+#*--*##elseif($node.isAggregationType)
+#*----*##if(!$envMap.namespace)
+${envMap.POUND_CHAR}ifdef __cplusplus
+extern "C" {
+${envMap.POUND_CHAR}endif
+#*----*##end        
+        
+extern const char *${node.nativeFQNameInModule}TYPENAME;
+ 
+#*----*##if(!$envMap.namespace) 
+${envMap.POUND_CHAR}ifdef __cplusplus
+}
+${envMap.POUND_CHAR}endif
+#*----*##end  
+
+#*--Begin update to bigpine*#
+${envMap.POUND_CHAR}ifdef __cplusplus
+struct ${node.nativeFQNameInModule}Seq;
+#*---------*##if($node.topLevel=="true")
+${envMap.POUND_CHAR}ifndef NDDS_STANDALONE_TYPE
+    class ${node.nativeFQNameInModule}TypeSupport;
+    class ${node.nativeFQNameInModule}DataWriter;
+    class ${node.nativeFQNameInModule}DataReader;
+${envMap.POUND_CHAR}endif
+#*---------*##end  
+${envMap.POUND_CHAR}endif
+#*--End update to bigpine*#
+
+
+#*----*##if($envMap.language=="C"|| $node.constructKind=="union")
+typedef struct ${node.nativeFQNameInModule} 
+{
+#*------*##if($node.constructKind=="union")
+${envMap.POUND_CHAR}ifdef __cplusplus
+    typedef struct ${node.nativeFQNameInModule}Seq Seq;
+
+${envMap.POUND_CHAR}ifndef NDDS_STANDALONE_TYPE
+    typedef ${node.nativeFQNameInModule}TypeSupport TypeSupport;
+    typedef ${node.nativeFQNameInModule}DataWriter DataWriter;
+    typedef ${node.nativeFQNameInModule}DataReader DataReader;
+${envMap.POUND_CHAR}endif
+
+${envMap.POUND_CHAR}endif
+
+#*--------*##assignMemberVariables($node.unionDiscriminatorMap $node)
+
+$node.unionDiscriminatorMap.nativeTypeFQName _d;
+struct ${node.nativeFQNameInModule}_u 
+{
+#*------*##end
+
+#*----*##else
+class ${node.nativeFQNameInModule} 
+#if($node.baseTypeFQName): public $node.baseTypeFQName#end
+{
+public:
+${envMap.POUND_CHAR}ifdef __cplusplus
+    typedef struct ${node.nativeFQNameInModule}Seq Seq;
+#*---------*##if($node.topLevel=="true")
+${envMap.POUND_CHAR}ifndef NDDS_STANDALONE_TYPE
+    typedef ${node.nativeFQNameInModule}TypeSupport TypeSupport;
+    typedef ${node.nativeFQNameInModule}DataWriter DataWriter;
+    typedef ${node.nativeFQNameInModule}DataReader DataReader;
+${envMap.POUND_CHAR}endif
+#*---------*##end  
+    
+#*---------*#${envMap.POUND_CHAR}endif
+#*----*##end
+
+#*----*##assignTypeVariables($node.memberFieldMapList $node)## Call to a macro here to initialize the types of the members in the node
+#*----*##headerInit($node) ## Call to a macro here  to define each member in the node
+#*----*##if($node.constructKind=="union")
+ }_u;
+#*----*##end
+}#if($envMap.language=="C" ||$node.constructKind=="union") ${node.nativeFQNameInModule} #end;
+#*----*##declareTypeFunctions($node)
+#*--*##end
+#end
+
+${envMap.POUND_CHAR}endif /* ${envMap.idlFileName.replace(".","_").replace("-","_")} */
+
+

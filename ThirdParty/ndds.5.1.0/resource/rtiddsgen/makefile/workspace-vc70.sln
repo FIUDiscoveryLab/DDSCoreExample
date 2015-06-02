@@ -1,0 +1,37 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "%%IDLFileBaseName%%_%%Project1Name%%", "%%IDLFileBaseName%%_%%Project1Name%%-vc70.vcproj", "{BF900500-D48B-438B-827F-01512AC24AB1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "%%IDLFileBaseName%%_%%Project2Name%%", "%%IDLFileBaseName%%_%%Project2Name%%-vc70.vcproj", "{8E420232-A373-41D3-AA50-83B62C0E2B2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Debug DLL
+		ConfigName.2 = Release
+		ConfigName.3 = Release DLL
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug.ActiveCfg = Debug|Win32
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug.Build.0 = Debug|Win32
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug DLL.ActiveCfg = Debug DLL|Win32
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug DLL.Build.0 = Debug DLL|Win32
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release.ActiveCfg = Release|Win32
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release.Build.0 = Release|Win32
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release DLL.ActiveCfg = Release DLL|Win32
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release DLL.Build.0 = Release DLL|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug.ActiveCfg = Debug|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug.Build.0 = Debug|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug DLL.ActiveCfg = Debug DLL|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug DLL.Build.0 = Debug DLL|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release.ActiveCfg = Release|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release.Build.0 = Release|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release DLL.ActiveCfg = Release DLL|Win32
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release DLL.Build.0 = Release DLL|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

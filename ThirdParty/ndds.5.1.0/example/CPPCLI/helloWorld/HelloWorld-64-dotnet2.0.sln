@@ -1,0 +1,25 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld_publisher", "HelloWorld_publisher-64-dotnet2.0.vcproj", "{BF900500-D48B-438B-827F-01512AC24AB1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld_subscriber", "HelloWorld_subscriber-64-dotnet2.0.vcproj", "{8E420232-A373-41D3-AA50-83B62C0E2B2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Debug|x64.ActiveCfg = Debug|x64
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Debug|x64.Build.0 = Debug|x64
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Release|x64.ActiveCfg = Release|x64
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Release|x64.Build.0 = Release|x64
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Debug|x64.ActiveCfg = Debug|x64
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Debug|x64.Build.0 = Debug|x64
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Release|x64.ActiveCfg = Release|x64
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

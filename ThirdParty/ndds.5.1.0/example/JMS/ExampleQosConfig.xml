@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<jms>
+    <!-- ================================================================= -->
+    <!-- Configuration for "Hello, World" Example                          -->
+    <!-- ================================================================= -->
+
+    <library name="hello">
+        <!-- ConnectionFactory has all default settings: -->
+        <connection_factory name="helloConnectionFactory">
+        </connection_factory>
+
+        <!--
+        Topic is configured for strict reliability and for publishers to keep
+        sent messages on behalf of late-joining subscribers.
+        -->
+        <topic name="helloTopic">
+            <!-- Use reliable communications, not best-effort. -->
+            <reliability>
+                <kind>RELIABLE_RELIABILITY_QOS</kind>
+            </reliability>
+            <!-- Retain the last 10 messages published: -->
+            <history>
+                <kind>KEEP_LAST_HISTORY_QOS</kind>
+                <depth>10</depth>
+            </history>
+            <!--
+            Retain the historical messages for late-joining subscribers;
+            don't discard them once they've been acknowledged by current
+            subscribers.
+            -->
+            <durability>
+                <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+            </durability>
+        </topic>
+    </library>
+
+
+    <!-- ================================================================= -->
+    <!-- Configuration for Stock Example                                   -->
+    <!-- ================================================================= -->
+
+    <library name="stock">
+        <connection_factory name="connectionFactory">
+        </connection_factory>
+
+        <topic name="Example Stock News">
+            <producer_defaults>
+                <!-- Requirement I. Late Joiners Need Last 20 News Messages -->
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <depth>20</depth>
+                </history>
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+            </producer_defaults>
+            <consumer_defaults>
+                <!-- Requirement I. Late Joiners Need Last 20 News Messages -->
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <depth>20</depth>
+                </history>
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+            </consumer_defaults>
+        </topic>
+
+        <topic name="Example Stock Price">
+            <producer_defaults>
+                <!-- Requirement I. Late Joiners Need Last Price Message -->
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <depth>1</depth>
+                </history>
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+                <!-- Requirement III: Stock Price from Most Trusted Source -->
+                <ownership>
+                    <kind>EXCLUSIVE_OWNERSHIP_QOS</kind>
+                </ownership>
+                <ownership_strength>
+                    <!-- Will be overridden in code -->
+                    <value>0</value>
+                </ownership_strength>
+                <deadline>
+                    <period>
+                        <sec>8</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+            </producer_defaults>
+            <consumer_defaults>
+                <!-- Requirement I. Late Joiners Need Last Price Message -->
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <depth>1</depth>
+                </history>
+                <durability>
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+                <!--
+                Requirement II. Service Level Controls How Often 
+                Prices are Received
+                and
+                Requirement III: Stock Price from Most Trusted Source
+                and Service level determines the Deadline -->
+                <ownership>
+                    <kind>EXCLUSIVE_OWNERSHIP_QOS</kind>
+                </ownership>
+                <time_based_filter>
+                    <minimum_separation>
+                        <!-- Will be overridden in code -->
+                        <sec>0</sec>
+                        <nanosec>0</nanosec>
+                    </minimum_separation>
+                </time_based_filter>
+                <deadline>
+                    <period>
+                        <!-- Will be overridden in code -->
+                        <sec>8</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+            </consumer_defaults>
+        </topic>
+    </library>
+
+
+    <!-- ================================================================= -->
+    <!-- Configuration for Chat Example                                    -->
+    <!-- ================================================================= -->
+
+    <library name="chat">
+        <connection_factory name="connectionFactory">
+        </connection_factory>
+
+        <topic name="topic">
+            <reliability>
+                <kind>RELIABLE_RELIABILITY_QOS</kind>
+            </reliability>
+            <history>
+                <kind>KEEP_ALL_HISTORY_QOS</kind>
+            </history>
+            <durability>
+                <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+            </durability>
+        </topic>
+    </library>
+
+</jms>

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+(c) Copyright, Real-Time Innovations, Inc. 2003-2010.  All rights reserved.
+
+Modification history
+- - - - - - - - - - - - -
+5.0.1,06may13,fcs CODEGEN-584: Received samples for an Extensible type may 
+                  contain invalid values for fields not present on the wire
+5.01,30apr13,acr CODEGEN-574 Added allocate generation mode and removed
+                 optional attribute (we don't need separate templates for
+                 optional members anymore; we re-use existing ones)
+5.01,24apr13,acr CODEGEN-574 Added optional attribute to templates and new
+                 generation mode for the finalizeOptionalMembers function.
+10ae,10feb11,fcs Fixed bug 13844
+10ae,05aug10,rbw Added missing sequenceActualSizeMethod to avoid validation
+                 errors (already being used in generation-info)
+10ab,03jun09,rbw Updated to match current contents of generation-info.java.xml
+10x,09may08,rbw Added multidim attribute for multi-dimensional arrays
+10v,19mar08,rbw Added missing methods
+10v,17mar08,rbw Added missing methods
+10v,11mar08,rbw Allow distinguishing between user enums and user structs
+10s,04mar08,rbw Added cdrType attribute to support CDR in C++/CLI
+10o,03jul07,rbw Updated for new attributes in file format
+10m,11jul06,krb Added attribute 'special' to element 'kind' so that
+                parallel templates can exist for special purpose types.
+10e,19apr05,rw  Updated attribute list to reflect changes to
+                generation-info.*.xml
+10e,28mar05,rw  Bug #10270: removed copy_key_fields (unified with copy)
+10e,22mar05,rw  Updated to reflect changes to generation-info.*.xml
+10d,15nov04,eys Type plugin refactoring
+10d,26jul04,rw  Added method kind "copy_key_fields"
+10d,22jul04,rw  Refactored from generation-info.*.xml
+-->
+
+
+<!-- ===================================================================== -->
+<!-- Entities                                                              -->
+<!-- ===================================================================== -->
+
+<!ENTITY nl "&#xa;">                <!--   new line  -->
+<!ENTITY indent "    ">             <!-- indentation -->
+
+
+<!-- ===================================================================== -->
+<!-- Elements                                                              -->
+<!-- ===================================================================== -->
+
+<!ELEMENT generationInfo (typeInfoMap, methodInfoMap, sourcePreamble+)>
+<!ATTLIST generationInfo style    NMTOKEN #IMPLIED
+                         language NMTOKEN #REQUIRED>
+
+<!ELEMENT typeInfoMap (type*)>
+
+<!ELEMENT type EMPTY>
+<!ATTLIST type idlType                   NMTOKEN #REQUIRED
+               nativeType                NMTOKEN #REQUIRED
+               initialValue              CDATA   #IMPLIED
+               cdrType                   NMTOKEN #IMPLIED
+               typeCode                  NMTOKEN #REQUIRED
+               corbaCPPNativeType        NMTOKEN #IMPLIED
+               nativeTypeSeq             NMTOKEN #REQUIRED
+               typeEnum                  CDATA   #REQUIRED
+               class					 NMTOKEN #IMPLIED
+
+               elementSerializeMethod    NMTOKEN #REQUIRED
+               arraySerializeMethod      NMTOKEN #REQUIRED
+               sequenceSerializeMethod   NMTOKEN #REQUIRED
+               pointerSequenceSerializeMethod    NMTOKEN #IMPLIED
+
+               elementDeserializeMethod  NMTOKEN #REQUIRED
+               arrayDeserializeMethod    NMTOKEN #REQUIRED
+               sequenceDeserializeMethod NMTOKEN #REQUIRED
+               pointerSequenceDeserializeMethod  NMTOKEN #IMPLIED
+
+               elementSkipMethod         NMTOKEN #IMPLIED
+               arraySkipMethod           NMTOKEN #IMPLIED
+               sequenceSkipMethod        NMTOKEN #IMPLIED
+               pointerSequenceSkipMethod NMTOKEN #IMPLIED
+
+               elementPrintMethod        NMTOKEN #IMPLIED
+               elementPrintBitsMethod    NMTOKEN #IMPLIED
+
+               elementInitMethod         NMTOKEN #IMPLIED
+
+               elementCopyMethod         NMTOKEN #IMPLIED
+
+               elementSize               CDATA   #REQUIRED
+               elementAlignment          NMTOKEN #REQUIRED
+               elementSizeMethod         CDATA   #REQUIRED
+               arraySizeMethod           CDATA   #REQUIRED
+               sequenceSizeMethod        CDATA   #REQUIRED
+               sequenceActualSizeMethod  CDATA   #REQUIRED
+>
+
+<!ELEMENT methodInfoMap (method*)>
+
+<!ELEMENT method (template*)>
+<!ATTLIST method kind (structMember            |
+                       serialize               |
+                       deserialize             |
+                       skip                    |
+                       get_min_size_serialized |
+                       get_max_size_serialized |
+                       print                   |
+                       copy                    |
+                       initialize              |
+                       finalize                |
+                       finalize_optional       |
+                       allocate                |
+                       new                     |
+                       nativeType              |
+                       hashCode                |
+                       equals)                   #REQUIRED
+>
+
+<!ELEMENT template (#PCDATA)>
+<!ATTLIST template kind (scalar | string | wstring | array | sequence |
+                         bitfield | arraySequence)  #REQUIRED
+                   baseMemberKind (scalar | string | wstring | array | 
+                         sequence | bitfield | arraySequence) #IMPLIED
+                   typeKind (builtin | user)        #IMPLIED
+                   optional (true | false)              #IMPLIED
+                   pointer  (yes | no)              #IMPLIED
+                   bitKind  (normal | lastBitField) #IMPLIED
+                   type     (string  |
+                             wstring |
+                             wchar   |
+                             boolean)               #IMPLIED
+                   enum     (yes | no)              #IMPLIED
+                   multidim (yes | no)              #IMPLIED
+                   special  (none | corba_union)    "none"
+>
+
+<!ELEMENT sourcePreamble (#PCDATA)>
+<!ATTLIST sourcePreamble kind (type-header | type-source | support-header |
+                               support-source | type-plugin-header |
+                               type-plugin-source | type-datatype-source |
+                               java) #IMPLIED
+>

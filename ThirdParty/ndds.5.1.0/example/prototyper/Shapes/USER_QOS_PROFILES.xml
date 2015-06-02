@@ -1,0 +1,83 @@
+
+<!--
+RTI Data Distribution Service Deployment
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="../../../resource/qos_profiles_5.1.0/schema/rti_dds_profiles.xsd" 
+     version="5.1.0">
+         
+    <!-- Qos Library -->
+    <qos_library name="qosLibrary">
+        <qos_profile name="defaultProfile" is_default_qos="true">
+        </qos_profile>
+    </qos_library>
+
+    <!-- types -->
+    <types>
+         <const name="MAX_COLOR_LEN" type="long" value="32"/>
+
+         <struct name="ShapeType">
+             <member name="color"  key="true"
+                     type="string"  stringMaxLength="MAX_COLOR_LEN"/>
+             <member name="x" type="long"/>
+             <member name="y" type="long"/>
+             <member name="shapesize" type="long"/>
+         </struct>
+    </types>
+
+    <!-- Domain Library -->
+    <domain_library name="MyDomainLibrary" >
+
+        <domain name="ShapeDomain" domain_id="0">
+            <register_type name="ShapeType" kind="dynamicData"
+                           type_ref="ShapeType" />
+
+            <topic name="Square"   register_type_ref="ShapeType"/>
+            <topic name="Circle"   register_type_ref="ShapeType"/>
+            <topic name="Triangle" register_type_ref="ShapeType"/>
+            
+        </domain>
+    </domain_library>
+
+    <!-- Participant library -->
+    <participant_library name="MyParticipantLibrary">
+
+        <!-- first participant: publishes Square and Circle
+        -->
+        <domain_participant name="ShapePublisher" 
+                            domain_ref="MyDomainLibrary::ShapeDomain">
+
+            <publisher name="MyPublisher">
+                <data_writer name="MySquareWriter" topic_ref="Square"/>
+                <data_writer name="MyCircleWriter" topic_ref="Circle"/>            
+            </publisher>
+        </domain_participant>
+        
+        <!-- 2nd participant: subscribes Square, Circle, and Triangle
+        -->
+        <domain_participant name="ShapeSubscriber" 
+                             domain_ref="MyDomainLibrary::ShapeDomain">                        
+                     
+            <subscriber name="MySubscriber">
+                <data_reader name="MySquareRdr"   topic_ref="Square"/>
+                <data_reader name="MyCircleRdr"   topic_ref="Circle"/>
+                <data_reader name="MyTriangleRdr" topic_ref="Triangle"/>
+            </subscriber>
+        </domain_participant>
+ 
+        <!-- 3rd participant: publishes Triangle and subscribes Circle
+        -->
+        <domain_participant name="ShapePubSub" 
+                             domain_ref="MyDomainLibrary::ShapeDomain">                        
+
+            <publisher name="MyPublisher">
+                <data_writer name="MyTriangleWr" topic_ref="Triangle"/>
+            </publisher>
+                      
+            <subscriber name="MySubscriber">
+                <data_reader name="MyCircleRdr"  topic_ref="Circle"/>
+            </subscriber>
+        </domain_participant>
+   
+    </participant_library>
+</dds>

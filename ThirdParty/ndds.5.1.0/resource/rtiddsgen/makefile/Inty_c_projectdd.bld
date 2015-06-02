@@ -1,0 +1,8 @@
+#!build
+default:
+	integrity_app
+	:integrity_option=nokernel
+%%IDLFileBaseName%%_%%ProjectName%%dd_as1.bld
+	program
+%%IDLFileBaseName%%_%%ProjectName%%dd.int
+	integrate_file

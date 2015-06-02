@@ -1,0 +1,301 @@
+  <xs:simpleType name="fileName">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="identifierName">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="([a-zA-Z_]|::)([a-zA-Z_0-9]|::)*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="allTypeKind">
+    <xs:restriction base="xs:string">       
+      <xs:enumeration value="boolean"/>
+      <xs:enumeration value="octet"/>
+      <xs:enumeration value="long"/>
+      <xs:enumeration value="float"/>
+      <xs:enumeration value="double"/>
+      <xs:enumeration value="string"/>
+      <xs:enumeration value="char"/>
+      <xs:enumeration value="wchar"/>
+      <xs:enumeration value="wstring"/>
+      <xs:enumeration value="short"/>
+      <xs:enumeration value="unsignedShort"/>
+      <xs:enumeration value="unsignedLong"/>
+      <xs:enumeration value="longLong"/>
+      <xs:enumeration value="unsignedLongLong"/>
+      <xs:enumeration value="longDouble"/>
+      <xs:enumeration value="nonBasic"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="includeDecl">
+    <xs:attribute name="file" type="fileName" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="constDecl">
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="type" type="allTypeKind" use="required"/>
+    <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+    <xs:attribute name="value" type="xs:string" use="required"/>
+    <xs:attribute name="resolveName" type="trueFalseKind" use="optional"/>
+  </xs:complexType>
+
+  <xs:simpleType name="visibilityKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="public"/>
+      <xs:enumeration value="private"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="trueFalseKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="0"/>
+      <xs:enumeration value="1"/>
+      <xs:enumeration value="true"/>
+      <xs:enumeration value="false"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="arrayDimensionsKind">
+    <xs:restriction base="xs:string">
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="typeModifierKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="custom"/>
+      <xs:enumeration value="abstract"/>
+      <xs:enumeration value="truncatable"/>
+      <xs:enumeration value="none"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="directiveKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="copy"/>
+      <xs:enumeration value="copyC"/>
+      <xs:enumeration value="copyJava"/>
+      <xs:enumeration value="copyJavaBegin"/>
+      <xs:enumeration value="copyDeclaration"/>
+      <xs:enumeration value="copyCDeclaration"/>
+      <xs:enumeration value="copyJavaDeclaration"/>
+      <xs:enumeration value="copyJavaDeclarationBegin"/>
+      <xs:enumeration value="copyCppcli"/>
+      <xs:enumeration value="copyCppcliDeclaration"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="extensibilityKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="final"/>
+      <xs:enumeration value="extensible"/>
+      <xs:enumeration value="mutable"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="memberId">
+    <xs:restriction base="xs:unsignedInt">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="268435455"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="directiveDecl">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute name="kind" type="directiveKind" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+
+  <xs:complexType name="caseDiscriminatorDecl">
+    <xs:attribute name="value" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="caseDecl">
+    <xs:sequence>
+      <xs:choice minOccurs="1" maxOccurs="unbounded">
+        <xs:element name="caseDiscriminator" type="caseDiscriminatorDecl" minOccurs="1" maxOccurs="unbounded"/>
+      </xs:choice>
+      <xs:element name="member" type="memberDecl" minOccurs="1" maxOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="memberDecl">
+    <xs:attribute name="name" type="identifierName" use="optional"/>
+    <xs:attribute name="type" type="allTypeKind" use="required"/>
+    <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+    <xs:attribute name="key" type="trueFalseKind" use="optional" default="false"/>
+    <xs:attribute name="pointer" type="trueFalseKind" use="optional" default="false"/>
+    <xs:attribute name="bitField" type="xs:string" use="optional"/>
+    <xs:attribute name="stringMaxLength" type="xs:string" use="optional"/>
+    <xs:attribute name="sequenceMaxLength" type="xs:string" use="optional"/>
+    <xs:attribute name="arrayDimensions" type="arrayDimensionsKind" use="optional"/>
+    <xs:attribute name="resolveName" type="trueFalseKind" use="optional"/>
+    <xs:attribute name="visibility" type="visibilityKind" use="optional"/>
+    <xs:attribute name="id" type="memberId" use="optional"/>
+    <xs:attribute name="optional" type="trueFalseKind" use="optional" default="false"/>
+  </xs:complexType>
+
+  <xs:complexType name="structDecl">
+      <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="member" type="memberDecl" minOccurs="1"/>
+        <xs:element name="directive" type="directiveDecl" minOccurs="0"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="baseType" type="identifierName" use="optional"/>
+    <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+    <xs:attribute name="extensibility" type="extensibilityKind" use="optional" default="extensible"/>
+  </xs:complexType>
+
+  <xs:complexType name="valuetypeDecl">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="const" type="constDecl" minOccurs="0"/>
+        <xs:element name="member" type="memberDecl" minOccurs="1"/>
+        <xs:element name="directive" type="directiveDecl" minOccurs="0"/>
+      </xs:choice>
+    </xs:sequence>
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+    <xs:attribute name="baseClass" type="identifierName" use="optional"/>
+    <xs:attribute name="typeModifier" type="typeModifierKind" use="optional"/>
+    <xs:attribute name="extensibility" type="extensibilityKind" use="optional" default="extensible"/>
+  </xs:complexType>
+
+  <xs:complexType name="discriminatorDecl">
+    <xs:attribute name="type" type="identifierName" use="required"/>
+    <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="unionDecl">
+    <xs:sequence>
+      <xs:element name="discriminator" type="discriminatorDecl" minOccurs="1"/>
+      <xs:sequence maxOccurs="unbounded">
+        <xs:element name="case" type="caseDecl" minOccurs="1"/>
+      </xs:sequence>
+    </xs:sequence>
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+    <xs:attribute name="extensibility" type="extensibilityKind" use="optional" default="extensible"/>
+  </xs:complexType>
+
+  <xs:complexType name="typedefDecl">
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="type" type="allTypeKind" use="required"/>
+    <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+    <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+    <xs:attribute name="stringMaxLength" type="xs:string" use="optional"/>
+    <xs:attribute name="sequenceMaxLength" type="xs:string" use="optional"/>
+    <xs:attribute name="arrayDimensions" type="arrayDimensionsKind" use="optional"/>
+    <xs:attribute name="pointer" type="trueFalseKind" use="optional"/>
+    <xs:attribute name="resolveName" type="trueFalseKind" use="optional"/>
+  </xs:complexType>
+
+  <xs:complexType name="enumeratorDecl">
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="value" type="xs:string" use="optional"/>
+  </xs:complexType>
+
+  <xs:simpleType name="bitsetBitBound">
+    <xs:restriction base="xs:unsignedShort">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="64"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="enumBitBound">
+    <xs:restriction base="xs:unsignedShort">
+      <xs:minInclusive value="1"/>
+      <xs:maxInclusive value="32"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="enumDecl">
+    <xs:sequence>
+      <xs:element name="enumerator" type="enumeratorDecl" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="extensibility" type="extensibilityKind" use="optional" default="extensible"/>
+    <xs:attribute name="bitBound" type="enumBitBound"
+        use="optional" default="32" />
+  </xs:complexType>
+
+  <xs:simpleType name="flagIndex">
+    <xs:restriction base="xs:unsignedShort">
+      <xs:minInclusive value="0"/>
+      <xs:maxInclusive value="63"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="flagDecl">
+    <xs:attribute name="name"
+                  type="identifierName"
+                  use="required"/>
+    <xs:attribute name="value"
+                  type="flagIndex"
+                  use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="bitsetDecl">
+    <xs:sequence>
+      <xs:element name="flag"
+                  type="flagDecl"
+                  minOccurs="0"
+                  maxOccurs="64"/>
+    </xs:sequence>
+
+    <xs:attribute name="name"
+                  type="identifierName"
+                  use="required"/>
+    <xs:attribute name="bitBound"
+                  type="bitsetBitBound"
+                  use="optional"
+                  default="32"/>
+  </xs:complexType>
+
+  <xs:simpleType name="forwardDeclTypeKind">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="component"/>
+      <xs:enumeration value="enum"/>
+      <xs:enumeration value="bitset"/>
+      <xs:enumeration value="eventtype"/>
+      <xs:enumeration value="interface"/>
+      <xs:enumeration value="struct"/>
+      <xs:enumeration value="union"/>
+      <xs:enumeration value="valuetype"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:complexType name="forwardDecl">
+    <xs:attribute name="name" type="identifierName" use="required"/>
+    <xs:attribute name="kind" type="forwardDeclTypeKind" use="required"/>
+  </xs:complexType>
+
+  <xs:group name="moduleElements">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element name="include" type="includeDecl" minOccurs="0"/>
+        <xs:element name="const" type="constDecl" minOccurs="0"/>
+        <xs:element name="directive" type="directiveDecl" minOccurs="0"/>
+        <xs:element name="module" type="moduleDecl" minOccurs="0"/>
+        <xs:element name="struct" type="structDecl" minOccurs="0"/>
+        <xs:element name="valuetype" type="valuetypeDecl" minOccurs="0"/>
+        <xs:element name="union" type="unionDecl" minOccurs="0"/>
+        <xs:element name="typedef" type="typedefDecl" minOccurs="0"/>
+        <xs:element name="enum" type="enumDecl" minOccurs="0"/>
+        <xs:element name="bitset" type="bitsetDecl" minOccurs="0"/>
+        <xs:element name="forward_dcl" type="forwardDecl" minOccurs="0"/>
+      </xs:choice>
+    </xs:sequence>
+  </xs:group>
+
+  <xs:complexType name="moduleDecl">
+    <xs:group ref="moduleElements"/>
+    <xs:attribute name="name" type="identifierName" use="required"/>
+  </xs:complexType>
+

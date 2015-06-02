@@ -1,0 +1,353 @@
+##/* $Id: utils.vm,v 1.13 2013/03/12 15:27:15 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##2.0,12sep13,ajm CODEGENII-92: Support for optional members
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,02Apr13,ajm Adding support for XTypes in .Net
+##10a,26mar13,ajm Adding support for unions in .Net
+##10a,19mar13,ajm Adding support for typedefs and const in .Net
+##10a,18mar13,ajm created 
+##
+##******************************************************************************
+## Macros to define Typecodes
+##******************************************************************************
+##------------------------------------------------------------------------------
+## Macros to define the typeCode
+##------------------------------------------------------------------------------
+
+#macro(typeCodeDeclaration $node $language)
+DDS_TypeCode* ${node.nativeFQNameInModule}_get_typecode()
+{
+    static RTIBool is_initialized = RTI_FALSE;
+#*------*##if($node.constructKind=="union")   
+#*--------*##unionTypeCodeLabels($node)
+#*------*##end
+#*------*##typeCodeArraydimensionLists($node.memberFieldMapList)
+
+#*------*##collectionTypeCodes($node.memberFieldMapList)
+#*------*##if($node.constructKind!="alias")
+    static DDS_TypeCode_Member ${node.nativeFQNameInModule}_g_tc_members[$node.memberCount]=
+    {
+
+#*--------*##typeCodeMembers($node.memberFieldMapList $node $envMap.language)
+    };
+#*------*##end
+
+#*------*##typeCode ($node)
+
+    if (is_initialized) {
+        return &${node.nativeFQNameInModule}_g_tc;
+    }
+
+#*------*# #if($node.constructKind!="enum")
+#*--------*##initArrayAndSeqElementTypeCodes($node)
+#*--------*##initMemberTypeCode($node)
+#*------*##end
+
+#*------*##if($node.constructKind=="valueType" || ($node.constructKind=="struct" && $node.baseTypeFQName))
+    ${node.nativeFQNameInModule}_g_tc._data._typeCode = (RTICdrTypeCode *)#*
+----*##if($node.baseTypeFQName)  ${node.baseTypeFQName}_get_typecode(); #*
+----*##else &DDS_g_tc_null; #end /* Base class */
+#*------*##end 
+
+#*------*##if($node.constructKind=="union")
+    /* Discriminator type code */
+    ${node.nativeFQNameInModule}_g_tc._data._typeCode = #getTypeCodeReference(${node.unionDiscriminatorMap})
+#*------*##end  
+    
+    is_initialized = RTI_TRUE;
+
+    return &${node.nativeFQNameInModule}_g_tc;
+}
+#end
+
+##------------------------------------------------------------------------------
+## Macros to define the array dimensionLists
+##------------------------------------------------------------------------------
+
+#macro(typeCodeArraydimensionLists $memberFieldMapList)
+#*--*##foreach($member in $memberFieldMapList)
+#*----*##if(($member.dimensionList)&&($member.dimensionList.size()> 1))
+static DDS_UnsignedLong $member.typeCodeDimension [$member.dimensionList.size()]#*
+*# = {#arraydimensionListWithCommaIfNeeded($velocityCount $member.dimensionList)} ;
+#*----*##end
+#*--*##end
+#end
+
+
+##------------------------------------------------------------------------------
+## Macros to define Type Code
+##------------------------------------------------------------------------------
+
+#macro(collectionTypeCodes $memberFieldMapList)
+#*--*##foreach($member in $memberFieldMapList)
+#*---*##if($member.directive)
+#*---*##copyDirectiveNoDeclaration($member)
+#*---*##else
+#*------*##stringTypeCode($member)
+#*------*##sequenceTypeCode($member)
+#*------*##arrayTypeCode($member )
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macros to define String Type Code
+##------------------------------------------------------------------------------
+#macro(stringTypeCode $member)
+#*--*##if(!$member.aliasNativeTypeFQName) ## We need this for .Net because the typedef has typeName string if is a typedef of a string
+##in .Net the nativeTypeFQName is System::String for both
+#*----*##if($member.typeName.equals("string"))
+static DDS_TypeCode $member.typeCode =#*
+--*# DDS_INITIALIZE_STRING_TYPECODE($member.strSize);
+#*----*##elseif($member.typeName.equals("wstring"))
+static DDS_TypeCode $member.typeCode =#*
+--*# DDS_INITIALIZE_WSTRING_TYPECODE($member.strSize);
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macros to define Array Type Code
+##------------------------------------------------------------------------------
+#macro(arrayTypeCode $member)
+#*--*##if($member.dimensionList)
+static DDS_TypeCode $member.typeCodeArray =#*
+*#DDS_INITIALIZE_ARRAY_TYPECODE($member.dimensionList.size(),$member.dimensionList.get(0),#*
+*##if($member.dimensionList.size()> 1)$member.typeCodeDimension#else NULL#end,NULL);
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macros to define Sequence Type Code
+##------------------------------------------------------------------------------
+#macro(sequenceTypeCode $member)
+#*--*##if($member.seqSize)
+static DDS_TypeCode $member.typeCodeSeq =#*
+*# DDS_INITIALIZE_SEQUENCE_TYPECODE($member.seqSize,NULL);
+#*--*##end
+#end
+
+
+
+##------------------------------------------------------------------------------
+## Macro to define the labels of a union
+##------------------------------------------------------------------------------
+
+#macro(unionTypeCodeLabels $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*------*##copyDirectiveNoDeclaration($member)
+#*----*##elseif($member.labelList.size()>1)
+static DDS_Long ${node.nativeFQNameInModule}_g_tc_${member.name}_labels[$member.labelList.size()] #*
+*#= {#foreach($l in $member.labelList)#*
+*##if($l=="(default)")RTI_CDR_TYPE_CODE_UNION_DEFAULT_LABEL#else(DDS_Long)$l#end#commaIfNeeded($velocityCount $member.labelList)#end};
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to intialize the arrays and sequences 
+##------------------------------------------------------------------------------
+
+#macro(initArrayAndSeqElementTypeCodes $struct)
+#*--*##foreach($member in $struct.memberFieldMapList)
+#*----*##if($member.seqSize) 
+${member.typeCodeSeq}._data._typeCode = #getTypeCodeBasicReference ($member)
+#*----*##end
+#*----*##if($member.dimensionList && $member.seqSize)
+${member.typeCodeArray}._data._typeCode =(RTICdrTypeCode *)& $member.typeCodeSeq;
+#elseif($member.dimensionList)
+${member.typeCodeArray}._data._typeCode =#getTypeCodeBasicReference ($member)
+#*----*##end
+#*--*##end
+#end
+
+
+##------------------------------------------------------------------------------
+## Macro to intialize the type code of all variables 
+##------------------------------------------------------------------------------
+
+#macro(initMemberTypeCode $struct)
+#set ($count=0)
+#*--*##foreach($member in $struct.memberFieldMapList)
+#*---*##if($member.directive)
+#*---*##copyDirectiveNoDeclaration($member)
+#*---*##else
+#*------*##if($struct.constructKind=="alias")#*
+--------*#    ${struct.nativeFQNameInModule}_g_tc._data#*
+--------*#._typeCode =  #getTypeCodeReference($member)#*
+--------*##else#*
+----------*#    ${struct.nativeFQNameInModule}_g_tc_#*
+--------*#members[${count}]._representation._typeCode = #getTypeCodeReference($member)#*
+---------*##set($count = $count +1)#*
+------*##end
+#*---*##end
+#*--*##end
+#end
+
+
+##------------------------------------------------------------------------------
+## Macro to intialize the TypeCode
+##------------------------------------------------------------------------------
+
+#macro(getTypeCodeReference $member)
+#*--*##if($member.dimensionList)
+(RTICdrTypeCode *)& $member.typeCodeArray;
+#*--*##elseif($member.seqSize)
+(RTICdrTypeCode *)& $member.typeCodeSeq;
+#*--*##else
+#getTypeCodeBasicReference($member)
+#*--*##end
+#end
+
+#macro (getTypeCodeBasicReference $member)
+#*----*##if($member.typeKind=="user" ||$member.aliasNativeTypeFQName)
+(RTICdrTypeCode *)$member.typeCode;
+#*----*##else
+(RTICdrTypeCode *)&$member.typeCode;
+#*----*##end
+
+#end
+
+##------------------------------------------------------------------------------
+## Macro to define the Variables
+##------------------------------------------------------------------------------
+
+#macro(typeCodeMembers $memberFieldMapList $node $language)
+#*---*##set($numMember=0) #* Used for counting member position for XTypes*#
+#*--*##foreach($member in $memberFieldMapList)
+#*---*##if($member.directive)
+#*-----*##copyDirectiveNoDeclaration($member)
+#*---*##else
+#*---*##set($numMember = $numMember +1)
+        {
+            (char *)"$member.name",/* Member name */
+            {
+                #if($member.id)$member.id,/* Representation ID */#*
+--------------*##else 0, /* Ignored */#end
+          
+                #if($member.isPointer)DDS_BOOLEAN_TRUE#*
+--------------*##else DDS_BOOLEAN_FALSE#end,/* Is a pointer? */
+                -1, /* Bitfield bits */
+                NULL/* Member type code is assigned later */
+            },
+#if($node.constructKind=="enum")       
+            #if($language.equals("CppCli")|| $language.equals("CSharp"))#*
+            *# (RTICdrLong)$member.nativeFQName#*
+            *##else$member.name#end, /* Enumerator ordinal */
+#else            
+            0, /* Ignored */
+#end 
+#if($node.constructKind=="union")
+            $member.labelList.size(), /* Number of labels */
+#else            
+            0, /* Ignored */
+#end            
+#if($node.constructKind=="union")
+#if($member.labelList.get(0) =="(default)")
+            RTI_CDR_TYPE_CODE_UNION_DEFAULT_LABEL, /* First label */
+#else
+             #if($language.equals("CppCli")|| $language.equals("CSharp"))#*
+            *# static_cast<RTICdrLong>($member.labelList.get(0))#else$member.labelList.get(0)#end, /* First label */
+#end                        
+#else           
+            0, /* Ignored */
+#end 
+#if($node.constructKind=="union")
+#if($member.labelList.size() > 1)
+            /* Labels (it is NULL when there is only one label)*/
+            ${node.nativeFQNameInModule}_g_tc_${member.name}_labels, 
+#else           
+            NULL, /* Labels (it is NULL when there is only one label)*/
+#end 
+#else            
+            NULL, /* Ignored */
+#end            
+           #if($member.isKey)RTI_CDR_KEY_MEMBER#*
+           *# #elseif($member.isOptional || $node.constructKind.equals("union"))#*
+           *# RTI_CDR_NONKEY_MEMBER#else RTI_CDR_REQUIRED_MEMBER#end, /* Is a key? */
+#if(($node.constructKind=="struct" && $node.baseTypeFQName) || $member.isPublic)
+            DDS_PUBLIC_MEMBER,/* Member visibility */
+#else
+            DDS_PRIVATE_MEMBER,/* Member visibility */ 
+            
+#end
+            1,
+            NULL/* Ignored */
+        }#commaIfNeeded($velocityCount $node.memberFieldMapList)
+
+#*--*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+## Macro to initialize Type
+##------------------------------------------------------------------------------
+
+#macro(typeCode $node)
+#*--*##if($node.constructKind!="alias")
+    static DDS_TypeCode ${node.nativeFQNameInModule}_g_tc =
+    {{
+#*----*##if($node.constructKind=="valueType" || $node.baseTypeFQName)
+        DDS_TK_VALUE#*
+------*##elseif($node.constructKind=="struct")
+        DDS_TK_STRUCT#*
+------*##elseif($node.constructKind=="enum")
+        DDS_TK_ENUM#*
+------*##else
+        DDS_TK_UNION#*
+------*##end
+#*----*##if($node.extensibility=="FINAL_EXTENSIBILITY")#*
+------*#| DDS_TK_FINAL_EXTENSIBILITY#*
+------*##elseif($node.extensibility=="MUTABLE_EXTENSIBILITY")#*
+------*#| DDS_TK_MUTABLE_EXTENSIBILITY#end,/* Kind */
+        DDS_BOOLEAN_FALSE, /* Ignored */
+        #if($node.defaultIndex)$node.defaultIndex#else -1#end, /*Ignored*/
+        (char *)"${node.FQName}", /* Name */
+        NULL, #if($node.constructKind=="struct")/* Ignored */ #else#*
+-------*#    /* Base class type code is assigned later */ #end
+     
+        0, /* Ignored */
+        0, /* Ignored */
+        NULL, /* Ignored */
+        $node.memberCount, /* Number of members */
+        ${node.nativeFQNameInModule}_g_tc_members, /* Members */
+        DDS_VM_NONE #if($node.constructKind=="struct") /* Ignored */ #else#*
+-------*#  /* Type Modifier */#end
+        
+    }}; /* Type code for ${node.nativeFQNameInModule}*/
+    
+#elseif($node.constructKind=="alias")
+ static DDS_TypeCode ${node.nativeFQNameInModule}_g_tc =
+    {{
+        DDS_TK_ALIAS, /* Kind*/
+        #if($node.firstMember.isPointer)DDS_BOOLEAN_TRUE#*
+------*##else DDS_BOOLEAN_FALSE#end,/* Is a pointer? */
+        -1, /* Ignored */
+        (char *)"${node.FQName}", /* Name */
+        NULL, /* Content type code is assigned later */
+        0, /* Ignored */
+        0, /* Ignored */
+        NULL, /* Ignored */
+        0, /* Ignored */
+        NULL, /* Ignored */
+        DDS_VM_NONE /* Ignored */
+    }}; /* Type code for  ${node.nativeFQNameInModule} */
+
+#end
+#end
+
+#macro(arraydimensionListWithCommaIfNeeded $index $dimensionList)
+#foreach ($d in $dimensionList)
+$d#if( $index <$dimensionList.size()), #end  
+#end
+#end

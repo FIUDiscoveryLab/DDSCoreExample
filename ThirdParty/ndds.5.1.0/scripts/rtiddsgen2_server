@@ -1,0 +1,244 @@
+#!/bin/sh
+
+# Script to run nddsgen tool
+
+filename=$0
+scriptDir=`dirname "$filename"`
+scriptDir="`(cd \"$scriptDir\" && pwd)`"
+nddsgenDir="${scriptDir}/.."
+libDir="${nddsgenDir}/lib"
+
+# JVM lib path
+declare JVM_LIB
+
+################################################################
+# SCRIPT maintenance for new platforms and utilities
+executableName="rtiddsgen2"
+sparcSol28Platforms=`ls -1 $libDir/ | grep sparcSol2.8 | grep -v jdk`
+i86Sol29Platforms=`ls -1 $libDir/ | grep i86Sol2.9 | grep -v jdk`
+sparcSol29Platforms=`ls -1 $libDir/ | grep sparcSol2.9 | grep -v jdk`
+sparcSol210Platforms=`ls -1 $libDir/ | grep sparcSol2.10 | grep -v jdk`
+
+i86Sol210Platforms=`ls -1 $libDir/ | grep i86Sol2.10 | grep -v jdk`
+x64Sol210Platforms=`ls -1 $libDir/ | grep x64Sol2.10 | grep -v jdk`
+sparc64Sol210Platforms=`ls -1 $libDir/ | grep sparc64Sol2.10 | grep -v jdk`
+
+i86Linux24Platforms=`ls -1 $libDir/ | grep i86Linux2.4 | grep -v jdk`
+x64Linux24Platforms=`ls -1 $libDir/ | grep x64Linux2.4 | grep -v jdk`
+i86Linux26Platforms=`ls -1 $libDir/ | grep i86Linux2.6 | grep -v jdk`
+x64Linux26Platforms=`ls -1 $libDir/ | grep x64Linux2.6 | grep -v jdk`
+ppcLinux26Platforms=`ls -1 $libDir/ | grep ppc7400Linux2.6 | grep -v jdk`
+
+i86Linux3xPlatforms=`ls -1 $libDir/ | grep i86Linux3 | grep -v jdk`
+x64Linux3xPlatforms=`ls -1 $libDir/ | grep x64Linux3 | grep -v jdk`
+
+i86SusePlatforms=`ls -1 $libDir/ | grep i86Suse | grep -v jdk`
+x64SusePlatforms=`ls -1 $libDir/ | grep x64Suse | grep -v jdk`
+
+p5AIXPlatforms=`ls -1 $libDir/ | grep "^p5AIX" | grep -v jdk`
+p564AIXPlatforms=`ls -1 $libDir/ | grep "^64p5AIX"` | grep -v jdk
+
+i86DarwinTigerPlatforms=`ls -1 $libDir/ | grep i86Darwin8.5`
+ppcDarwinTigerPlatforms=`ls -1 $libDir/ | grep ppcDarwin8.5`
+i86DarwinLeopardPlatforms=`ls -1 $libDir/ | grep i86Darwin9.0`
+ppcDarwinLeopardPlatforms=`ls -1 $libDir/ | grep ppcDarwin9.0`
+x64Darwin10Platforms=`ls -1 $libDir/ | grep x64Darwin10`
+
+platformName="unknown"
+
+# Initialize ${arch} to a dummy value so that JREHOME will be properly
+# initialized in the event that the OS is not recognized.
+arch="some_dummy_value_to_be_overridden_later"
+os=`uname -s`
+osver=`uname -r`
+
+case $os in
+SunOS*)
+    cpu=`uname -p`
+    if test "i386" = "$cpu"; then
+        arch="i86Solaris9"
+		JVM_LIB="lib/i386/client"
+    else
+	if test "5.9" = "$osver"; then
+	    arch="sparcSolaris9"
+	else
+	    arch="sparcSolaris"
+	fi
+		JVM_LIB="lib/sparc/client"
+    fi
+	
+	case $osver in
+	5.8*)
+		platformsToTry=$sparcSol28Platforms
+		;;
+	5.9*)
+		platformsToTry="$sparcSol29Platforms $sparcSol28Platforms"
+		;;
+	5.10*)
+		if test "$cpu" = "i386"; then
+			platformsToTry="$i86Sol210Platforms $x64Sol210Platforms"
+		fi
+		if test "$cpu" = "sparc"; then
+				platformsToTry="$sparcSol210Platforms $sparcSol29Platforms $sparcSol28Platforms $sparc64Sol210Platforms"
+	    fi
+	;;
+	esac
+    ;;
+	
+Linux*)
+    cpu=`uname -p`
+    if test "unknown" = "$cpu";
+    then
+        cpu=`uname -m`
+    fi
+    if test "ppc64" = "$cpu"; then
+        arch="ppc64Linux"
+		JVM_LIB="lib/ppc64/j9vm"
+    elif test "power7" = "$cpu"; then
+        arch="ppc64Linux"
+		JVM_LIB="lib/ppc64/j9vm"
+    elif test "ppc" = "$cpu"; then
+        arch="ppcLinux"
+		JVM_LIB="lib/ppc/j9vm"
+    elif test "armv6l" = "$cpu"; then
+        arch="armvfphLinux"
+		JVM_LIB="lib/arm/client"
+    else
+        if test "x86_64" = "$cpu"; then
+			if [ -d "${nddsgenDir}/jre/x64Linux" ]; then
+				arch="x64Linux"
+				JVM_LIB="lib/amd64/server"
+			else
+			    # Try using jre shipped 32-bit linux host
+				arch="i86Linux"
+				JVM_LIB="lib/i386/client"
+			fi
+        else
+            arch="i86Linux"
+			JVM_LIB="lib/i386/client"
+        fi
+        if [ -e "/etc/redhat-release" ]; then
+            osversion=`cat /etc/redhat-release`
+            case $osversion in 
+            *release\ 4*)
+	        arch="RHEL4_32"
+		JVM_LIB="lib/i386/client"
+                if test "x86_64" = "$cpu"; then
+			if [ -d "${nddsgenDir}/jre/RHEL4_64" ]; then
+				arch="RHEL4_64"
+				JVM_LIB="lib/amd64/server"
+			fi
+	        fi
+	        ;;
+            *)
+	        ;;
+            esac
+        fi
+    fi
+	
+    case $osver in
+	2.4*)
+		if test "$cpu" = "x86_64"; then
+			platformsToTry="$x64Linux24Platforms"
+		else
+			platformsToTry=$i86Linux24Platforms
+		fi;;
+	2.6* | 3.*)
+		if test "$cpu" = "x86_64"; then
+			platformsToTry="$x64Linux3xPlatforms $x64Linux26Platforms $x64SusePlatforms $i86Linux3xPlatforms $i86Linux26Platforms $i86SusePlatforms"
+		elif test "$cpu" = "ppc"; then
+			platformsToTry="$ppcLinux26Platforms"
+		elif test "$cpu" = "unknown"; then
+			cpu=`uname -m`
+			if test "$cpu" = "x86_64"; then
+				platformsToTry="$x64Linux3xPlatforms $x64Linux26Platforms"
+			else
+				platformsToTry="$i86Linux3xPlatforms $i86Linux26Platforms"
+			fi	
+		else
+			platformsToTry="$i86Linux3xPlatforms $i86Linux26Platforms $i86SusePlatforms"
+	    fi
+	;;
+	esac	
+	;;
+	
+Darwin*)
+    if test "10.0.2" = "$osver"; then
+	JREHOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
+    else
+	arch="darwin"
+    fi
+    processor=`uname -p`
+    case $osver in
+    8.*)
+      if test "$processor" = "powerpc"; then
+        platformsToTry="$ppcDarwinTigerPlatforms"
+      else
+        platformsToTry="$i86DarwinTigerPlatforms"
+      fi
+    ;;
+    9.*)
+      if test "$processor" = "powerpc"; then
+        platformsToTry="$ppcDarwinLeopardPlatforms"
+      else
+        platformsToTry="$i86DarwinLeopardPlatforms"
+      fi
+    ;;
+    10* | 11*)
+      platformsToTry="$x64Darwin10Platforms"
+    ;;
+    esac
+ 
+    ;;
+AIX*)
+    osversion=`uname -v`
+    if test "5" = "$osversion"; then
+        arch="aix5"
+	JVM_LIB="lib/ppc/j9vm"
+    else
+	arch="aix"
+	JVM_LIB="lib/ppc64/j9vm"
+    fi
+	
+	cpu=`uname -p`
+    if test "$cpu" = "powerpc"; then
+      platformsToTry="$p5AIXPlatforms $p564AIXPlatforms"
+    fi
+    ;;
+*)
+    # If we don't recognize the OS, fall back to JREHOME. It may still work.
+    echo "Warning: OS $os may not be supported. Be sure JREHOME is set."
+    ;;
+esac
+
+# Forced to use the include jre
+if [ x$NDDSJREHOME = x ]; then
+    if [ -d "${nddsgenDir}/jre/${arch}" ]; then
+        JREHOME="${nddsgenDir}/jre/${arch}"
+    else
+        if [ x$JREHOME = x ]; then
+	    echo "$filename: JREHOME not set."
+	    exit 1
+        fi
+    fi
+fi
+
+for platform in $platformsToTry
+do
+#   echo testing $libDir/$platform/$executableName
+   if [ -x $libDir/$platform/$executableName ]; then
+       platformName=$platform
+       break;
+   fi
+done
+
+if [ "$platformName" = "unknown" ]; then
+    echo "Warning: Could not find the executable for $executableName."
+    echo "         Please examine <NDDSHOME>/lib/<arch> to find the executable for $executableName"
+    echo "         and run this executable directly. If $executableName is not in your lib directory"
+    echo "         please contact support@rti.com."
+else
+	# Set library path to point to the JVM library
+    export LD_LIBRARY_PATH="${JREHOME}/${JVM_LIB}":"${libDir}/${platformName}":${LD_LIBRARY_PATH}
+    exec "${libDir}/${platformName}/${executableName}" -n_nddsresource "${nddsgenDir}/resource/rtiddsgen" -n_resolvelo -n_nddshome "$NDDSHOME" -n_serverport 14662 -n_servertimeout 20000 -n_classpath "${nddsgenDir}/class/rtiddsgen2.jar" "$@"
+fi

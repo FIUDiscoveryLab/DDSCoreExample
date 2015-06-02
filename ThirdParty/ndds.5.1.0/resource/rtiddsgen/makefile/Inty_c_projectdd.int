@@ -1,0 +1,14 @@
+Kernel
+	Filename			DynamicDownload
+EndKernel
+
+AddressSpace
+	Filename			%%IDLFileBaseName%%_%%ProjectName%%dd_as1
+	Language			C
+	Library				libINTEGRITY.so
+	Library				libc.so
+	Task Initial
+		StackLength		0xF000
+	EndTask
+EndAddressSpace
+

@@ -1,0 +1,9 @@
+c_cc_i86QNX6.3.0qcc_acpp = qcc -V3.3.1,gcc_ntox86 -Y_acpp -lang-c
+c_ld_i86QNX6.3.0qcc_acpp = qcc -V3.3.1,gcc_ntox86 -Y_acpp -lang-c
+c_ld_flags_i86QNX6.3.0qcc_acpp =
+cxx_cc_i86QNX6.3.0qcc_acpp = qcc -V3.3.1,gcc_ntox86 -Y_acpp -lang-c++
+cxx_ld_i86QNX6.3.0qcc_acpp = qcc -V3.3.1,gcc_ntox86 -Y_acpp -lang-c++
+cxx_ld_flags_i86QNX6.3.0qcc_acpp =
+syslibs_i86QNX6.3.0qcc_acpp = -lm -lsocket
+DEFINES_ARCH_SPECIFIC = -DRTI_QNX
+cxx_DEFINES_ARCH_SPECIFIC =

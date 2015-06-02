@@ -1,0 +1,16 @@
+##/* $Id: publisherSpecification.vm,v 1.5 2013/06/27 15:59:41 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a,28may13,ajm Adding constructMap node for the example type
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,14oct11,jmt created 
+##========================================================================*/*#
+procedure ${constructMap.nativeFQName}_Publisher;

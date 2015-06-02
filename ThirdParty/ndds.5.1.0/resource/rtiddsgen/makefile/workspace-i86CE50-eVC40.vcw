@@ -1,0 +1,41 @@
+Microsoft eMbedded Visual Tools Workspace File, Format Version 4.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "%%IDLFileBaseName%%_%%Project1Name%%"=".\%%IDLFileBaseName%%_%%Project1Name%%-i86CE50-eVC40.vcp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "%%IDLFileBaseName%%_%%Project2Name%%"=".\%%IDLFileBaseName%%_%%Project2Name%%-i86CE50-eVC40.vcp" - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+

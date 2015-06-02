@@ -1,0 +1,167 @@
+##/* $Id: typePluginKeyElementsMacro.vm,v 1.11 2013/03/08 18:44:06 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##10a,29oct13,ajm CODEGENII-143 and nddsgen1.0 fixes for CODEGEN-561 
+##2.0,12sep13,ajm CODEGENII-143 and CODEGEN-567 
+##           The TypePlugin get_size functions do not provide the right value for Mutable types
+##10a,26mar13,ajm Bug fixing
+##10a,25mar13,ajm Adding support for enums and inheritance 
+##10a,19mar13,ajm Adding support for typedefs and const  
+##10a,18mar13,ajm created 
+##
+##------------------------------------------------------------------
+##-----------------------------------------------------------------
+##               
+##             Macros for the TypePluginKeyElementsMacro in CPP/CLI
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+## Contains the macros related to the key members in the structure
+##---------------------------------------------------------------------
+##---------------------------------------------------------------------
+##******************************************************************************
+## Macro to serialize_key_max
+##******************************************************************************          
+        
+#macro (alignmentMaxSizeKey $node)
+#*--*##if($node.hasKey || $node.constructKind=="alias")
+#*----*##foreach($member in $node.memberFieldMapList)
+#*------*##if($member.isKey || $$node.constructKind=="alias")
+#*--------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##end
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY") && $node.constructKind!="union")
+        current_alignment += RTICdrStream_getExtendedParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end
+#*------*##alignmentMaxSizeMember($member "key" $node.currentAlignment)
+
+#*------*##end
+#*----*##end
+#*--*##else
+#*------*##if(!${node.hasKeyBaseType})         
+current_alignment +=get_serialized_sample_max_size(
+                           endpoint_data,false, encapsulation_id, current_alignment);
+#*--*##end
+
+#*--*##end
+#end
+
+##******************************************************************************
+## Macro to serializeKey
+##******************************************************************************    
+#macro(serializeKey $node)
+#set($serializeSuffix="_key")
+#*--*##if($node.hasKey || $node.constructKind=="alias")
+#*----*##foreach($member in $node.memberFieldMapList)
+#*------*##if($member.isKey || $node.constructKind=="alias")
+#*----------*##serializeMember($member $serializeSuffix $node)
+#*------*##end##memberiskey
+#*----*##end##foreach
+#*--*##else
+#*----*##if(!${node.hasKeyBaseType})    
+if (!serialize(
+    endpoint_data,
+    sample,
+    stream,
+    serialize_encapsulation,
+    encapsulation_id, 
+    serialize_key,
+    endpoint_plugin_qos)) {
+    return false;
+}
+#*----*##end##haskeyBaseType            
+#*--*##end##haskey
+#end 
+
+##******************************************************************************
+## Macro to deserializeKey
+##****************************************************************************** 
+#macro(deserializeKey $node)
+#set($deserializeSuffix="deserialize_key_sample")
+#*--*##if($node.hasKey || $node.constructKind=="alias")
+#*----*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+{
+    UInt32 memberId = 0;
+    UInt32 length = 0;
+    Boolean end = false;
+    
+#*--*##mutableTypeStartDesBlock()
+#*----*##end
+#*----*##foreach($member in $node.memberFieldMapList)
+#*-----*##if($member.isKey || $node.constructKind=="alias")
+#*-------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+            case $member.id:
+#*-------*##end    
+#*--------*##deserializeMember( $member $deserializeSuffix)
+#*-------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+            break;
+#*-------*##end   
+#*------*##end##memberiskey
+#*----*##end##foreach
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+           #mutableTypeEndDesBlock($node)
+}
+#*------*##end
+#*--*##else
+#*----*##if(!${node.hasKeyBaseType})   
+if (!deserialize_sample(
+    endpoint_data, sample, stream,
+    deserialize_encapsulation,
+    deserialize_key,
+    endpoint_plugin_qos)) {
+    return false;
+}
+#*----*##end             
+#*--*##end 
+#end           
+
+
+##******************************************************************************
+## Macro to deserialize_key and skip the rest)
+##******************************************************************************
+#macro(deserializeKeyAndSkip $node)
+#set($deserializeSuffix="serialized_sample_to_key")
+#*--*##if($node.hasKey || $node.hasKeyBaseType|| $node.constructKind=="alias")
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*--------*##mutableTypeStartDesBlock()
+#*------*##end
+#*----*##foreach($member in $node.memberFieldMapList)
+#*-------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+            case $member.id:
+#*-------*##end           
+#*------*##if($member.isKey || $node.constructKind=="alias")
+#*--------*##deserializeMember($member $deserializeSuffix)
+#*------*##else
+#*--------*##skipMember($member)#*----*#
+#*------*##end
+#*-------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+            break;
+#*-------*##end  
+#*----*##end
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##mutableTypeEndDesBlock($node)
+#*------*##end
+
+#*--*##else
+#*------*##if(!${node.hasKeyBaseType}) 
+if (!deserialize_sample(
+    endpoint_data,
+    sample,
+    stream,
+    deserialize_encapsulation,
+    deserialize_key,
+    endpoint_plugin_qos)) {
+    return false;
+}
+#*----*##end
+#*--*##end
+#end
+
+  

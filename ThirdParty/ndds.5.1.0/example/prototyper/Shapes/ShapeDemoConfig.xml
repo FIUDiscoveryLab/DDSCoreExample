@@ -1,0 +1,113 @@
+
+<!--
+RTI Data Distribution Service Deployment
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="../../../resource/qos_profiles_5.1.0/schema/rti_dds_profiles.xsd" 
+     version="5.1.0">
+         
+    <!-- Participant library -->
+    <participant_library name="ControlledParticipantLibrary">
+
+        <domain_participant name="ControlledShapePublisher" 
+                            domain_ref="MyDomainLibrary::ShapeDomain">
+
+            <publisher name="MyPublisher">
+                <data_writer name="MySquareWriter" topic_ref="Square">
+                    <datawriter_qos>
+                        <property>
+                            <value>
+                                <element>
+                                    <name>rti.prototyper.member:color</name>
+                                    <value>iterator?list=[Red]</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:x</name>
+                                    <value>linear?begin=0,end=100</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:y</name>
+                                    <value>linear?begin=0,end=100</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:shapesize</name>
+                                    <value>linear?begin=20,end=20</value>
+                                </element>
+                            </value>
+                        </property>
+                    </datawriter_qos>
+ 				</data_writer>
+                <data_writer name="MyCircleWriter" topic_ref="Circle">            
+                    <datawriter_qos>
+                        <property>
+                            <value>
+                               <element>
+                                    <name>rti.prototyper.member:color</name>
+                                    <value>iterator?list=[Orange]</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:x</name>
+                                    <value>linear?begin=0,end=250</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:y</name>
+                                    <value>linear?begin=150,end=200</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:shapesize</name>
+                                    <value>linear?begin=30,end=30</value>
+                                </element>
+                            </value>
+                        </property>
+                    </datawriter_qos>
+ 				</data_writer>
+            </publisher>
+        </domain_participant>
+        
+        <domain_participant name="ControlledShapeSubscriber" 
+                            domain_ref="MyDomainLibrary::ShapeDomain">                        
+                     
+            <subscriber name="MySubscriber">
+                <data_reader name="MySquareRdr"   topic_ref="Square"/>
+                <data_reader name="MyCircleRdr"   topic_ref="Circle"/>
+                <data_reader name="MyTriangleRdr" topic_ref="Triangle"/>
+            </subscriber>
+        </domain_participant>
+ 
+         <domain_participant name="ControlledShapePubSub" 
+                             domain_ref="MyDomainLibrary::ShapeDomain">                        
+
+            <publisher name="MyPublisher">
+                <data_writer name="MyTriangleWr" topic_ref="Triangle">
+                    <datawriter_qos>
+                        <property>
+                            <value>
+                                <element>
+                                    <name>rti.prototyper.member:color</name>
+                                    <value>iterator?list=[Green,Yellow]</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:x</name>
+                                    <value>linear?begin=100,end=200</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:y</name>
+                                    <value>linear?begin=0,end=250</value>
+                                </element>
+                                <element>
+                                    <name>rti.prototyper.member:shapesize</name>
+                                    <value>linear?begin=30,end=30</value>
+                                </element>
+                            </value>
+                        </property>
+                    </datawriter_qos>
+ 				</data_writer>
+            </publisher>
+                      
+            <subscriber name="MySubscriber">
+                <data_reader name="MyCircleRdr"  topic_ref="Circle"/>
+            </subscriber>
+        </domain_participant>
+   
+    </participant_library>
+</dds>

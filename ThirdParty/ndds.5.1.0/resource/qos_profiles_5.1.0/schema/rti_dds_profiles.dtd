@@ -1,0 +1,1366 @@
+<!-- 
+ (c) Copyright, Real-Time Innovations, $Date: 2013/09/24 00:58:46 $.
+ All rights reserved.
+ No duplications, whole or partial, manual or electronic, may be made
+ without express written permission.  Any such copies, or
+ revisions thereof, must display this notice unaltered.
+ This code contains trade secrets of Real-Time Innovations, Inc.
+
+Description
+DDS QoS Profiles DTD
+-->
+
+<!-- dds --> 
+<!ELEMENT dds (qos_library|types|type_library|domain_library|participant_library)+>
+<!ATTLIST dds xmlns:xsi CDATA #IMPLIED>
+<!ATTLIST dds xsi:noNamespaceSchemaLocation CDATA #IMPLIED>
+<!ATTLIST dds version CDATA "5.1.0">
+
+ 
+<!-- domain_library -->
+<!ELEMENT domain_library (domain)+>
+<!ATTLIST domain_library name CDATA #REQUIRED>
+
+<!-- domain -->
+<!ELEMENT domain (register_type| 
+				  topic| 
+				  domain_id| 
+				  participant_qos| 
+				  deserialize_mode| 
+				  type_config)*>
+<!ATTLIST domain name CDATA #REQUIRED>
+<!ATTLIST domain base_name CDATA #IMPLIED>
+<!ATTLIST domain domain_id CDATA #IMPLIED>
+
+<!-- register_type -->
+<!ELEMENT register_type (registered_name)?>
+<!ATTLIST register_type name CDATA #REQUIRED>
+<!ATTLIST register_type kind (builtin.string| 
+                                builtin.keyedString| 
+                                builtin.octets| 
+                                builtin.keyedOctets| 
+                                dynamicData| 
+                                userGenerated) #REQUIRED>
+<!ATTLIST register_type type_ref CDATA #IMPLIED>
+
+<!-- Topic -->
+<!ELEMENT topic (registered_name? | topic_qos?)>
+<!ATTLIST topic name CDATA #REQUIRED>
+<!ATTLIST topic register_type_ref CDATA #REQUIRED>
+
+<!-- registered_name-->
+<!ELEMENT registered_name (#PCDATA)>
+
+<!-- participant_library -->
+<!ELEMENT participant_library (domain_participant)+>
+<!ATTLIST participant_library name CDATA #REQUIRED>
+
+<!-- domain_participant -->
+<!ELEMENT domain_participant ((register_type* | 
+                        topic*), 
+                        (publisher* | 
+                        subscriber* | 
+                        data_writer* | 
+                        data_reader* | 
+                        participant_qos?))>
+<!ATTLIST domain_participant name CDATA #REQUIRED>
+<!ATTLIST domain_participant base_name CDATA #IMPLIED>
+<!ATTLIST domain_participant domain_ref CDATA #IMPLIED>
+<!ATTLIST domain_participant domain_id CDATA #IMPLIED>
+
+<!-- publisher -->
+<!ELEMENT publisher (data_writer* | publisher_qos?)>
+<!ATTLIST publisher name CDATA #REQUIRED>
+<!ATTLIST publisher multiplicity CDATA #IMPLIED>
+
+<!-- data_writer -->
+<!ELEMENT data_writer (datawriter_qos)?>
+<!ATTLIST data_writer name CDATA #REQUIRED>
+<!ATTLIST data_writer multiplicity CDATA #IMPLIED>
+<!ATTLIST data_writer topic_ref CDATA #REQUIRED>
+
+<!-- subscriber -->
+<!ELEMENT subscriber (data_reader* | subscriber_qos?)>
+<!ATTLIST subscriber name CDATA #REQUIRED>
+<!ATTLIST subscriber multiplicity CDATA #IMPLIED>
+
+<!-- data_reader -->
+<!ELEMENT data_reader (filter? | datareader_qos?)>
+<!ATTLIST data_reader name CDATA #REQUIRED>
+<!ATTLIST data_reader multiplicity CDATA #IMPLIED>
+<!ATTLIST data_reader topic_ref CDATA #REQUIRED>
+
+<!-- Filter -->
+<!ELEMENT filter (#PCDATA|expression|parameter_list)*>
+<!ATTLIST filter name CDATA #IMPLIED>
+<!ATTLIST filter kind (builtin.sql|builtin.stringMatch) #IMPLIED>
+
+<!-- expression-->
+<!ELEMENT expression (#PCDATA)>
+
+<!-- parameters-->
+<!ELEMENT parameter_list (param+)>
+<!ELEMENT param (#PCDATA)>
+
+
+<!-- qos_library --> 
+<!ELEMENT qos_library (participant_qos|
+                       participant_factory_qos|
+                       topic_qos| 
+                       publisher_qos| 
+                       subscriber_qos| 
+                       writer_qos| 
+                       reader_qos| 
+                       datawriter_qos| 
+                       datareader_qos| 
+                       qos_profile)*> 
+<!ATTLIST qos_library name CDATA #REQUIRED> 
+
+<!-- qos_profile --> 
+<!ELEMENT qos_profile (participant_qos| 
+                       participant_factory_qos|
+                       topic_qos| 
+                       publisher_qos| 
+                       subscriber_qos| 
+                       writer_qos| datawriter_qos|
+                       reader_qos| datareader_qos)*> 
+<!ATTLIST qos_profile name CDATA #REQUIRED> 
+<!ATTLIST qos_profile base_name CDATA #IMPLIED> 
+<!ATTLIST qos_profile is_default_qos CDATA #IMPLIED> 
+<!ATTLIST qos_profile is_default_participant_factory_profile CDATA #IMPLIED>
+
+<!-- participant_qos --> 
+<!ELEMENT participant_qos (user_data| 
+                   entity_factory| 
+                   wire_protocol| 
+                   transport_builtin| 
+                   default_unicast|
+                   multicast_mapping| 
+                   discovery| 
+                   resource_limits| 
+                   event| 
+                   receiver_pool| 
+                   database| 
+                   discovery_config| 
+                   property| 
+                   participant_name|
+                   type_support)*> 
+<!ATTLIST participant_qos name CDATA #IMPLIED> 
+<!ATTLIST participant_qos base_name CDATA #IMPLIED> 
+<!ATTLIST participant_qos base_qos_name CDATA #IMPLIED> 
+
+<!-- participant_factory_qos -->
+<!ELEMENT participant_factory_qos (logging|entity_factory)*>
+<!ATTLIST participant_factory_qos name CDATA #IMPLIED>
+<!ATTLIST participant_factory_qos base_name CDATA #IMPLIED>
+<!ATTLIST participant_factory_qos base_qos_name CDATA #IMPLIED>
+
+<!-- topic_qos --> 
+<!ELEMENT topic_qos (topic_data| 
+                     durability| 
+                     durability_service| 
+                     deadline| 
+                     latency_budget| 
+                     liveliness| 
+                     reliability| 
+                     destination_order| 
+                     history| 
+                     resource_limits| 
+                     transport_priority| 
+                     lifespan| 
+                     ownership)*> 
+<!ATTLIST topic_qos name CDATA #IMPLIED> 
+<!ATTLIST topic_qos base_name CDATA #IMPLIED> 
+<!ATTLIST topic_qos base_qos_name CDATA #IMPLIED> 
+<!ATTLIST topic_qos topic_filter CDATA #IMPLIED>
+
+<!-- publisher_qos --> 
+<!ELEMENT publisher_qos (presentation| 
+                        partition| 
+                        group_data| 
+                        entity_factory| 
+                        asynchronous_publisher| 
+                        exclusive_area|
+                        publisher_name)*> 
+<!ATTLIST publisher_qos name CDATA #IMPLIED> 
+<!ATTLIST publisher_qos base_name CDATA #IMPLIED> 
+<!ATTLIST publisher_qos base_qos_name CDATA #IMPLIED> 
+
+<!-- subscriber_qos --> 
+<!ELEMENT subscriber_qos (presentation| 
+                          partition| 
+                          group_data| 
+                          entity_factory| 
+                          exclusive_area|
+                          subscriber_name)*> 
+<!ATTLIST subscriber_qos name CDATA #IMPLIED> 
+<!ATTLIST subscriber_qos base_name CDATA #IMPLIED> 
+<!ATTLIST subscriber_qos base_qos_name CDATA #IMPLIED> 
+
+<!-- writer_qos --> 
+<!ELEMENT writer_qos (durability| 
+      		      durability_service| 
+      		      deadline| 
+      		      latency_budget| 
+      		      liveliness| 
+      		      reliability| 
+      		      destination_order| 
+      		      history| 
+      		      resource_limits| 
+      		      transport_priority| 
+      		      lifespan| 
+      		      user_data| 
+      		      ownership| 
+      		      ownership_strength| 
+      		      writer_data_lifecycle| 
+      		      writer_resource_limits| 
+      		      protocol| 
+      		      transport_selection| 
+      		      unicast| 
+      		      type_support| 
+      		      publish_mode| 
+      		      property|
+                  batch|
+                  multi_channel|
+                  availability|
+                  publication_name|
+                  encapsulation)*>
+<!ATTLIST writer_qos name CDATA #IMPLIED> 
+<!ATTLIST writer_qos base_name CDATA #IMPLIED> 
+<!ATTLIST writer_qos base_qos_name CDATA #IMPLIED> 
+<!ATTLIST writer_qos topic_filter CDATA #IMPLIED>
+
+<!-- datawriter_qos --> 
+<!ELEMENT datawriter_qos (durability| 
+      		      durability_service| 
+      		      deadline| 
+      		      latency_budget| 
+      		      liveliness| 
+      		      reliability| 
+      		      destination_order| 
+      		      history| 
+      		      resource_limits| 
+      		      transport_priority| 
+      		      lifespan| 
+      		      user_data| 
+      		      ownership| 
+      		      ownership_strength| 
+      		      writer_data_lifecycle| 
+      		      writer_resource_limits| 
+      		      protocol| 
+      		      transport_selection| 
+      		      unicast| 
+      		      type_support| 
+      		      publish_mode| 
+      		      property|
+                  batch|
+                  multi_channel|
+                  availability|
+                  publication_name|
+                  encapsulation)*>
+<!ATTLIST datawriter_qos name CDATA #IMPLIED> 
+<!ATTLIST datawriter_qos base_name CDATA #IMPLIED> 
+<!ATTLIST datawriter_qos base_qos_name CDATA #IMPLIED> 
+<!ATTLIST datawriter_qos topic_filter CDATA #IMPLIED>
+
+<!-- reader_qos --> 
+<!ELEMENT reader_qos (durability| 
+      		      deadline| 
+      		      latency_budget| 
+      		      liveliness| 
+      		      reliability| 
+      		      destination_order| 
+      		      history| 
+      		      resource_limits| 
+      		      user_data| 
+      		      ownership| 
+      		      time_based_filter| 
+      		      reader_data_lifecycle| 
+      		      reader_resource_limits| 
+      		      protocol| 
+      		      transport_selection| 
+      		      unicast| 
+      		      multicast| 
+      		      type_support| 
+      		      property|
+                  availability|
+                  subscription_name|
+                  encapsulation|
+                  type_consistency)*>
+<!ATTLIST reader_qos name CDATA #IMPLIED> 
+<!ATTLIST reader_qos base_name CDATA #IMPLIED> 
+<!ATTLIST reader_qos base_qos_name CDATA #IMPLIED> 
+<!ATTLIST reader_qos topic_filter CDATA #IMPLIED>
+
+<!-- datareader_qos --> 
+<!ELEMENT datareader_qos (durability| 
+      		      deadline| 
+      		      latency_budget| 
+      		      liveliness| 
+      		      reliability| 
+      		      destination_order| 
+      		      history| 
+      		      resource_limits| 
+      		      user_data| 
+      		      ownership| 
+      		      time_based_filter| 
+      		      reader_data_lifecycle| 
+      		      reader_resource_limits| 
+      		      protocol| 
+      		      transport_selection| 
+      		      unicast| 
+      		      multicast| 
+      		      type_support| 
+      		      property|
+                  availability|
+                  subscription_name|
+                  encapsulation|
+                  type_consistency)*>
+<!ATTLIST datareader_qos name CDATA #IMPLIED> 
+<!ATTLIST datareader_qos base_name CDATA #IMPLIED> 
+<!ATTLIST datareader_qos base_qos_name CDATA #IMPLIED> 
+<!ATTLIST datareader_qos topic_filter CDATA #IMPLIED>
+
+<!-- !!!!!Qos Policies!!!!! --> 
+ 
+<!-- user_data --> 
+<!ELEMENT user_data (value)> 
+ 
+<!-- entity_factory --> 
+<!ELEMENT entity_factory (autoenable_created_entities)> 
+ 
+<!-- wire_protocol --> 
+<!ELEMENT wire_protocol (participant_id|rtps_auto_id_kind|rtps_host_id|rtps_app_id|rtps_instance_id|rtps_well_known_ports|
+                                             rtps_reserved_port_mask)*> 
+ 
+<!-- transport_builtin --> 
+<!ELEMENT transport_builtin (mask)> 
+ 
+<!-- default_unicast --> 
+<!ELEMENT default_unicast (value)> 
+ 
+<!-- multicast_mapping --> 
+<!ELEMENT multicast_mapping (value)> 
+ 
+<!-- discovery --> 
+<!ELEMENT discovery (enabled_transports|initial_peers|
+                     multicast_receive_addresses|metatraffic_transport_priority| 
+ 		     accept_unknown_peers)*> 
+
+<!-- logging -->
+<!ELEMENT logging (verbosity|category|print_format|output_file)*>
+
+<!-- resource_limits --> 
+<!ELEMENT resource_limits (local_writer_allocation|local_reader_allocation| 
+      			   local_publisher_allocation|local_subscriber_allocation| 
+      			   local_topic_allocation|remote_writer_allocation| 
+      			   remote_reader_allocation|remote_participant_allocation| 
+      			   matching_writer_reader_pair_allocation|matching_reader_writer_pair_allocation| 
+      			   ignored_entity_allocation|content_filtered_topic_allocation| 
+      			   content_filter_allocation|read_condition_allocation|query_condition_allocation| 
+      			   outstanding_asynchronous_sample_allocation|flow_controller_allocation| 
+      			   local_writer_hash_buckets|local_reader_hash_buckets| 
+      			   local_publisher_hash_buckets|local_subscriber_hash_buckets| 
+      			   local_topic_hash_buckets|remote_writer_hash_buckets| 
+                   remote_reader_hash_buckets|remote_participant_hash_buckets| 
+      			   matching_writer_reader_pair_hash_buckets|matching_reader_writer_pair_hash_buckets| 
+      			   ignored_entity_hash_buckets|content_filtered_topic_hash_buckets| 
+      			   content_filter_hash_buckets|flow_controller_hash_buckets| 
+      			   max_gather_destinations|participant_user_data_max_length| 
+      			   topic_data_max_length|publisher_group_data_max_length| 
+      			   subscriber_group_data_max_length| 
+      			   writer_user_data_max_length|reader_user_data_max_length| 
+      			   max_partitions|max_partition_cumulative_characters| 
+                   max_endpoint_groups|max_endpoint_groups_cumulative_characters|
+      			   type_code_max_serialized_length|type_object_max_serialized_length|
+      			   serialized_type_object_dynamic_allocation_threshold|type_object_max_deserialized_length|
+      			   deserialized_type_object_dynamic_allocation_threshold|contentfilter_property_max_length|
+      			   participant_property_list_max_length|participant_property_string_max_length| 
+      			   writer_property_list_max_length|writer_property_string_max_length| 
+      			   reader_property_list_max_length|reader_property_string_max_length|
+                   max_samples|max_instances|max_samples_per_instance|initial_samples|
+                   max_endpoint_groups|max_endpoint_group_cumulative_characters|
+                   initial_instances|instance_hash_buckets|
+                   channel_seq_max_length|channel_filter_expression_max_length|
+                   type_signature_list_max_length|type_signature_string_max_length|
+                   transport_info_list_max_length)*> 
+                   
+
+<!-- event --> 
+<!ELEMENT event (thread|initial_count|max_count)*> 
+ 
+<!-- receiver_pool --> 
+<!ELEMENT receiver_pool (thread|buffer_size|buffer_alignment)*> 
+ 
+<!-- database --> 
+<!ELEMENT database (thread|shutdown_timeout|cleanup_period| 
+                    shutdown_cleanup_period|initial_records|max_skiplist_level| 
+		            max_weak_references|initial_weak_references)*> 
+ 
+<!-- discovery_config --> 
+<!ELEMENT discovery_config (participant_liveliness_lease_duration|participant_liveliness_assert_period| 
+                            remote_participant_purge_kind|max_liveliness_loss_detection_period| 
+      			    initial_participant_announcements|min_initial_participant_announcement_period|max_initial_participant_announcement_period| 
+      			    participant_reader_resource_limits|publication_reader| 
+      			    publication_reader_resource_limits|subscription_reader| 
+      			    subscription_reader_resource_limits|publication_writer| 
+      			    publication_writer_data_lifecycle|subscription_writer|
+      			    subscription_writer_data_lifecycle|builtin_discovery_plugins|
+      			    asynchronous_publisher|
+      			    default_domain_announcement_period|
+      			    ignore_default_domain_announcements|
+      			    participant_message_reader|participant_message_writer|
+      			    participant_proxy_reader|participant_state_writer|
+      			    publication_writer_publish_mode|subscription_writer_publish_mode)*> 
+      			    
+<!ELEMENT default_domain_announcement_period (sec|nanosec)*> 
+<!ELEMENT ignore_default_domain_announcements (#PCDATA)*> 
+
+<!-- property --> 
+<!ELEMENT property (value)*>
+<!ATTLIST property inherit CDATA #IMPLIED> 
+ 
+<!-- participant_name --> 
+<!ELEMENT participant_name (name|role_name)> 
+
+<!-- publisher_name --> 
+<!ELEMENT publisher_name (name|role_name)> 
+
+<!-- subscriber_name --> 
+<!ELEMENT subscriber_name (name|role_name)> 
+
+<!-- publication_name --> 
+<!ELEMENT publication_name (name|role_name)> 
+
+<!-- subscription_name --> 
+<!ELEMENT subscription_name (name|role_name)> 
+ 
+<!-- topic_data --> 
+<!ELEMENT topic_data (value)> 
+ 
+<!-- durability --> 
+<!ELEMENT durability (kind|direct_communication)*> 
+ 
+<!-- durability_service --> 
+<!ELEMENT durability_service (service_cleanup_delay|history_kind|history_depth| 
+                              max_samples|max_instances|max_samples_per_instance)*> 
+ 
+<!-- deadline --> 
+<!ELEMENT deadline (period)> 
+ 
+<!-- latency_budget --> 
+<!ELEMENT latency_budget (duration)> 
+ 
+<!-- liveliness --> 
+<!ELEMENT liveliness (kind|lease_duration)*> 
+
+<!-- reliability --> 
+<!ELEMENT reliability (kind|max_blocking_time|acknowledgment_kind)*> 
+ 
+<!-- destination_order --> 
+<!ELEMENT destination_order (kind|source_timestamp_tolerance)*> 
+ 
+<!-- history --> 
+<!ELEMENT history (kind|depth|refilter)*> 
+ 
+<!-- transport_priority --> 
+<!ELEMENT transport_priority (value)> 
+ 
+<!-- lifespan --> 
+<!ELEMENT lifespan (duration)> 
+ 
+<!-- ownership --> 
+<!ELEMENT ownership (kind)> 
+ 
+<!-- presentation --> 
+<!ELEMENT presentation (access_scope|coherent_access|ordered_access)*> 
+ 
+<!-- partition --> 
+<!ELEMENT partition (name)> 
+
+<!-- group_data --> 
+<!ELEMENT group_data (value)> 
+ 
+<!-- asynchronous_publisher --> 
+<!ELEMENT asynchronous_publisher (disable_asynchronous_write|disable_asynchronous_batch|thread|
+				 asynchronous_batch_thread|asynchronous_batch_blocking_kind)*> 
+ 
+<!-- exclusive_area --> 
+<!ELEMENT exclusive_area (use_shared_exclusive_area)> 
+ 
+<!-- ownership_strength --> 
+<!ELEMENT ownership_strength (value)> 
+ 
+<!-- writer_data_lifecycle --> 
+<!ELEMENT writer_data_lifecycle (autodispose_unregistered_instances|autopurge_unregistered_instances_delay)> 
+ 
+<!-- writer_resource_limits --> 
+<!ELEMENT writer_resource_limits (initial_concurrent_blocking_threads|max_concurrent_blocking_threads| 
+				  max_remote_reader_filters|initial_batches|max_batches|instance_replacement|replace_empty_instances|
+				  autoregister_instances|initial_virtual_writers|max_virtual_writers|max_remote_readers|
+				  max_app_ack_remote_readers)*> 
+ 
+<!-- protocol --> 
+<!ELEMENT protocol (virtual_guid|rtps_object_id|push_on_write|rtps_reliable_writer|rtps_reliable_reader|
+                    disable_positive_acks|disable_inline_keyhash|expects_inline_qos|initial_virtual_sequence_number|
+                    propagate_dispose_of_unregistered_instances|serialize_key_with_dispose)*>
+ 
+<!-- transport_selection --> 
+<!ELEMENT transport_selection (enabled_transports)> 
+
+<!-- unicast --> 
+<!ELEMENT unicast (value)> 
+ 
+<!-- type_support --> 
+<!ELEMENT type_support (plugin_data|cdr_padding_kind)*> 
+ 
+<!-- publish_mode --> 
+<!ELEMENT publish_mode (kind|flow_controller_name|priority)*> 
+ 
+<!-- publication_writer_publish_mode --> 
+<!ELEMENT publication_writer_publish_mode (kind|flow_controller_name|priority)*>
+
+<!-- subscription_writer_publish_mode --> 
+<!ELEMENT subscription_writer_publish_mode (kind|flow_controller_name|priority)*> 
+
+<!-- time_based_filter --> 
+<!ELEMENT time_based_filter (minimum_separation)> 
+ 
+<!-- reader_data_lifecycle --> 
+<!ELEMENT reader_data_lifecycle (autopurge_nowriter_samples_delay|autopurge_disposed_samples_delay)*> 
+ 
+<!-- reader_resource_limits --> 
+<!ELEMENT reader_resource_limits (max_remote_writers|max_remote_writers_per_instance| 
+      				  max_samples_per_remote_writer|max_infos|initial_remote_writers| 
+      				  initial_remote_writers_per_instance|initial_infos| 
+      				  initial_outstanding_reads|max_outstanding_reads|max_samples_per_read| 
+      				  disable_fragmentation_support|max_fragmented_samples| 
+      				  initial_fragmented_samples|max_fragmented_samples_per_remote_writer| 
+      				  max_fragments_per_sample|dynamically_allocate_fragmented_samples|
+                      max_total_instances|max_remote_virtual_writers_per_instance|
+                      initial_remote_virtual_writers_per_instance|
+                      initial_remote_virtual_writers|max_remote_virtual_writers|
+                      max_remote_writers_per_sample|max_query_condition_filters|
+                      max_app_ack_response_length)*>
+
+<!-- multicast --> 
+<!ELEMENT multicast (value|kind)> 
+
+<!-- batch -->
+<!ELEMENT batch (enable|max_data_bytes|max_meta_data_bytes|max_samples|
+                 max_flush_delay|source_timestamp_resolution|thread_safe_write)*>
+
+<!-- multi_channel -->
+<!ELEMENT multi_channel (channels|filter_name)*> 
+
+<!-- encapsulation -->
+<!ELEMENT encapsulation (value)> 
+
+<!-- encapsulation -->
+<!ELEMENT availability (enable_required_subscriptions|
+                        max_data_availability_waiting_time|
+                        max_endpoint_availability_waiting_time|
+                        required_matched_endpoint_groups)*> 
+
+<!ELEMENT enable_required_subscriptions (#PCDATA)>
+
+<!-- !!!!!Qos Policies Values!!!!! --> 
+ 
+<!ELEMENT value (#PCDATA|element)*> 
+ 
+<!ELEMENT autoenable_created_entities (#PCDATA)> 
+ 
+<!ELEMENT participant_id (#PCDATA)> 
+ 
+<!ELEMENT rtps_auto_id_kind (#PCDATA)>
+
+<!ELEMENT rtps_host_id (#PCDATA)> 
+ 
+<!ELEMENT rtps_app_id (#PCDATA)> 
+ 
+<!ELEMENT rtps_instance_id (#PCDATA)> 
+ 
+<!ELEMENT rtps_well_known_ports (port_base| 
+                                 domain_id_gain| 
+      				 participant_id_gain| 
+      				 builtin_multicast_port_offset| 
+      				 builtin_unicast_port_offset| 
+      				 user_multicast_port_offset| 
+      				 user_unicast_port_offset)*> 
+
+<!ELEMENT port_base (#PCDATA)> 
+ 
+<!ELEMENT domain_id_gain (#PCDATA)> 
+ 
+<!ELEMENT participant_id_gain (#PCDATA)> 
+ 
+<!ELEMENT builtin_multicast_port_offset (#PCDATA)> 
+ 
+<!ELEMENT builtin_unicast_port_offset (#PCDATA)> 
+ 
+<!ELEMENT user_multicast_port_offset (#PCDATA)> 
+ 
+<!ELEMENT user_unicast_port_offset (#PCDATA)> 
+
+<!ELEMENT rtps_reserved_port_mask (#PCDATA)>
+
+<!ELEMENT mask (#PCDATA)> 
+
+<!ELEMENT verbosity (#PCDATA)>
+
+<!ELEMENT category (#PCDATA)> 
+
+<!ELEMENT print_format (#PCDATA)>
+
+<!ELEMENT output_file (#PCDATA)> 
+
+<!ELEMENT element (#PCDATA|addresses|topic_expression|mapping_function|receive_port|transports|name|value|propagate|receive_address|
+                   domain_filter|type_config|path|file_name|type|register_top_level|max_string|
+                   max_sequence|type_name|registered_type_name|topics|priority|
+                   filter_expression|kind|port|address|multicast_settings|encapsulations|
+                   role_name|topic_name|quorum_count|property)*>
+ 
+<!ELEMENT receive_port (#PCDATA)> 
+ 
+<!ELEMENT transports (element)*> 
+
+<!ELEMENT addresses (#PCDATA)*> 
+
+<!ELEMENT topic_expression (#PCDATA)*> 
+
+<!ELEMENT mapping_function (dll|function_name)*>
+
+<!ELEMENT dll (#PCDATA)*> 
+
+<!ELEMENT function_name (#PCDATA)*> 
+
+<!ELEMENT encapsulations (element)*> 
+ 
+<!ELEMENT enabled_transports (element)*> 
+ 
+<!ELEMENT initial_peers (#PCDATA|element)*> 
+
+<!ELEMENT multicast_receive_addresses (element)*> 
+ 
+<!ELEMENT metatraffic_transport_priority (#PCDATA)> 
+ 
+<!ELEMENT accept_unknown_peers (#PCDATA)> 
+ 
+<!ELEMENT local_writer_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT initial_count (#PCDATA)> 
+ 
+<!ELEMENT max_count (#PCDATA)> 
+ 
+<!ELEMENT incremental_count (#PCDATA)> 
+ 
+<!ELEMENT local_reader_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT local_publisher_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT local_subscriber_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT local_topic_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT remote_writer_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT remote_reader_allocation (initial_count|max_count|incremental_count)*> 
+
+<!ELEMENT remote_participant_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT matching_writer_reader_pair_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT matching_reader_writer_pair_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT ignored_entity_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT content_filtered_topic_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT content_filter_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT read_condition_allocation (initial_count|max_count|incremental_count)*> 
+
+<!ELEMENT query_condition_allocation (initial_count|max_count|incremental_count)*>
+ 
+<!ELEMENT outstanding_asynchronous_sample_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT flow_controller_allocation (initial_count|max_count|incremental_count)*> 
+ 
+<!ELEMENT local_writer_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT local_reader_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT local_publisher_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT local_subscriber_hash_buckets (#PCDATA)> 
+
+<!ELEMENT local_topic_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT remote_writer_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT remote_reader_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT remote_participant_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT matching_writer_reader_pair_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT matching_reader_writer_pair_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT ignored_entity_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT content_filtered_topic_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT content_filter_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT flow_controller_hash_buckets (#PCDATA)> 
+ 
+<!ELEMENT max_gather_destinations (#PCDATA)> 
+ 
+<!ELEMENT participant_user_data_max_length (#PCDATA)> 
+ 
+<!ELEMENT topic_data_max_length (#PCDATA)> 
+
+<!ELEMENT publisher_group_data_max_length (#PCDATA)> 
+ 
+<!ELEMENT subscriber_group_data_max_length (#PCDATA)> 
+ 
+<!ELEMENT writer_user_data_max_length (#PCDATA)> 
+ 
+<!ELEMENT reader_user_data_max_length (#PCDATA)> 
+ 
+<!ELEMENT max_partitions (#PCDATA)> 
+ 
+<!ELEMENT max_partition_cumulative_characters (#PCDATA)> 
+ 
+<!ELEMENT type_code_max_serialized_length (#PCDATA)> 
+
+<!ELEMENT type_object_max_serialized_length (#PCDATA)> 
+
+<!ELEMENT serialized_type_object_dynamic_allocation_threshold (#PCDATA)> 
+
+<!ELEMENT type_object_max_deserialized_length (#PCDATA)> 
+
+<!ELEMENT deserialized_type_object_dynamic_allocation_threshold (#PCDATA)> 
+ 
+<!ELEMENT contentfilter_property_max_length (#PCDATA)> 
+ 
+<!ELEMENT participant_property_list_max_length (#PCDATA)> 
+ 
+<!ELEMENT participant_property_string_max_length (#PCDATA)> 
+ 
+<!ELEMENT writer_property_list_max_length (#PCDATA)> 
+ 
+<!ELEMENT writer_property_string_max_length (#PCDATA)> 
+ 
+<!ELEMENT reader_property_list_max_length (#PCDATA)> 
+
+<!ELEMENT reader_property_string_max_length (#PCDATA)> 
+
+<!ELEMENT type_signature_list_max_length (#PCDATA)>
+
+<!ELEMENT type_signature_string_max_length (#PCDATA)>
+
+<!ELEMENT asynchronous_batch_thread (mask|priority|stack_size|cpu_list|cpu_rotation)*>
+
+<!ELEMENT thread (mask|priority|stack_size|cpu_list|cpu_rotation)*> 
+ 
+<!ELEMENT priority (#PCDATA)> 
+ 
+<!ELEMENT stack_size (#PCDATA)> 
+
+<!ELEMENT cpu_list (element)*> 
+
+<!ELEMENT cpu_rotation (#PCDATA)> 
+ 
+<!ELEMENT buffer_size (#PCDATA)> 
+ 
+<!ELEMENT buffer_alignment (#PCDATA)> 
+ 
+<!ELEMENT shutdown_timeout (sec|nanosec)*> 
+ 
+<!ELEMENT sec (#PCDATA)> 
+ 
+<!ELEMENT nanosec (#PCDATA)> 
+ 
+<!ELEMENT cleanup_period (sec|nanosec)*> 
+ 
+<!ELEMENT shutdown_cleanup_period (sec|nanosec)*> 
+ 
+<!ELEMENT initial_records (#PCDATA)> 
+ 
+<!ELEMENT max_skiplist_level (#PCDATA)> 
+
+<!ELEMENT max_weak_references (#PCDATA)> 
+ 
+<!ELEMENT initial_weak_references (#PCDATA)> 
+ 
+<!ELEMENT participant_liveliness_lease_duration (sec|nanosec)*> 
+ 
+<!ELEMENT participant_liveliness_assert_period (sec|nanosec)*> 
+ 
+<!ELEMENT remote_participant_purge_kind (#PCDATA)> 
+ 
+<!ELEMENT max_liveliness_loss_detection_period (sec|nanosec)*> 
+
+<!ELEMENT initial_participant_announcements (#PCDATA)>
+
+<!ELEMENT min_initial_participant_announcement_period (sec|nanosec)*>
+
+<!ELEMENT max_initial_participant_announcement_period (sec|nanosec)*>
+ 
+<!ELEMENT participant_reader_resource_limits (initial_samples|max_samples| 
+                                         initial_infos|max_infos| 
+                                         initial_outstanding_reads|max_outstanding_reads| 
+                                         max_samples_per_read|disable_fragmentation_support|max_fragmented_samples|
+                                         initial_fragmented_samples|max_fragmented_samples_per_remote_writer|
+                                         max_fragments_per_sample|dynamically_allocate_fragmented_samples)*>
+ 
+<!ELEMENT initial_samples (#PCDATA)> 
+ 
+<!ELEMENT max_samples (#PCDATA)> 
+
+<!ELEMENT initial_infos (#PCDATA)> 
+ 
+<!ELEMENT max_infos (#PCDATA)> 
+ 
+<!ELEMENT initial_outstanding_reads (#PCDATA)> 
+ 
+<!ELEMENT max_outstanding_reads (#PCDATA)> 
+ 
+<!ELEMENT max_samples_per_read (#PCDATA)> 
+ 
+<!ELEMENT receive_window_size (#PCDATA)> 
+
+<!ELEMENT round_trip_time (sec|nanosec)*> 
+ 
+<!ELEMENT publication_reader (min_heartbeat_response_delay|max_heartbeat_response_delay| 
+			      heartbeat_suppression_duration|nack_period|receive_window_size|round_trip_time|
+                               app_ack_period|min_app_ack_response_keep_duration|samples_per_app_ack)*> 
+ 
+<!ELEMENT min_heartbeat_response_delay (sec|nanosec)*> 
+ 
+<!ELEMENT max_heartbeat_response_delay (sec|nanosec)*> 
+ 
+<!ELEMENT heartbeat_suppression_duration (sec|nanosec)*> 
+
+<!ELEMENT nack_period (sec|nanosec)*> 
+
+<!ELEMENT app_ack_period (sec|nanosec)*>
+
+<!ELEMENT min_app_ack_response_keep_duration (sec|nanosec)*>
+
+<!ELEMENT samples_per_app_ack (#PCDATA)>
+ 
+<!ELEMENT publication_reader_resource_limits (initial_samples|max_samples| 
+                                              initial_infos|max_infos| 
+                                              initial_outstanding_reads|max_outstanding_reads| 
+                                              max_samples_per_read|disable_fragmentation_support|max_fragmented_samples|
+                                              initial_fragmented_samples|max_fragmented_samples_per_remote_writer|
+                                              max_fragments_per_sample|dynamically_allocate_fragmented_samples)*>
+
+<!ELEMENT subscription_reader (min_heartbeat_response_delay|max_heartbeat_response_delay| 
+                               heartbeat_suppression_duration|nack_period|
+                               receive_window_size|round_trip_time|
+                               app_ack_period|min_app_ack_response_keep_duration|samples_per_app_ack)*> 
+ 
+<!ELEMENT subscription_reader_resource_limits (initial_samples|max_samples| 
+                                               initial_infos|max_infos| 
+                                               initial_outstanding_reads|max_outstanding_reads| 
+                                               max_samples_per_read|disable_fragmentation_support|max_fragmented_samples|
+                                               initial_fragmented_samples|max_fragmented_samples_per_remote_writer|
+                                               max_fragments_per_sample|dynamically_allocate_fragmented_samples)*>
+ 
+<!ELEMENT participant_message_reader (min_heartbeat_response_delay|max_heartbeat_response_delay| 
+                               heartbeat_suppression_duration|nack_period|
+                               receive_window_size|round_trip_time|
+                               app_ack_period|min_app_ack_response_keep_duration|samples_per_app_ack)*> 
+
+<!ELEMENT participant_proxy_reader (min_heartbeat_response_delay|max_heartbeat_response_delay|
+                              heartbeat_suppression_duration|nack_period|
+                              receive_window_size|round_trip_time|
+                              app_ack_period|min_app_ack_response_keep_duration|samples_per_app_ack)*>
+
+<!ELEMENT publication_writer (low_watermark|high_watermark|heartbeat_period| 
+                              fast_heartbeat_period|late_joiner_heartbeat_period| 
+                              virtual_heartbeat_period|samples_per_virtual_heartbeat|
+                              max_heartbeat_retries|inactivate_nonprogressing_readers|
+                              heartbeats_per_max_samples| 
+                              min_nack_response_delay|max_nack_response_delay|
+                              disable_positive_acks_min_sample_keep_duration|
+                              disable_positive_acks_max_sample_keep_duration|
+                              disable_positive_acks_sample_min_separation|
+                              disable_positive_acks_decrease_sample_keep_duration_factor|
+                              disable_positive_acks_increase_sample_keep_duration_factor|
+                              disable_positive_acks_enable_adaptive_sample_keep_duration|
+                              disable_positive_acks_enable_spin_wait|
+                              nack_suppression_duration|max_bytes_per_nack_response|
+                              min_send_window_size|max_send_window_size|
+                              send_window_update_period|send_window_increase_factor|
+                              send_window_decrease_factor|
+                              enable_multicast_periodic_heartbeat|multicast_resend_threshold)*> 
+
+<!ELEMENT publication_writer_data_lifecycle (autodispose_unregistered_instances|
+                                             autopurge_unregistered_instances_delay)*>
+ 
+<!ELEMENT low_watermark (#PCDATA)> 
+ 
+<!ELEMENT high_watermark (#PCDATA)> 
+ 
+<!ELEMENT heartbeat_period (sec|nanosec)*> 
+ 
+<!ELEMENT fast_heartbeat_period (sec|nanosec)*> 
+
+<!ELEMENT virtual_heartbeat_period (sec|nanosec)*>
+
+<!ELEMENT samples_per_virtual_heartbeat (#PCDATA)>
+ 
+<!ELEMENT late_joiner_heartbeat_period (sec|nanosec)*> 
+ 
+<!ELEMENT max_heartbeat_retries (#PCDATA)> 
+
+<!ELEMENT inactivate_nonprogressing_readers (#PCDATA)> 
+
+<!ELEMENT heartbeats_per_max_samples (#PCDATA)>
+
+<!ELEMENT disable_positive_acks_decrease_sample_keep_duration_factor (#PCDATA)>
+
+<!ELEMENT disable_positive_acks_increase_sample_keep_duration_factor (#PCDATA)>
+
+<!ELEMENT disable_positive_acks_enable_adaptive_sample_keep_duration (#PCDATA)>
+
+<!ELEMENT disable_positive_acks_enable_spin_wait (#PCDATA)>
+
+<!ELEMENT min_nack_response_delay (sec|nanosec)*> 
+ 
+<!ELEMENT max_nack_response_delay (sec|nanosec)*> 
+
+<!ELEMENT disable_positive_acks_min_sample_keep_duration (sec|nanosec)*> 
+
+<!ELEMENT disable_positive_acks_max_sample_keep_duration (sec|nanosec)*> 
+
+<!ELEMENT disable_positive_acks_sample_min_separation (sec|nanosec)*> 
+ 
+<!ELEMENT nack_suppression_duration (sec|nanosec)*> 
+ 
+<!ELEMENT max_bytes_per_nack_response (#PCDATA)> 
+
+<!ELEMENT send_window_update_period (sec|nanosec)*> 
+
+<!ELEMENT min_send_window_size (#PCDATA)> 
+
+<!ELEMENT max_send_window_size (#PCDATA)> 
+
+<!ELEMENT send_window_increase_factor (#PCDATA)> 
+
+<!ELEMENT send_window_decrease_factor (#PCDATA)>
+ 
+<!ELEMENT enable_multicast_periodic_heartbeat (#PCDATA)>
+
+<!ELEMENT multicast_resend_threshold (#PCDATA)>
+ 
+<!ELEMENT subscription_writer (low_watermark|high_watermark|heartbeat_period| 
+                              fast_heartbeat_period|late_joiner_heartbeat_period| 
+                              virtual_heartbeat_period|samples_per_virtual_heartbeat|
+                              max_heartbeat_retries|inactivate_nonprogressing_readers|
+                              heartbeats_per_max_samples| 
+                              min_nack_response_delay|max_nack_response_delay|
+                              disable_positive_acks_min_sample_keep_duration|
+                              disable_positive_acks_max_sample_keep_duration|
+                              disable_positive_acks_sample_min_separation|
+                              disable_positive_acks_decrease_sample_keep_duration_factor|
+                              disable_positive_acks_increase_sample_keep_duration_factor|
+                              disable_positive_acks_enable_adaptive_sample_keep_duration|
+                              disable_positive_acks_enable_spin_wait|
+                              nack_suppression_duration|max_bytes_per_nack_response|
+                              min_send_window_size|max_send_window_size|
+                              send_window_update_period|send_window_increase_factor|
+                              send_window_decrease_factor|
+                              enable_multicast_periodic_heartbeat|multicast_resend_threshold)*> 
+
+<!ELEMENT subscription_writer_data_lifecycle (autodispose_unregistered_instances|
+                                             autopurge_unregistered_instances_delay)*>
+ 
+<!ELEMENT participant_message_writer (low_watermark|high_watermark|heartbeat_period| 
+                              fast_heartbeat_period|late_joiner_heartbeat_period| 
+                              virtual_heartbeat_period|samples_per_virtual_heartbeat|
+                              max_heartbeat_retries|inactivate_nonprogressing_readers|
+                              heartbeats_per_max_samples| 
+                              min_nack_response_delay|max_nack_response_delay|
+                              disable_positive_acks_min_sample_keep_duration|
+                              disable_positive_acks_max_sample_keep_duration|
+                              disable_positive_acks_sample_min_separation|
+                              disable_positive_acks_decrease_sample_keep_duration_factor|
+                              disable_positive_acks_increase_sample_keep_duration_factor|
+                              disable_positive_acks_enable_adaptive_sample_keep_duration|
+                              disable_positive_acks_enable_spin_wait|
+                              nack_suppression_duration|max_bytes_per_nack_response|
+                              min_send_window_size|max_send_window_size|
+                              send_window_update_period|send_window_increase_factor|
+                              send_window_decrease_factor|
+                              enable_multicast_periodic_heartbeat|multicast_resend_threshold)*> 
+
+<!ELEMENT participant_state_writer (low_watermark|high_watermark|heartbeat_period|
+                             fast_heartbeat_period|late_joiner_heartbeat_period|
+                             virtual_heartbeat_period|samples_per_virtual_heartbeat|
+                             max_heartbeat_retries|inactivate_nonprogressing_readers|
+                             heartbeats_per_max_samples|
+                             min_nack_response_delay|max_nack_response_delay|
+                             disable_positive_acks_min_sample_keep_duration|
+                             disable_positive_acks_max_sample_keep_duration|
+                             disable_positive_acks_sample_min_separation|
+                             disable_positive_acks_enable_adaptive_sample_keep_duration|
+                             disable_positive_acks_enable_spin_wait|
+                             disable_positive_acks_decrease_sample_keep_duration_factor|
+                             disable_positive_acks_increase_sample_keep_duration_factor|
+                             nack_suppression_duration|max_bytes_per_nack_response|
+                             min_send_window_size|max_send_window_size|
+                             send_window_update_period|send_window_increase_factor|
+                             send_window_decrease_factor|
+                             enable_multicast_periodic_heartbeat|multicast_resend_threshold)*>
+ 
+<!ELEMENT builtin_discovery_plugins (#PCDATA)> 
+ 
+<!ELEMENT name (#PCDATA|element)*> 
+<!ATTLIST name xsi:nil CDATA #IMPLIED> 
+ 
+<!ELEMENT propagate (#PCDATA)> 
+ 
+<!ELEMENT kind (#PCDATA)> 
+ 
+<!ELEMENT direct_communication (#PCDATA)> 
+
+<!ELEMENT service_cleanup_delay (sec|nanosec)*> 
+ 
+<!ELEMENT history_kind (#PCDATA)> 
+ 
+<!ELEMENT history_depth (#PCDATA)> 
+ 
+<!ELEMENT max_instances (#PCDATA)> 
+ 
+<!ELEMENT max_samples_per_instance (#PCDATA)> 
+ 
+<!ELEMENT initial_instances (#PCDATA)> 
+
+<!ELEMENT instance_hash_buckets (#PCDATA)>
+ 
+<!ELEMENT period (sec|nanosec)*> 
+ 
+<!ELEMENT duration (sec|nanosec)*> 
+ 
+<!ELEMENT lease_duration (sec|nanosec)*> 
+ 
+<!ELEMENT max_blocking_time (sec|nanosec)*> 
+
+<!ELEMENT acknowledgment_kind (#PCDATA)>
+
+<!ELEMENT source_timestamp_tolerance (sec|nanosec)*> 
+ 
+<!ELEMENT depth (#PCDATA)> 
+ 
+<!ELEMENT refilter (#PCDATA)> 
+ 
+<!ELEMENT access_scope (#PCDATA)> 
+
+<!ELEMENT coherent_access (#PCDATA)> 
+ 
+<!ELEMENT ordered_access (#PCDATA)> 
+ 
+<!ELEMENT disable_asynchronous_write (#PCDATA)> 
+
+ <!ELEMENT disable_asynchronous_batch (#PCDATA)>
+
+<!ELEMENT asynchronous_batch_blocking_kind (#PCDATA)>
+
+<!ELEMENT use_shared_exclusive_area (#PCDATA)> 
+ 
+<!ELEMENT initial_concurrent_blocking_threads (#PCDATA)> 
+ 
+<!ELEMENT max_concurrent_blocking_threads (#PCDATA)> 
+ 
+<!ELEMENT max_remote_reader_filters (#PCDATA)> 
+
+<!ELEMENT initial_batches (#PCDATA)> 
+
+<!ELEMENT max_batches (#PCDATA)> 
+
+<!ELEMENT autoregister_instances (#PCDATA)> 
+
+<!ELEMENT initial_virtual_writers (#PCDATA)> 
+
+<!ELEMENT max_virtual_writers (#PCDATA)> 
+
+<!ELEMENT max_remote_readers (#PCDATA)> 
+
+<!ELEMENT max_app_ack_remote_readers (#PCDATA)> 
+
+<!ELEMENT instance_replacement (#PCDATA)> 
+
+<!ELEMENT replace_empty_instances (#PCDATA)> 
+ 
+<!ELEMENT virtual_guid (value)> 
+ 
+<!ELEMENT rtps_object_id (#PCDATA)> 
+ 
+<!ELEMENT push_on_write (#PCDATA)> 
+ 
+<!ELEMENT rtps_reliable_writer (low_watermark|high_watermark|heartbeat_period| 
+                                fast_heartbeat_period|late_joiner_heartbeat_period| 
+                                virtual_heartbeat_period|samples_per_virtual_heartbeat|
+                                max_heartbeat_retries|inactivate_nonprogressing_readers|
+                                heartbeats_per_max_samples| 
+                                min_nack_response_delay|max_nack_response_delay|
+                                disable_positive_acks_min_sample_keep_duration|
+                                disable_positive_acks_max_sample_keep_duration|
+                                disable_positive_acks_sample_min_separation|
+                                disable_positive_acks_decrease_sample_keep_duration_factor|
+                                disable_positive_acks_increase_sample_keep_duration_factor|
+                                disable_positive_acks_enable_adaptive_sample_keep_duration|
+                                disable_positive_acks_enable_spin_wait|
+                                nack_suppression_duration|max_bytes_per_nack_response|
+                                min_send_window_size|max_send_window_size|
+                                send_window_update_period|send_window_increase_factor|
+                                send_window_decrease_factor|
+                                enable_multicast_periodic_heartbeat|multicast_resend_threshold)*> 
+
+<!ELEMENT plugin_data (#PCDATA)> 
+
+<!ELEMENT cdr_padding_kind (#PCDATA)> 
+ 
+<!ELEMENT autodispose_unregistered_instances (#PCDATA)> 
+ 
+<!ELEMENT autopurge_unregistered_instances_delay (sec|nanosec)*> 
+ 
+<!ELEMENT flow_controller_name (#PCDATA)> 
+ 
+<!ELEMENT minimum_separation (sec|nanosec)*> 
+ 
+<!ELEMENT autopurge_nowriter_samples_delay (sec|nanosec)*> 
+ 
+<!ELEMENT autopurge_disposed_samples_delay (sec|nanosec)*> 
+ 
+<!ELEMENT max_remote_writers (#PCDATA)> 
+ 
+<!ELEMENT max_remote_writers_per_instance (#PCDATA)> 
+ 
+<!ELEMENT max_samples_per_remote_writer (#PCDATA)> 
+ 
+<!ELEMENT initial_remote_writers (#PCDATA)> 
+ 
+<!ELEMENT initial_remote_writers_per_instance (#PCDATA)> 
+ 
+<!ELEMENT disable_fragmentation_support (#PCDATA)> 
+ 
+<!ELEMENT max_fragmented_samples (#PCDATA)> 
+
+<!ELEMENT initial_fragmented_samples (#PCDATA)> 
+ 
+<!ELEMENT max_fragmented_samples_per_remote_writer (#PCDATA)> 
+ 
+<!ELEMENT max_fragments_per_sample (#PCDATA)> 
+ 
+<!ELEMENT dynamically_allocate_fragmented_samples (#PCDATA)> 
+
+<!ELEMENT max_total_instances (#PCDATA)> 
+ 
+<!ELEMENT rtps_reliable_reader (min_heartbeat_response_delay|max_heartbeat_response_delay| 
+                                heartbeat_suppression_duration|nack_period|
+                                receive_window_size|round_trip_time|
+                                app_ack_period|min_app_ack_response_keep_duration|samples_per_app_ack)>
+ 
+<!ELEMENT receive_address (#PCDATA)>
+
+<!ELEMENT disable_positive_acks (#PCDATA)>
+
+<!ELEMENT disable_inline_keyhash (#PCDATA)>
+
+<!ELEMENT serialize_key_with_dispose (#PCDATA)>
+
+<!ELEMENT expects_inline_qos (#PCDATA)>
+
+<!ELEMENT initial_virtual_sequence_number (high|low|value)>
+
+<!ELEMENT high (#PCDATA)>
+
+<!ELEMENT low (#PCDATA)>
+
+<!ELEMENT propagate_dispose_of_unregistered_instances (#PCDATA)>
+
+<!ELEMENT enable (#PCDATA)>
+
+<!ELEMENT max_data_bytes (#PCDATA)>
+
+<!ELEMENT max_meta_data_bytes (#PCDATA)>
+
+<!ELEMENT max_flush_delay (sec|nanosec)*>
+
+<!ELEMENT source_timestamp_resolution (sec|nanosec)*>
+
+<!ELEMENT thread_safe_write (#PCDATA)>
+
+<!ELEMENT channels (element)*>
+
+<!ELEMENT filter_name (#PCDATA)>
+
+<!ELEMENT filter_expression (#PCDATA)>
+
+<!ELEMENT multicast_settings (element)*>
+
+<!ELEMENT port (#PCDATA)>
+
+<!ELEMENT address (#PCDATA)>
+
+<!ELEMENT channel_seq_max_length (#PCDATA)>
+
+<!ELEMENT channel_filter_expression_max_length (#PCDATA)>
+
+<!ELEMENT max_remote_virtual_writers (#PCDATA)>
+
+<!ELEMENT initial_remote_virtual_writers (#PCDATA)>
+
+<!ELEMENT max_remote_virtual_writers_per_instance (#PCDATA)>
+
+<!ELEMENT initial_remote_virtual_writers_per_instance (#PCDATA)>
+
+<!ELEMENT max_remote_writers_per_sample (#PCDATA)>
+
+<!ELEMENT max_query_condition_filters (#PCDATA)>
+
+<!ELEMENT max_app_ack_response_length (#PCDATA)>
+
+<!ELEMENT max_data_availability_waiting_time (sec|nanosec)*>
+
+<!ELEMENT max_endpoint_availability_waiting_time (sec|nanosec)*>
+
+<!ELEMENT required_matched_endpoint_groups (element)*>
+
+<!ELEMENT role_name (#PCDATA)>
+<!ATTLIST role_name xsi:nil CDATA #IMPLIED> 
+
+<!ELEMENT topic_name (#PCDATA)>
+
+<!ELEMENT quorum_count (#PCDATA)>
+
+<!ELEMENT max_endpoint_groups (#PCDATA)>
+
+<!ELEMENT max_endpoint_group_cumulative_characters (#PCDATA)>
+
+<!ELEMENT transport_info_list_max_length (#PCDATA)>
+
+<!ELEMENT type_consistency (kind)>
+
+ 
+<!ELEMENT types (include|const|directive|struct|valuetype|
+		sparse_valuetype|union|typedef|module|enum|bitset|forward_dcl)+>
+<!ATTLIST types xmlns:xsi CDATA #IMPLIED>
+<!ATTLIST types xsi:noNamespaceSchemaLocation CDATA #IMPLIED>
+<!ATTLIST types name CDATA #IMPLIED>
+
+<!ELEMENT type_library (include|const|directive|struct|valuetype|
+                        sparse_valuetype|union|typedef|module|enum|bitset|forward_dcl)+>
+<!ATTLIST type_library xmlns:xsi CDATA #IMPLIED>
+<!ATTLIST type_library xsi:noNamespaceSchemaLocation CDATA #IMPLIED>
+<!ATTLIST type_library name CDATA #IMPLIED>
+
+<!ELEMENT module (include|const|directive|struct|union|
+      		typedef|module|enum|valuetype|sparse_valuetype|bitset|forward_dcl)+>
+<!ATTLIST module name NMTOKEN #REQUIRED>
+
+<!ELEMENT valuetype (const?|member|directive?)+>
+<!ATTLIST valuetype name NMTOKEN #REQUIRED>
+<!ATTLIST valuetype extensibility CDATA #IMPLIED>
+<!ATTLIST valuetype baseClass CDATA #IMPLIED>
+<!ATTLIST valuetype typeModifier (custom|none|truncatable|abstract) #IMPLIED>
+<!ATTLIST valuetype topLevel (true|false|1|0) "true">
+
+<!ELEMENT sparse_valuetype (const?|member|directive?)+>
+<!ATTLIST sparse_valuetype name NMTOKEN #REQUIRED>
+<!ATTLIST sparse_valuetype baseClass CDATA #IMPLIED>
+<!ATTLIST sparse_valuetype typeModifier (custom|none|truncatable|abstract) #IMPLIED>
+<!ATTLIST sparse_valuetype topLevel (true|false|1|0) "true">
+
+<!ELEMENT include EMPTY>
+<!ATTLIST include file CDATA #REQUIRED >
+
+<!ELEMENT struct (member|directive)+>
+<!ATTLIST struct name NMTOKEN #REQUIRED>
+<!ATTLIST struct baseType CDATA #IMPLIED>
+<!ATTLIST struct extensibility CDATA #IMPLIED>
+<!ATTLIST struct topLevel (true|false|1|0) "true">
+
+<!ELEMENT union (discriminator,(case|directive)+)>
+<!ATTLIST union name NMTOKEN #REQUIRED>
+<!ATTLIST union extensibility CDATA #IMPLIED>
+<!ATTLIST union topLevel (true|false|1|0) "true">
+
+<!ELEMENT const EMPTY>
+<!ATTLIST const name NMTOKEN #REQUIRED>
+<!ATTLIST const value CDATA #REQUIRED>
+<!ATTLIST const type (char|string|short|long|float|boolean|double|octet|wchar|wstring|longLong|unsignedLongLong|longShort|longDouble|unsignedShort|unsignedLong|nonBasic) #REQUIRED>
+<!ATTLIST const nonBasicTypeName CDATA #IMPLIED>
+<!ATTLIST const resolveName (true|false|1|0) #IMPLIED>
+
+<!ELEMENT discriminator EMPTY>
+<!ATTLIST discriminator type (char|string|short|long|float|boolean|double|octet|wchar|wstring|longLong|unsignedLongLong|longShort|longDouble|unsignedShort|unsignedLong|nonBasic) #REQUIRED>
+<!ATTLIST discriminator nonBasicTypeName CDATA #IMPLIED>
+
+<!ELEMENT case ((caseDiscriminator)+,member)>
+
+<!ELEMENT caseDiscriminator EMPTY>
+<!ATTLIST caseDiscriminator value CDATA #REQUIRED>
+
+<!ELEMENT member EMPTY>
+<!ATTLIST member name NMTOKEN #IMPLIED>
+<!ATTLIST member visibility (public|private) #IMPLIED>
+<!ATTLIST member pointer (true|false|1|0) #IMPLIED>
+<!ATTLIST member type (char|string|short|long|float|boolean|double|octet|wchar|wstring|longLong|unsignedLongLong|longShort|longDouble|unsignedShort|unsignedLong|nonBasic) #REQUIRED>
+<!ATTLIST member nonBasicTypeName CDATA #IMPLIED>
+<!ATTLIST member bitField CDATA #IMPLIED>
+<!ATTLIST member stringMaxLength CDATA #IMPLIED>
+<!ATTLIST member sequenceMaxLength CDATA #IMPLIED>
+<!ATTLIST member key (true|false|1|0) "false">
+<!ATTLIST member resolveName (true|false|1|0) #IMPLIED>
+<!ATTLIST member arrayDimensions CDATA #IMPLIED>
+<!ATTLIST member id CDATA #IMPLIED>
+<!ATTLIST member optional (true|false|1|0) #IMPLIED>
+<!ATTLIST member required (true|false|1|0) #IMPLIED>
+
+
+<!ELEMENT typedef EMPTY>
+<!ATTLIST typedef name NMTOKEN #REQUIRED>
+<!ATTLIST typedef type (char|string|short|long|float|boolean|double|octet|wchar|wstring|longLong|unsignedLongLong|longShort|longDouble|unsignedShort|unsignedLong|nonBasic) #REQUIRED>
+<!ATTLIST typedef nonBasicTypeName CDATA #IMPLIED>
+<!ATTLIST typedef stringMaxLength CDATA #IMPLIED>
+<!ATTLIST typedef sequenceMaxLength CDATA #IMPLIED>
+<!ATTLIST typedef pointer (true|false|1|0) #IMPLIED>
+<!ATTLIST typedef resolveName (true|false|1|0) #IMPLIED>
+<!ATTLIST typedef arrayDimensions CDATA #IMPLIED>
+<!ATTLIST typedef topLevel (true|false|1|0) "true">
+
+<!ELEMENT enum (enumerator)+>
+<!ATTLIST enum name NMTOKEN #REQUIRED>
+<!ATTLIST enum extensibility CDATA #IMPLIED>
+<!ATTLIST enum bitBound CDATA "32">
+
+<!ELEMENT enumerator EMPTY>
+<!ATTLIST enumerator name NMTOKEN #REQUIRED>
+<!ATTLIST enumerator value CDATA #IMPLIED>
+
+<!ELEMENT forward_dcl EMPTY>
+<!ATTLIST forward_dcl name NMTOKEN #REQUIRED>
+<!ATTLIST forward_dcl kind NMTOKEN #REQUIRED>
+
+<!ELEMENT directive (#PCDATA) >
+<!ATTLIST directive kind (copy|copyC|copyJava|copyJavaBegin|
+			  copyDeclaration|copyCDeclaration|copyJavaDeclaration|
+                          copyJavaDeclarationBegin|
+			  copyCppcli|copyCppcliDeclaration) 
+			#REQUIRED>
+
+<!ELEMENT bitset (flag)+>
+<!ATTLIST bitset name NMTOKEN #REQUIRED>
+<!ATTLIST bitset bitBound CDATA "32">
+
+<!ELEMENT flag EMPTY>
+<!ATTLIST flag name NMTOKEN #REQUIRED>
+<!ATTLIST flag value CDATA #REQUIRED>
+

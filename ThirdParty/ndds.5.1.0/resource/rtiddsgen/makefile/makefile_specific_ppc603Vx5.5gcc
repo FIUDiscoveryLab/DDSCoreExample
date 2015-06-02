@@ -1,0 +1,8 @@
+c_cc_ppc603Vx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ccppc
+c_ld_ppc603Vx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ldppc
+c_ld_flags_ppc603Vx5.5gcc =
+cxx_cc_ppc603Vx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ccppc
+cxx_ld_ppc603Vx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ldppc
+cxx_ld_flags_ppc603Vx5.5gcc =
+syslibs_ppc603Vx5.5gcc =
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -mcpu=603 -G 0 -fno-builtin -mlongcall -DCPU=PPC603

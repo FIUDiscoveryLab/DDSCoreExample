@@ -1,0 +1,25 @@
+<!--
+(c) Copyright, Real-Time Innovations, Inc. 2003-2010.  All rights reserved.
+-->
+
+<generationInfoCCL>
+    <typeInfoMap>
+        <type idlType="short" cclType="INTEGER" ccsType="IntegerColumnType"/>   
+        <type idlType="long" cclType="INTEGER" ccsType="IntegerColumnType"/>  
+        <type idlType="longlong" cclType="LONG" ccsType="LongColumnType"/> 
+        <type idlType="unsignedshort" cclType="INTEGER" ccsType="IntegerColumnType"/> 
+        <type idlType="unsignedlong" cclType="INTEGER" ccsType="IntegerColumnType"/> 
+        <type idlType="unsignedlonglong" cclType="LONG" ccsType="LongColumnType"/> 
+        <type idlType="float" cclType="FLOAT" ccsType="FloatColumnType"/> 
+        <type idlType="double" cclType="FLOAT" ccsType="FloatColumnType"/> 
+        <type idlType="longdouble" cclType="BLOB" ccsType="BlobColumnType"/> 
+        <type idlType="char" cclType="INTEGER" ccsType="IntegerColumnType"/> 
+        <type idlType="wchar" cclType="INTEGER" ccsType="IntegerColumnType"/> 
+        <type idlType="octet" cclType="INTEGER" ccsType="IntegerColumnType"/> 
+        <type idlType="boolean" cclType="BOOL" ccsType="BooleanColumnType"/>
+        <type idlType="enum" cclType="INTEGER" ccsType="IntegerColumnType"/>
+        <type idlType="string" cclType="STRING" ccsType="StringColumnType"/>
+        <type idlType="wstring" cclType="BLOB" ccsType="BlobColumnType"/>
+        <type idlType="blob" cclType="BLOB" ccsType="BlobColumnType"/>
+    </typeInfoMap>
+</generationInfoCCL>

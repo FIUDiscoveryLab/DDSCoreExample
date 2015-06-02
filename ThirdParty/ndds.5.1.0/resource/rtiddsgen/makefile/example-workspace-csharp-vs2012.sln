@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "%%IDLFileBaseName%%_%%Project1Name%%", "%%IDLFileBaseName%%_%%Project1Name%%-csharp.csproj", "{BF900500-D48B-438B-827F-01512AC24AB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "%%IDLFileBaseName%%_%%Project2Name%%", "%%IDLFileBaseName%%_%%Project2Name%%-csharp.csproj", "{8E420232-A373-41D3-AA50-83B62C0E2B2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release|Any CPU.Build.0 = Release|Any CPU
+
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

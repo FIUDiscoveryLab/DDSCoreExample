@@ -1,0 +1,8 @@
+c_cc_ppc604Vx5.4gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ccppc
+c_ld_ppc604Vx5.4gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ldppc
+c_ld_flags_ppc604Vx5.4gcc =
+cxx_cc_ppc604Vx5.4gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ccppc
+cxx_ld_ppc604Vx5.4gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ldppc
+cxx_ld_flags_ppc604Vx5.4gcc =
+syslibs_ppc604Vx5.4gcc =
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -mcpu=604 -mcpu=604 -mstrict-align -fstrength-reduce -fno-builtin -mlongcall -DCPU=PPC604

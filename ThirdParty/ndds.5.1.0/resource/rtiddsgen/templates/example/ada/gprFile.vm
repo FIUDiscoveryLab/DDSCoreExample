@@ -1,0 +1,130 @@
+##/* $Id: gprFile.vm,v 1.3 2013/06/10 15:56:59 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,14oct11,jmt created 
+##========================================================================*/*#
+
+with "dds.gpr";
+with "dds-libnddsada.gpr";
+with "dds-libnddsc.gpr";
+
+project ${envMap.idlFileName} is
+
+   for Source_Dirs use (".");
+   for Object_Dir use ".obj";
+   for Exec_Dir use "bin";
+   type Build_Type is
+      ("release", "debug");
+   Ndds_Build : Build_Type := external ("NDDS_BUILD");
+   type Library_Kind_Type is
+      ("static", "relocatable");
+   Library_Type : Library_Kind_Type := external ("LIBRARY_TYPE");
+   type Os_Type is
+      ("Linux", "Windows_NT");
+   Os : Os_Type := external ("OS");
+   for languages use ("Ada");
+
+   package Binder is
+      case Ndds_Build is
+         when "release" =>
+            for Default_Switches ("ada") use ("-E");
+
+         when "debug" =>
+            case Library_Type is
+               when "static" =>
+                  for Default_Switches ("ada") use ("-E", "-g");
+               when "relocatable" =>
+                  for Default_Switches ("ada") use ("-E");
+            end case;
+      end case;
+   end Binder;
+
+   package Compiler is
+      for Driver ("idl") use "";
+
+      case Ndds_Build is
+         when "release" =>
+            case Library_Type is
+               when "static" =>
+                  for Default_Switches ("ada") use Dds.Compiler'Default_Switches ("ada");
+                  for Default_Switches ("c") use Dds.Compiler'Default_Switches ("C");
+
+               when "relocatable" =>
+                  for Default_Switches ("ada") use Dds.Compiler'Default_Switches ("ada") & "-ldl";
+                  for Default_Switches ("c") use Dds.Compiler'Default_Switches ("C");
+            end case;
+
+         when "debug" =>
+            case Library_Type is
+               when "static" =>
+                  for Default_Switches ("ada") use Dds.Compiler'Default_Switches ("ada") & "-g";
+                  for Default_Switches ("c") use Dds.Compiler'Default_Switches ("C") & "-g";
+
+               when "relocatable" =>
+                  for Default_Switches ("ada") use Dds.Compiler'Default_Switches ("ada") & "-ldl -g";
+                  for Default_Switches ("c") use Dds.Compiler'Default_Switches ("C") & "-g";
+            end case;
+      end case;
+   end Compiler;
+
+   package Builder is
+      case Ndds_Build is
+         when "release" =>
+            case Library_Type is
+               when "static" =>
+                  for Default_Switches ("ada") use Dds.Builder'Default_Switches ("ada");
+
+               when "relocatable" =>
+                  for Default_Switches ("ada") use Dds.Builder'Default_Switches ("ada") & "-ldl";
+            end case;
+
+         when "debug" =>
+            case Library_Type is
+               when "static" =>
+                  for Default_Switches ("ada") use Dds.Builder'Default_Switches ("ada") & "-g";
+
+               when "relocatable" =>
+                  for Default_Switches ("ada") use Dds.Builder'Default_Switches ("ada") & "-ldl -g";
+            end case;
+      end case;
+   end Builder;
+
+   package Linker is
+      case Ndds_Build is
+         when "release" =>
+            case Library_Type is
+               when "static" =>
+
+               when "relocatable" =>
+                  for Default_Switches ("ada") use ("-ldl");
+            end case;
+
+         when "debug" =>
+            case Library_Type is
+               when "static" =>
+                  for Default_Switches ("c") use ("-g");
+                  for Default_Switches ("ada") use ("-g");
+
+               when "relocatable" =>
+                  for Default_Switches ("c") use ("-g");
+                  for Default_Switches ("ada") use ("-ldl", "-g");
+            end case;
+      end case;
+   end Linker;
+
+   package Naming is
+      for Specification_Suffix ("idl") use ".idl";
+   end Naming;
+
+end ${envMap.idlFileName};
+

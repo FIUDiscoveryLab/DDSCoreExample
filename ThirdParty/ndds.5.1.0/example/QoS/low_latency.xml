@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+ (c) Copyright, Real-Time Innovations, $Date: 2012/04/25 16:07:27 $.
+ All rights reserved.
+ Permission to modify and use for internal purposes granted.
+ This software is provided "as is", without warranty, express or implied.
+-->
+
+<!-- ===================================================================== -->
+<!-- Low Latency QoS Profile                                               -->
+<!-- ===================================================================== -->
+
+<!--
+Your XML editor may be able to provide validation and auto-completion services
+as you type. To enable these services, replace the opening tag of this
+document with the following, and update the absolute path as appropriate for
+your installation:
+  
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="/my_NDDSHOME_directory/resource/qos_profiles_myVersion/schema/rti_dds_qos_profiles.xsd">
+-->
+<dds>
+    <qos_library name="DefaultLibrary">
+        <!--
+        The Low Latency profile is an extension of the Reliable profile.
+        RTI Connext provides APIs for loading multiple QoS
+        profile files at once, and referring from one to the other, but for
+        the sake of simplicity, we duplicate the Reliable profile here. For
+        more information about how it works, see the file reliable.xml.
+        -->
+        <qos_profile name="Reliable">
+            <datareader_qos>
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+                <protocol>
+                    <rtps_reliable_reader>
+                        <min_heartbeat_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </min_heartbeat_response_delay>
+                        <max_heartbeat_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </max_heartbeat_response_delay>
+                    </rtps_reliable_reader>
+                </protocol>
+            </datareader_qos>
+            
+            <datawriter_qos>      
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                    <max_blocking_time>
+                        <sec>5</sec>
+                        <nanosec>0</nanosec>
+                    </max_blocking_time>
+                </reliability>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+                <resource_limits>
+                    <max_samples>32</max_samples>
+                </resource_limits>
+                <protocol>
+                    <rtps_reliable_writer>
+                        <low_watermark>5</low_watermark>
+                        <high_watermark>15</high_watermark>
+                        <heartbeat_period>
+                            <sec>0</sec>
+                            <nanosec>100000000</nanosec>
+                        </heartbeat_period>
+                        <fast_heartbeat_period>
+                            <sec>0</sec>
+                            <nanosec>10000000</nanosec>
+                        </fast_heartbeat_period>
+                        <late_joiner_heartbeat_period>
+                            <sec>0</sec>
+                            <nanosec>10000000</nanosec>
+                        </late_joiner_heartbeat_period>
+                        <max_heartbeat_retries>500</max_heartbeat_retries>
+                        <min_nack_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </min_nack_response_delay>
+                        <max_nack_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </max_nack_response_delay>
+                        <min_send_window_size>32</min_send_window_size>
+                        <max_send_window_size>32</max_send_window_size>
+                    </rtps_reliable_writer>
+                </protocol>
+            </datawriter_qos>
+        </qos_profile>
+
+        <!--
+        The Low Latency profile extends the Reliable profile to perform
+        additional, finer-grainer performance tuning specific to applications
+        that send continuously streaming data. The parameters specified here
+        add to and/or override the parameters specified in the Reliable
+        profile.
+        -->
+        <qos_profile name="LowLatency"
+                     base_name="Reliable"
+                     is_default_qos="true">
+            <datareader_qos>
+                <resource_limits>
+                    <max_samples>100</max_samples>
+                    <initial_samples>100</initial_samples>
+                </resource_limits>
+				
+                <protocol>
+                    <rtps_reliable_reader>
+                        <heartbeat_suppression_duration>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </heartbeat_suppression_duration>
+                    </rtps_reliable_reader>
+                </protocol>
+            </datareader_qos>
+
+            <datawriter_qos>
+                <resource_limits>
+                    <max_samples>LENGTH_UNLIMITED</max_samples>
+                    <initial_samples>100</initial_samples>
+                </resource_limits>
+
+                <protocol>
+                    <rtps_reliable_writer>
+                        <low_watermark>10</low_watermark>
+                        <high_watermark>100</high_watermark>
+
+                        <heartbeats_per_max_samples>
+                            1000
+                        </heartbeats_per_max_samples>
+                        <!--
+                        Speed up the heartbeat rate. See reliable.xml for
+                        more information about this parameter.
+                        -->            
+                        <heartbeat_period>
+                            <!-- 10 milliseconds: -->
+                            <sec>0</sec>
+                            <nanosec>10000000</nanosec>
+                        </heartbeat_period>
+                        <!--
+                        Speed up the heartbeat rate. See reliable.xml for
+                        more information about this parameter.
+                        -->
+                        <fast_heartbeat_period>
+                            <!-- 1 millisecond: -->
+                            <sec>0</sec>
+                            <nanosec>1000000</nanosec>
+                        </fast_heartbeat_period>
+                    </rtps_reliable_writer>
+                </protocol>
+            </datawriter_qos>
+
+            <participant_qos>
+                <!--
+                The participant name, if it is set, will be displayed in the
+                RTI Analyzer tool, making it easier for you to tell one
+                application from another when you're debugging.
+                -->
+                <participant_name>
+                    <name>RTI Example (Low Latency)</name>
+                </participant_name>
+            </participant_qos>
+        </qos_profile>
+    </qos_library>
+</dds>

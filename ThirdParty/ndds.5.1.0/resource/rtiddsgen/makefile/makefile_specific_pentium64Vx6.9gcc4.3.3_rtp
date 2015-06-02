@@ -1,0 +1,9 @@
+c_cc_pentium64Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccpentium
+c_ld_pentium64Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccpentium
+c_ld_flags_pentium64Vx6.9gcc4.3.3_rtp = -mrtp
+cxx_cc_pentium64Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++pentium
+cxx_ld_pentium64Vx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++pentium
+cxx_ld_flags_pentium64Vx6.9gcc4.3.3_rtp = -mrtp
+syslibs_pentium64Vx6.9gcc4.3.3_rtp = -L\$(WIND_BASE)/target/lib_lp64/usr/lib/pentium/CORE/common -lstdc++
+DEFINES_ARCH_SPECIFIC = -m64 -march=core2 -mcmodel=small -DRTI_VXWORKS -fno-builtin -DTOOL=gnu -DCPU=X86_64 -DRTI_64BIT -mrtp
+

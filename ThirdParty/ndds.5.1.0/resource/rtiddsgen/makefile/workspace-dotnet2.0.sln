@@ -1,0 +1,25 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "%%IDLFileBaseName%%_%%Project1Name%%", "%%IDLFileBaseName%%_%%Project1Name%%-dotnet2.0.vcproj", "{BF900500-D48B-438B-827F-01512AC24AB1}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "%%IDLFileBaseName%%_%%Project2Name%%", "%%IDLFileBaseName%%_%%Project2Name%%-dotnet2.0.vcproj", "{8E420232-A373-41D3-AA50-83B62C0E2B2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Debug|Win32.Build.0 = Debug|Win32
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Release|Win32.ActiveCfg = Release|Win32
+		{6724F987-FBB6-49B6-84EB-E22EF3F96447}.Release|Win32.Build.0 = Release|Win32
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Debug|Win32.Build.0 = Debug|Win32
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Release|Win32.ActiveCfg = Release|Win32
+		{B4C8166E-BEA0-4FF1-BCDA-AE0E0A87850F}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

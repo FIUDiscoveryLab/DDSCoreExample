@@ -1,0 +1,79 @@
+/* $Id: PersistenceServiceAdministration.idl,v 1.3 2013/10/10 23:26:03 alejandro Exp $
+
+ (c) Copyright, Real-Time Innovations, $Date: 2013/10/10 23:26:03 $.
+ All rights reserved.
+ No duplications, whole or partial, manual or electronic, may be made
+ without express written permission.  Any such copies, or
+ revisions thereof, must display this notice unaltered.
+ This code contains trade secrets of Real-Time Innovations, Inc.
+
+modification history
+------------ -------
+1.0p,21sep11,fcs Added STATUS
+1.0p,16aug11,fcs Created
+==============================================================================*/
+
+/*e \file
+  @brief IDL types used for remote administration
+*/
+
+module RTI {
+module PersistenceService {
+    module Administration {
+
+        /* Maximum length of an entity name
+        */
+        const long NAME_MAX_LENGTH = 255;
+
+        /* Maximum length of the response message
+        */
+        const long RESPONSE_MAX_LENGTH = 2048;
+
+        enum CommandKind {
+            RTI_PERSISTENCE_SERVICE_COMMAND_SHUTDOWN = 1,
+            RTI_PERSISTENCE_SERVICE_COMMAND_START,
+            RTI_PERSISTENCE_SERVICE_COMMAND_STOP,
+            RTI_PERSISTENCE_SERVICE_COMMAND_STATUS
+        };
+        
+        enum CommandResponseKind {
+            RTI_PERSISTENCE_SERVICE_COMMAND_RESPONSE_OK = 0,
+            RTI_PERSISTENCE_SERVICE_COMMAND_RESPONSE_ERROR
+        };
+        
+        union Command switch(CommandKind) {
+            case RTI_PERSISTENCE_SERVICE_COMMAND_START:
+                long dummy1;
+            case RTI_PERSISTENCE_SERVICE_COMMAND_STOP:
+                long dummy2;
+            case RTI_PERSISTENCE_SERVICE_COMMAND_SHUTDOWN:
+                long dummy3;
+            case RTI_PERSISTENCE_SERVICE_COMMAND_STATUS:
+                long dummy4;
+        }; //@top-level false
+           //@Extensibility MUTABLE_EXTENSIBILITY
+
+        struct CommandId {
+            long host;
+            long app;
+            long invocation;
+        }; //@top-level false
+           //@Extensibility FINAL_EXTENSIBILITY
+        
+        struct CommandRequest {
+            CommandId id;
+            string<NAME_MAX_LENGTH> target_ps;
+            Command command;
+        }; //@top-level true
+           //@Extensibility MUTABLE_EXTENSIBILITY
+
+        struct CommandResponse {
+            CommandId id;
+            CommandResponseKind kind;
+            string <RESPONSE_MAX_LENGTH> message;
+        }; //@top-level true
+           //@Extensibility EXTENSIBLE_EXTENSIBILITY
+    };
+ };
+};
+

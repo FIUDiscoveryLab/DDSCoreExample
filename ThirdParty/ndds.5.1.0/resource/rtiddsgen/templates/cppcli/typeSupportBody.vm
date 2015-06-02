@@ -1,0 +1,154 @@
+##/* $Id: typeSupportBody.vm,v 1.6 2013/01/31 02:37:53 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,18mar13,ajm created 
+##
+##----------------------------------------------------------------
+##-----------------------------------------------------------------
+##               
+##             Template for the typeSupport C file
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+##---------------------------------------------------------------------
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+
+
+${envMap.POUND_CHAR}include "${envMap.idlFileName}Support.h"
+${envMap.POUND_CHAR}include "${envMap.idlFileName}Plugin.h"
+
+
+using namespace System;
+using namespace DDS;
+ 
+ 
+#foreach($node in $constructMapList)
+#*--*##if($node.constructKind=="directive") ##if it is a directive we print its value
+#*----*##if($node.directiveKind=="copy-c"||$node.directiveKind=="copy") ##we avoid to copy the declaration directives
+$node.value
+#*----*##end
+#*--*##elseif($node.constructKind=="module") ##if the module node is here is because its for c++ and namespace option
+namespace $node.name {
+#*--*##elseif($node.constructKind=="moduleClose") ##if the module node is here is because its for c++ and namespace option
+} /* namespace $node.name  */
+#*--*##elseif($node.constructKind=="struct" || $node.constructKind=="valueType" || $node.constructKind=="union")
+#*----*##if($node.topLevel!="false")
+    
+/* ========================================================================= */
+
+// ---------------------------------------------------------------------------
+// ${node.nativeFQNameInModule}DataWriter
+// ---------------------------------------------------------------------------
+
+${node.nativeFQNameInModule}DataWriter::${node.nativeFQNameInModule}DataWriter(
+        System::IntPtr impl) : DDS::TypedDataWriter<${node.nativeFQNameInModule}^>(impl) {
+    // empty
+}
+
+
+// ---------------------------------------------------------------------------
+// ${node.nativeFQNameInModule}DataReader
+// ---------------------------------------------------------------------------
+
+${node.nativeFQNameInModule}DataReader::${node.nativeFQNameInModule}DataReader(
+        System::IntPtr impl) : DDS::TypedDataReader<${node.nativeFQNameInModule}^>(impl) {
+    // empty
+}
+
+
+// ---------------------------------------------------------------------------
+// ${node.nativeFQNameInModule}TypeSupport
+// ---------------------------------------------------------------------------
+
+${node.nativeFQNameInModule}TypeSupport::${node.nativeFQNameInModule}TypeSupport()
+        : DDS::TypedTypeSupport<${node.nativeFQNameInModule}^>(
+            ${node.nativeFQNameInModule}Plugin::get_instance()) {
+
+    _type_plugin = ${node.nativeFQNameInModule}Plugin::get_instance();
+}
+
+void ${node.nativeFQNameInModule}TypeSupport::register_type(
+        DDS::DomainParticipant^ participant,
+        System::String^ type_name) {
+
+    get_instance()->register_type_untyped(participant, type_name);
+}
+
+void ${node.nativeFQNameInModule}TypeSupport::unregister_type(
+        DDS::DomainParticipant^ participant,
+        System::String^ type_name) {
+
+    get_instance()->unregister_type_untyped(participant, type_name);
+}
+
+${node.nativeFQNameInModule}^ ${node.nativeFQNameInModule}TypeSupport::create_data() {
+    return gcnew ${node.nativeFQNameInModule}();
+}
+
+${node.nativeFQNameInModule}^ ${node.nativeFQNameInModule}TypeSupport::create_data_untyped() {
+    return create_data();
+}
+
+void ${node.nativeFQNameInModule}TypeSupport::delete_data(
+        ${node.nativeFQNameInModule}^ a_data) {
+    /* If the generated type does not implement IDisposable (the default),
+     * the following will no a no-op.
+     */
+    delete a_data;
+}
+
+void ${node.nativeFQNameInModule}TypeSupport::print_data(${node.nativeFQNameInModule}^ a_data) {
+     get_instance()->_type_plugin->print_data(a_data, nullptr, 0);
+}
+
+void ${node.nativeFQNameInModule}TypeSupport::copy_data(
+        ${node.nativeFQNameInModule}^ dst, ${node.nativeFQNameInModule}^ src) {
+
+    get_instance()->copy_data_untyped(dst, src);
+}
+
+System::String^ ${node.nativeFQNameInModule}TypeSupport::get_type_name() {
+    return TYPENAME;
+}
+
+System::String^ ${node.nativeFQNameInModule}TypeSupport::get_type_name_untyped() {
+    return TYPENAME;
+}
+
+DDS::DataReader^ ${node.nativeFQNameInModule}TypeSupport::create_datareaderI(
+        System::IntPtr impl) {
+
+    return gcnew ${node.nativeFQNameInModule}DataReader(impl);
+}
+
+DDS::DataWriter^ ${node.nativeFQNameInModule}TypeSupport::create_datawriterI(
+        System::IntPtr impl) {
+
+    return gcnew ${node.nativeFQNameInModule}DataWriter(impl);
+}
+
+${node.nativeFQNameInModule}TypeSupport^
+${node.nativeFQNameInModule}TypeSupport::get_instance() {
+    if (_singleton == nullptr) {
+        _singleton = gcnew ${node.nativeFQNameInModule}TypeSupport();
+    }
+    return _singleton;
+}
+#*----*##end
+#*--*##end
+#end    

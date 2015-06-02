@@ -1,0 +1,8 @@
+c_cc_ppc604VxT2.2.2gcc3.3.2_v6 = \$(WIND_BASE)/../gnu/3.3.2-vxworks653/x86-win32/bin/ccppc
+c_ld_ppc604VxT2.2.2gcc3.3.2_v6 = \$(WIND_BASE)/../gnu/3.3.2-vxworks653/x86-win32/bin/ldppc
+c_ld_flags_ppc604VxT2.2.2gcc3.3.2_v6 =
+cxx_cc_ppc604VxT2.2.2gcc3.3.2_v6 = \$(WIND_BASE)/../gnu/3.3.2-vxworks653/x86-win32/bin/ccppc
+cxx_ld_ppc604VxT2.2.2gcc3.3.2_v6 = \$(WIND_BASE)/../gnu/3.3.2-vxworks653/x86-win32/bin/ldppc
+cxx_ld_flags_ppc604VxT2.2.2gcc3.3.2_v6 =
+syslibs_ppc604VxT2.2.2gcc3.3.2_v6 =
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -mcpu=604 -G 0 -fno-builtin -mlongcall -DCPU=PPC604 -DVTHREADS

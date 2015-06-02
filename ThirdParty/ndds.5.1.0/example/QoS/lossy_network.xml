@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+Description
+An RTI Connext QoS Profile that for lossy networks.
+Lossy network is a profile that is more suitable for all the 
+situations where delays and reliability of the network are very poor.
+
+Data writer:
+  - The writer cache size is chosen not to exceed the bandwidth limitation
+    in case the writer needs resend the entire queue of samples because of
+    packet loss.
+  - The heartbeat periods are reduced to avoid flooding the network.
+  - Batch and flow control to use the network efficiently.
+  - max_bytes_per_nack_response is set to a small value to make sure we do not
+    exceed bandwidth limitations.
+
+Data reader:
+  - protocol: respond more aggressively to heartbeats with positive or
+              negative acknowledgements to speed up repairs of lost packets
+
+-->
+
+<!-- ================================================================= -->
+<!-- Lossy Network QoS Profile                                         -->
+<!-- ================================================================= -->
+
+<!--
+Your XML editor may be able to provide validation and auto-completion services
+as you type. To enable these services, replace the opening tag of this
+document with the following, and update the absolute path as appropriate for
+your installation:
+  
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="/my_NDDSHOME_directory/resource/qos_profiles_myVersion/schema/rti_dds_qos_profiles.xsd">
+-->
+<dds>
+    <qos_library name="DefaultLibrary">
+        <!--
+        The LossyNetwork profile is an extension of the Reliable profile.
+        RTI Connext provides APIs for loading multiple QoS
+        profile files at once, and referring from one to the other, but for
+        the sake of simplicity, we duplicate the Reliable profile here. For
+        more information about how it works, see the file reliable.xml.
+        -->
+        <qos_profile name="Reliable">
+            <datareader_qos>
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+                <protocol>
+                    <rtps_reliable_reader>
+                        <min_heartbeat_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </min_heartbeat_response_delay>
+                        <max_heartbeat_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </max_heartbeat_response_delay>
+                    </rtps_reliable_reader>
+                </protocol>
+            </datareader_qos>
+            
+            <datawriter_qos>      
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                    <max_blocking_time>
+                        <sec>5</sec>
+                        <nanosec>0</nanosec>
+                    </max_blocking_time>
+                </reliability>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                </history>
+                <resource_limits>
+                    <max_samples>32</max_samples>
+                </resource_limits>
+                <protocol>
+                    <rtps_reliable_writer>
+                        <low_watermark>5</low_watermark>
+                        <high_watermark>15</high_watermark>
+                        <heartbeat_period>
+                            <sec>0</sec>
+                            <nanosec>100000000</nanosec>
+                        </heartbeat_period>
+                        <fast_heartbeat_period>
+                            <sec>0</sec>
+                            <nanosec>10000000</nanosec>
+                        </fast_heartbeat_period>
+                        <late_joiner_heartbeat_period>
+                            <sec>0</sec>
+                            <nanosec>10000000</nanosec>
+                        </late_joiner_heartbeat_period>
+                        <max_heartbeat_retries>500</max_heartbeat_retries>
+                        <min_nack_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </min_nack_response_delay>
+                        <max_nack_response_delay>
+                            <sec>0</sec>
+                            <nanosec>0</nanosec>
+                        </max_nack_response_delay>
+                        <min_send_window_size>32</min_send_window_size>
+                        <max_send_window_size>32</max_send_window_size>
+                    </rtps_reliable_writer>
+                </protocol>
+            </datawriter_qos>
+        </qos_profile>
+
+        <!--
+        The LossyNetwork profile extends the Reliable profile to perform
+        additional, finer-grainer performance tuning specific to applications
+        that send continuously streaming data. The parameters specified here
+        add to and/or override the parameters specified in the Reliable
+        profile.
+        -->
+        <qos_profile name="LossyNetwork"
+                     base_name="Reliable"
+                     is_default_qos="true">
+            <datawriter_qos>
+                <reliability>
+                    <!--
+                    Set the maximum writer blocking time to a relatively large
+                    value because the link is assumed to have high latency.
+                    If the link is assumed to have a worst-case round-trip
+                    latency of 1 second, 10 seconds is a reasonable
+                    starting point.
+                    -->
+                    <max_blocking_time>
+                        <sec>10</sec>
+                        <nanosec>0</nanosec>
+                    </max_blocking_time>
+                </reliability>
+
+                <!--
+                The writer cache size is chosen not to exceed the bandwidth
+                limitation in case the writer needs resend the entire cache
+                of samples because of packet loss. If the worst-case round-
+                trip latency is 1 s, and the throughput is 256 Kb/s, and
+                we're sending data in 1400 B chunks, then we can't tolerate
+                a cache much larger than 20 samples.
+                -->
+                <resource_limits>
+                    <max_samples>20</max_samples>
+                    <initial_samples>20</initial_samples>
+                </resource_limits>
+                <writer_resource_limits>
+                    <!--
+                    When batching is enabled, this parameter - and not
+                    max_samples - is used to configure the piggyback
+                    heartbeat behavior.
+                    -->
+                    <max_batches>20</max_batches>
+                </writer_resource_limits>
+
+                <protocol>
+                    <rtps_reliable_writer>
+                        <!--
+                        Governs how often heartbeats are "piggybacked" on
+                        data samples. We want to send a heartbeat with every
+                        sample.
+                        -->
+                        <heartbeats_per_max_samples>
+                            20
+                        </heartbeats_per_max_samples>
+
+                        <!--
+                        There's no point in sending heartbeats faster than
+                        once per round-trip latency; we'd just be wasting
+                        bandwidth.
+
+                        At the same time, we don't want to depend entirely on
+                        piggybacked heartbeats, because if the writer blocks
+                        and its entire cache contents (or their ACKs) were
+                        lost, we don't want to lock up the writer.
+
+                        Heartbeating once every 1-2 seconds means we won't
+                        spend much bandwidth on heartbeats, but at the same
+                        time, we'll have several chance to get data through
+                        before the max_blocking_time expires.
+
+                        See reliable.xml for more information about these
+                        parameters.
+                        -->
+                        <heartbeat_period>
+                            <sec>2</sec>
+                            <nanosec>0</nanosec>
+                        </heartbeat_period>
+                        <fast_heartbeat_period>
+                            <sec>1</sec>
+                            <nanosec>0</nanosec>
+                        </fast_heartbeat_period>
+                        <late_joiner_heartbeat_period>
+                            <sec>1</sec>
+                            <nanosec>0</nanosec>
+                        </late_joiner_heartbeat_period>
+
+                        <!--
+                        The delay that's of concern here is the network
+                        latency. If there's substantial data loss, or the
+                        link temporarily goes down, you don't want to
+                        erroneously deactivate the reader, because the
+                        writer's cache is likely almost full almost all the
+                        time: if the reader comes back, it will lose a whole
+                        cache's-worth of samples or more.
+
+                        You could set max_heartbeat_retries to
+                        LENGTH_UNLIMITED to prevent the reader from ever
+                        being deactivated, but then you're throwing away a
+                        fault tolerance tool that can be very valuable if the
+                        reader really did go away.
+
+                        If we're sending periodic heartbeats once every
+                        second or two, a max_heartbeat_retries setting of 20
+                        leaves enough time for a write() to time out, be
+                        reattempted, and time out again. If the reader still
+                        isn't back, we'll stop waiting around for it.
+                        -->
+                        <max_heartbeat_retries>20</max_heartbeat_retries>
+
+                        <!--
+                        Limit the amount of repair traffic to make sure we do
+                        not exceed the bandwidth limitations. In this case,
+                        we're assuming 256 Kb/s == 32 KB/s, so a limit of
+                        ~28 KB gives us some slack for protocol overhead and
+                        the like. 
+                        -->
+                        <max_bytes_per_nack_response>
+                            28000
+                        </max_bytes_per_nack_response>
+
+                         <!--
+                        Set the maximum number of unacknowedged samples 
+                        (batches) in the DataWriter's queue equal to the max 
+                        number of batches.  
+                        -->
+                        <min_send_window_size>10</min_send_window_size>
+                        <max_send_window_size>20</max_send_window_size>
+
+                    </rtps_reliable_writer>
+                </protocol>
+
+                <!--
+                We want to fill the network as efficiently as possible, while
+                at the same time not exceeding the underlying transport MTU.
+                We assume here an MTU of 1500 B (the same as ethernet). We
+                leave some slack for protocol overhead, leaving 1400 B for
+                data. If the data size is larger than than, we will need to
+                fragment (see the participant transport configuration below)
+                and flow control it (see 'publish_mode'). If the data size is
+                smaller than that, we batch several samples together until we
+                reach that limit (see 'batch').
+
+                Fragmentation and batching cannot be used together; choose
+                one or the other depending on your data size. Flow control
+                is only necessary when fragmenting data, so it has been
+                commented out here.
+                -->
+              <!--
+                <publish_mode>
+                    <kind>ASYNCHRONOUS_PUBLISH_MODE_QOS</kind>
+                    <flow_controller_name>DDS_DEFAULT_FLOW_CONTROLLER_NAME</flow_controller_name>
+                </publish_mode>
+              -->
+
+                <batch>
+                    <enable>true</enable>
+
+                    <!--
+                    There is some overhead in the batch in addition to the
+                    sample data, so to keep the total "data" size in the batch
+                    under the transport's maximum message size, leave some
+                    additional slack.
+                    -->
+                    <max_data_bytes>1300</max_data_bytes>
+                    <max_samples>LENGTH_UNLIMITED</max_samples>
+
+                    <!--
+                    If a one-way latency-worth of time has passed, we should
+                    have flushed the batch by now. Since the example writes
+                    continuously, though, we probably won't ever get to this
+                    point.
+                    -->
+                    <max_flush_delay>
+                        <sec>0</sec>
+                        <nanosec>500000000</nanosec><!-- 500 ms -->
+                    </max_flush_delay>
+
+                    <source_timestamp_resolution>
+                        <sec>DURATION_INFINITE_SEC</sec>
+                        <nanosec>DURATION_INFINITE_NSEC</nanosec>
+                    </source_timestamp_resolution>
+                </batch>        
+            </datawriter_qos>
+
+            <participant_qos>
+                <!--
+                The participant name, if it is set, will be displayed in the
+                RTI Analyzer tool, making it easier for you to tell one
+                application from another when you're debugging.
+                -->
+                <participant_name>
+                    <name>RTI Example (Lossy Network)</name>
+                </participant_name>
+
+                <property>
+                    <value>
+                        <!--
+                        Configure UDPv4 transport:
+                        Limit the size of a datagram to the MTU of the
+                        underlying transport. For Ethernet, this value is
+                        1500 bytes; other transports will have different
+                        values. Then we leave some slack for UDP/IP overhead.
+
+                        Data batching and fragmentation are not currently
+                        supported together. For small data sizes - less than
+                        the MTU - leave this property commented. For large
+                        data sizes, comment the batching policy above and
+                        uncomment this property.
+                        -->
+                      <!--
+                        <element>
+                            <name>dds.transport.UDPv4.builtin.parent.message_size_max</name>
+                            <value>1400</value>
+                        </element>
+                      -->
+                    </value>
+                </property> 
+            </participant_qos>
+        </qos_profile>
+    </qos_library>
+</dds>

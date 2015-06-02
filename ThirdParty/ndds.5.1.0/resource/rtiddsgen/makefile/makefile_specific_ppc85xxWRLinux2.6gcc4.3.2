@@ -1,0 +1,10 @@
+c_cc_ppc85xxWRLinux2.6gcc4.3.2 = powerpc-wrs-linux-gnu-gcc
+c_cc_flags_ppc85xxWRLinux2.6gcc4.3.2 = -mcpu=powerpc -msoft-float -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/powerpc/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/powerpc-wrs-linux-gnu/libc/ 
+c_ld_ppc85xxWRLinux2.6gcc4.3.2 = powerpc-wrs-linux-gnu-gcc
+c_ld_flags_ppc85xxWRLinux2.6gcc4.3.2 = -mcpu=powerpc -msoft-float -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/powerpc/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/powerpc-wrs-linux-gnu/libc/ -static-libgcc
+cxx_cc_ppc85xxWRLinux2.6gcc4.3.2 = powerpc-wrs-linux-gnu-g++
+cxx_cc_flags_ppc85xxWRLinux2.6gcc4.3.2 = -mcpu=powerpc -msoft-float -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/powerpc/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/powerpc-wrs-linux-gnu/libc/
+cxx_ld_ppc85xxWRLinux2.6gcc4.3.2 = powerpc-wrs-linux-gnu-g++
+cxx_ld_flags_ppc85xxWRLinux2.6gcc4.3.2 = -mcpu=powerpc -msoft-float -B\$(WIND_BASE)/layers/wrll-toolchain-4.3-85/powerpc/toolchain/\$(WIND_HOST_TYPE)/bin/ --sysroot=\$(WIND_BASE)/sysroots/powerpc-wrs-linux-gnu/libc/ -static-libgcc
+syslibs_ppc85xxWRLinux2.6gcc4.3.2 = -ldl -lnsl -lm -lpthread -lrt
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_LINUX

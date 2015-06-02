@@ -1,0 +1,2704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ (c) Copyright, Real-Time Innovations, $Date: 2013/09/24 00:31:10 $.
+ All rights reserved.
+ No duplications, whole or partial, manual or electronic, may be made
+ without express written permission.  Any such copies, or
+ revisions thereof, must display this notice unaltered.
+ This code contains trade secrets of Real-Time Innovations, Inc.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <!-- =================================================================== -->
+    <!-- Simple Types                                                        -->
+    <!-- =================================================================== -->
+    <xs:simpleType name="boolean">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:boolean&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:boolean"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="string">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="integer">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:integer&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:integer"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeInteger">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:nonNegativeInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:nonNegativeInteger"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveInteger">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:positiveInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:positiveInteger"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="byteData">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                Uses a byte-oriented encoding wich successive bytes separates by comma and each byte represented
+                either using a decimal or hexadecimal notation. White space is allowed between bytes.
+                For example:
+                34, 44, 56,0x44,127,0xf3,
+                44,233,122, 122, 44, 222
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <!--
+            The regular expression is pretty hairy, so here's an explaination.
+            The general form is:
+
+                (\s)*(PATTERN)(\s)*(,(\s)*(PATTERN)(\s)*)*
+
+            In other words, it's a (numeric) pattern, surrounded by
+            whitespace. It must appear at least once; if it appears more than
+            once, subsequent appearances must be preceded by a comma.
+
+            The numeric pattern is is either a decimal or hexadecimal number:
+
+                (DEC)|(HEX)
+
+            A decimal number takes the form of 1-3 decimal digits, where the
+            first digit in a 3-digit number can be no greater than 2. Note
+            that this pattern has a loophole in that it allows a value like
+            285; closing that loophole with a regular expression was deemed
+            unimportant relative to the complication of the pattern it would
+            entail.
+
+                [0-2]?[0-9]?[0-9]
+
+            A hexadecimal number is comprised of a zero, a letter 'X', and
+            either one or two hexedecimal digits:
+
+                0[xX][0-9a-fA-F]?[0-9a-fA-F]
+            -->
+            <xs:pattern value="(\s)*(([0-2]?[0-9]?[0-9])|(0[xX][0-9a-fA-F]?[0-9a-fA-F]))(\s)*(,(\s)*(([0-2]?[0-9]?[0-9])|(0[xX][0-9a-fA-F]?[0-9a-fA-F]))(\s)*)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="elementName">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                Name that uniquely identifies this element.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="([a-zA-Z0-9_: ])+"/>
+            <!-- DDS: xs:pattern value="([a-zA-Z0-9_])+"/-->
+            <!-- <xs:pattern value="^((::)?([a-zA-Z0-9])+(::([a-zA-Z0-9])+)*)$"/> -->
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="elementBaseName">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                A QoS Profile can inherit its values from other QoS Profiles described in the XML file
+                using this attribute.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="((::)?[a-zA-Z0-9_])+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="javaClassName">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                Name that uniquely identifies this element.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="([a-zA-Z0-9_. ])+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="entityName">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                It can only be 255 characters in length.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="roleName">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                It can only be 255 characters in length.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="propertyName">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                The name of the Property.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="([a-zA-Z0-9_.])+"/>
+            <!-- <xs:pattern value="^((::)?([a-zA-Z0-9])+(::([a-zA-Z0-9])+)*)$"/> -->
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="topicNameFilter">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;xs:string&gt;
+            </xs:documentation>
+            <xs:documentation>
+                RTI Data Distribution Service will select a QoS based on the evaluation of this filter expression on the topic name.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="([a-zA-Z0-9\*_])+"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="destinationOrderKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;BY_RECEPTION_TIMESTAMP_DESTINATIONORDER_QOS|BY_SOURCE_TIMESTAMP_DESTINATIONORDER_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="BY_RECEPTION_TIMESTAMP_DESTINATIONORDER_QOS"/>
+            <xs:enumeration value="BY_SOURCE_TIMESTAMP_DESTINATIONORDER_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="durabilityKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;VOLATILE_DURABILITY_QOS|TRANSIENT_LOCAL_DURABILITY_QOS|TRANSIENT_DURABILITY_QOS|PERSISTENT_DURABILITY_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="VOLATILE_DURABILITY_QOS"/>
+            <xs:enumeration value="TRANSIENT_LOCAL_DURABILITY_QOS"/>
+            <xs:enumeration value="TRANSIENT_DURABILITY_QOS"/>
+            <xs:enumeration value="PERSISTENT_DURABILITY_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="historyKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;KEEP_LAST_HISTORY_QOS|KEEP_ALL_HISTORY_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="KEEP_LAST_HISTORY_QOS"/>
+            <xs:enumeration value="KEEP_ALL_HISTORY_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="livelinessKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;AUTOMATIC_LIVELINESS_QOS|MANUAL_BY_PARTICIPANT_LIVELINESS_QOS|MANUAL_BY_TOPIC_LIVELINESS_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="AUTOMATIC_LIVELINESS_QOS"/>
+            <xs:enumeration value="MANUAL_BY_PARTICIPANT_LIVELINESS_QOS"/>
+            <xs:enumeration value="MANUAL_BY_TOPIC_LIVELINESS_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="presentationAccessScopeKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;INSTANCE_PRESENTATION_QOS|TOPIC_PRESENTATION_QOS|GROUP_PRESENTATION_QOS|HIGHEST_OFFERED_PRESENTATION_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="INSTANCE_PRESENTATION_QOS"/>
+            <xs:enumeration value="TOPIC_PRESENTATION_QOS"/>
+            <xs:enumeration value="GROUP_PRESENTATION_QOS"/>
+            <xs:enumeration value="HIGHEST_OFFERED_PRESENTATION_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="reliabilityKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;BEST_EFFORT_RELIABILITY_QOS|RELIABLE_RELIABILITY_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="BEST_EFFORT_RELIABILITY_QOS"/>
+            <xs:enumeration value="RELIABLE_RELIABILITY_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="dataWriterResourceLimitsInstanceReplacementKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;UNREGISTERED_INSTANCE_REPLACEMENT|ALIVE_INSTANCE_REPLACEMENT|DISPOSED_INSTANCE_REPLACEMENT|ALIVE_THEN_DISPOSED_INSTANCE_REPLACEMENT|DISPOSED_THEN_ALIVE_INSTANCE_REPLACEMENT|ALIVE_OR_DISPOSED_INSTANCE_REPLACEMENT&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="UNREGISTERED_INSTANCE_REPLACEMENT"/>
+            <xs:enumeration value="ALIVE_INSTANCE_REPLACEMENT"/>
+            <xs:enumeration value="DISPOSED_INSTANCE_REPLACEMENT"/>
+            <xs:enumeration value="ALIVE_THEN_DISPOSED_INSTANCE_REPLACEMENT"/>
+            <xs:enumeration value="DISPOSED_THEN_ALIVE_INSTANCE_REPLACEMENT"/>
+            <xs:enumeration value="ALIVE_OR_DISPOSED_INSTANCE_REPLACEMENT"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="ownershipKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;SHARED_OWNERSHIP_QOS|EXCLUSIVE_OWNERSHIP_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="SHARED_OWNERSHIP_QOS"/>
+            <xs:enumeration value="EXCLUSIVE_OWNERSHIP_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="threadBlockingKind">
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="SEMAPHORE_BLOCKING_KIND"/>
+            <xs:enumeration value="SPIN_BLOCKING_KIND"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="cdrPaddingKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;ZERO_CDR_PADDING|NOT_SET_CDR_PADDING|AUTO_CDR_PADDING&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="ZERO_CDR_PADDING"/>
+            <xs:enumeration value="NOT_SET_CDR_PADDING"/>
+            <xs:enumeration value="AUTO_CDR_PADDING"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="integer_RTPS_AUTO_ID">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;RTPS_AUTO_ID|xs:string&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="RTPS_AUTO_ID|([+\-]?[0-9]+)"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="inetAddress">
+        <xs:annotation>
+            <xs:documentation>
+                A valid IP address
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <!--
+            For the address itself, the pattern [0-9a-fA-F.:]* would be
+            sufficient. But DDS allows an address to be prefixed with a
+            transport in URL for, so we allow the rest of the alphabet and
+            the forward slash.
+            -->
+            <xs:pattern value="[0-9a-zA-Z.:/]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="publishModeKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;SYNCHRONOUS_PUBLISH_MODE_QOS|ASYNCHRONOUS_PUBLISH_MODE_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="SYNCHRONOUS_PUBLISH_MODE_QOS"/>
+            <xs:enumeration value="ASYNCHRONOUS_PUBLISH_MODE_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="refilterKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;NONE_REFILTER_QOS|ALL_REFILTER_QOS|ON_DEMAND_REFILTER_QOS&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="NONE_REFILTER_QOS"/>
+            <xs:enumeration value="ALL_REFILTER_QOS"/>
+            <xs:enumeration value="ON_DEMAND_REFILTER_QOS"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="remoteConnectionPurgeKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;LIVELINESS_BASED_REMOTE_PARTICIPANT_PURGE|NO_REMOTE_PARTICIPANT_PURGE&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="LIVELINESS_BASED_REMOTE_PARTICIPANT_PURGE"/>
+            <xs:enumeration value="NO_REMOTE_PARTICIPANT_PURGE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="transportBuiltinKindMask">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;UDPv4|UDPv6|SHMEM|MASK_DEFAULT|MASK_NONE|MASK_ALL&gt; [|&lt;UDPv4|UDPv6|SHMEM&gt;| ... ]
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+
+            <xs:enumeration value="MASK_DEFAULT"/>
+            <xs:enumeration
+                value="TRANSPORTBUILTIN_MASK_DEFAULT"/><!-- legacy -->
+            <xs:enumeration value="MASK_NONE"/>
+            <xs:enumeration
+                value="TRANSPORTBUILTIN_MASK_NONE"/><!-- legacy -->
+            <xs:enumeration value="MASK_ALL"/>
+            <xs:enumeration
+                value="TRANSPORTBUILTIN_MASK_ALL"/><!-- legacy -->
+
+            <xs:enumeration value="UDPv4 | SHMEM"/>
+
+            <xs:enumeration value="UDPv4"/>
+            <xs:enumeration value="TRANSPORTBUILTIN_UDPv4"/><!-- legacy -->
+            <xs:enumeration value="UDPv6"/>
+            <xs:enumeration value="TRANSPORTBUILTIN_UDPv6"/><!-- legacy -->
+            <xs:enumeration value="SHMEM"/>
+            <xs:enumeration value="TRANSPORTBUILTIN_SHMEM"/><!-- legacy -->
+
+            <xs:enumeration value="UDPv6 | SHMEM"/>
+            <xs:enumeration value="UDPv4 | UDPv6"/>
+
+            <xs:enumeration value="UDPv4 | UDPv6 | SHMEM"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="typeConsistencyKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;DISALLOW_TYPE_COERCION|ALLOW_TYPE_COERCION&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="DISALLOW_TYPE_COERCION">
+                <xs:annotation>
+                    <xs:documentation>
+                        The DataWriter and the DataReader must support the same data type 
+                        in order for them to communicate.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="ALLOW_TYPE_COERCION">
+                <xs:annotation>
+                    <xs:documentation>
+                        The DataWriter and the DataReader need not support the same data type 
+                        in order for them to communicate as long as the reader’s type is assignable from the writer’s type
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+	<!-- RTI extension -->
+	<xs:simpleType name="integer_SEQUENCE_NUMBER">
+		<xs:annotation>
+			<xs:documentation>
+				&lt;AUTO_SEQUENCE_NUMBER|xs:string&gt;
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:whiteSpace value="collapse"/>
+			<xs:pattern value="AUTO_SEQUENCE_NUMBER|([0-9]+)"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<!-- RTI extension --> 
+    <xs:simpleType name="WireProtocolQosPolicyAutoKind">
+        <xs:annotation> 
+            <xs:documentation>
+                &lt;RTPS_AUTO_ID_FROM_IP|RTPS_AUTO_ID_FROM_MAC&gt;
+            </xs:documentation>
+        </xs:annotation> 
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+    
+            <xs:enumeration value="RTPS_AUTO_ID_FROM_IP"/>
+            <xs:enumeration value="RTPS_AUTO_ID_FROM_MAC"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="rtpsReservedPortKindMask">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;MASK_DEFAULT|MASK_NONE|MASK_ALL|BUILTIN_UNICAST|BUILTIN_MULTICAST|USER_UNICAST|USER_MULTICAST&gt; [|&lt;BUILTIN_UNICAST|BUILTIN_MULTICAST|USER_UNICAST|USER_MULTICAST&gt;| ... ]
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+
+            <xs:enumeration value="MASK_DEFAULT"/>
+            <xs:enumeration value="MASK_NONE"/>
+            <xs:enumeration value="MASK_ALL"/>
+
+            <xs:enumeration value="BUILTIN_UNICAST"/>
+            <xs:enumeration value="BUILTIN_MULTICAST"/>
+            <xs:enumeration value="USER_UNICAST"/>
+            <xs:enumeration value="USER_MULTICAST"/>
+
+            <xs:enumeration value="BUILTIN_UNICAST | BUILTIN_MULTICAST"/>
+            <xs:enumeration value="BUILTIN_UNICAST | USER_UNICAST"/>
+            <xs:enumeration value="BUILTIN_UNICAST | USER_MULTICAST"/>
+
+            <xs:enumeration value="BUILTIN_MULTICAST | USER_UNICAST"/>
+            <xs:enumeration value="BUILTIN_MULTICAST | USER_MULTICAST"/>
+
+            <xs:enumeration value="USER_UNICAST | USER_MULTICAST"/>
+
+            <xs:enumeration value="BUILTIN_UNICAST | BUILTIN_MULTICAST | USER_UNICAST"/>
+            <xs:enumeration value="BUILTIN_UNICAST | BUILTIN_MULTICAST | USER_MULTICAST"/>
+            <xs:enumeration value="BUILTIN_MULTICAST | USER_UNICAST | USER_MULTICAST"/>
+
+            <xs:enumeration value="BUILTIN_UNICAST | BUILTIN_MULTICAST | USER_MULTICAST | USER_MULTICAST"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="threadKindMask">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;MASK_DEFAULT|FLOATING_POINT|STDIO|REALTIME_PRIORITY|PRIORITY_ENFORCE&gt; [|&lt;FLOATING_POINT|STDIO|REALTIME_PRIORITY|PRIORITY_ENFORCE&gt;| ... ]
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+
+            <xs:enumeration value="MASK_DEFAULT"/>
+
+            <xs:enumeration value="STDIO"/>
+            <xs:enumeration value="THREAD_SETTINGS_STDIO"/><!-- legacy -->
+            <xs:enumeration value="FLOATING_POINT"/>
+            <xs:enumeration
+                value="THREAD_SETTINGS_FLOATING_POINT"/><!-- legacy -->
+            <xs:enumeration value="REALTIME_PRIORITY"/>
+            <xs:enumeration
+                value="THREAD_SETTINGS_REALTIME_PRIORITY"/><!-- legacy -->
+            <xs:enumeration value="PRIORITY_ENFORCE"/>
+            <xs:enumeration
+                value="THREAD_SETTINGS_PRIORITY_ENFORCE"/><!-- legacy -->
+
+            <xs:enumeration value="STDIO | FLOATING_POINT"/>
+            <xs:enumeration value="STDIO | REALTIME_PRIORITY"/>
+            <xs:enumeration value="STDIO | PRIORITY_ENFORCE"/>
+
+            <xs:enumeration value="FLOATING_POINT | REALTIME_PRIORITY"/>
+            <xs:enumeration value="FLOATING_POINT | PRIORITY_ENFORCE"/>
+
+            <xs:enumeration value="REALTIME_PRIORITY | PRIORITY_ENFORCE"/>
+
+            <xs:enumeration value="STDIO | FLOATING_POINT | REALTIME_PRIORITY"/>
+            <xs:enumeration value="STDIO | FLOATING_POINT | PRIORITY_ENFORCE"/>
+            <xs:enumeration value="STDIO | REALTIME_PRIORITY | PRIORITY_ENFORCE"/>
+            <xs:enumeration value="FLOATING_POINT | REALTIME_PRIORITY | PRIORITY_ENFORCE"/>
+
+            <xs:enumeration value="STDIO | FLOATING_POINT | REALTIME_PRIORITY | PRIORITY_ENFORCE"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="threadSettingsCpuRotationKind">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;CPU_NO_ROTATION|CPU_RR_ROTATION&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="CPU_NO_ROTATION"/>
+            <xs:enumeration value="CPU_RR_ROTATION"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="discoveryPluginKindMask">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;SDP|EDS|SPDP|SEDP|MASK_NONE|MASK_ALL|MASK_DEFAULT&gt; [|&lt;SDP|EDS|SPDP|SEDP&gt;| ... ]
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:enumeration value="MASK_DEFAULT"/>
+            <xs:enumeration value="MASK_NONE"/>
+            <xs:enumeration value="MASK_ALL"/>
+
+            <xs:enumeration value="SDP"/>
+            <xs:enumeration value="EDS"/>
+            <xs:enumeration value="SDP|EDS"/>
+
+            <xs:enumeration value="SPDP"/>
+            <xs:enumeration value="SEDP"/>
+            <xs:enumeration value="EDS|SPDP"/>
+            <xs:enumeration value="EDS|SEDP"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeInteger_UNLIMITED">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;LENGTH_UNLIMITED|xs:nonNegativeInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="LENGTH_UNLIMITED|(\+?[0-9]+)"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeInteger_Duration_SEC">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;DURATION_INFINITE_SEC|DURATION_ZERO_SEC|xs:nonNegativeInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="(\+?[0-9]+)|DURATION_INFINITE_SEC|DURATION_ZERO_SEC"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeInteger_Duration_NSEC">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;DURATION_INFINITE_NSEC|DURATION_ZERO_NSEC|xs:nonNegativeInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="([0-9]+)|DURATION_INFINITE_NSEC|DURATION_ZERO_NSEC"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeInteger_DurationAuto_SEC">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;DURATION_INFINITE_SEC|DURATION_ZERO_SEC|DURATION_AUTO_SEC|xs:nonNegativeInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="(\+?[0-9]+)|DURATION_INFINITE_SEC|DURATION_ZERO_SEC|DURATION_AUTO_SEC"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="nonNegativeInteger_DurationAuto_NSEC">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;DURATION_INFINITE_NSEC|DURATION_ZERO_NSEC|DURATION_AUTO_NSEC|xs:nonNegativeInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="([0-9]+)|DURATION_INFINITE_NSEC|DURATION_ZERO_NSEC|DURATION_AUTO_NSEC"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveInteger_UNLIMITED">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;LENGTH_UNLIMITED|xs:positiveInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="(LENGTH_UNLIMITED|[1-9]([0-9])*)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveInteger_AUTO">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;LENGTH_AUTO|xs:positiveInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="(LENGTH_AUTO|[1-9]([0-9])*)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveInteger_UNLIMITED_AUTO_MAX_TOTAL_INSTANCES">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;AUTO_MAX_TOTAL_INSTANCES|xs:positiveInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="(AUTO_MAX_TOTAL_INSTANCES|[1-9]([0-9])*)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveInteger_THREAD_PRIORITY_DEFAULT">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;THREAD_PRIORITY_DEFAULT|THREAD_PRIORITY_BELOW_NORMAL|THREAD_PRIORITY_LOW|THREAD_PRIORITY_NORMAL|THREAD_PRIORITY_ABOVE_NORMAL|THREAD_PRIORITY_HIGH|xs:positiveInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="(THREAD_PRIORITY_DEFAULT|THREAD_PRIORITY_BELOW_NORMAL|THREAD_PRIORITY_LOW|THREAD_PRIORITY_NORMAL|THREAD_PRIORITY_ABOVE_NORMAL|THREAD_PRIORITY_HIGH|([0-9])*)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="positiveInteger_THREAD_STACK_SIZE_DEFAULT">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;THREAD_STACK_SIZE_DEFAULT|xs:positiveInteger&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:whiteSpace value="collapse"/>
+            <xs:pattern value="(THREAD_STACK_SIZE_DEFAULT|[1-9]([0-9])*)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="string_GUID_AUTO">
+        <xs:annotation>
+            <xs:documentation>
+                &lt;GUID_AUTO|xs:string&gt;
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string"/>
+    </xs:simpleType>
+
+    <!-- ================================================================= -->
+    <!-- Complex Types                                                     -->
+    <!-- ================================================================= -->
+
+    <xs:complexType name="duration">
+        <xs:annotation>
+            <xs:documentation>
+                Time specified in seconds and nanoseconds
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="sec"
+                        type="nonNegativeInteger_Duration_SEC"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="nanosec"
+                        type="nonNegativeInteger_Duration_NSEC"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="durationAuto">
+        <xs:annotation>
+            <xs:documentation>
+                Time specified in seconds and nanoseconds
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="sec"
+                        type="nonNegativeInteger_DurationAuto_SEC"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="nanosec"
+                        type="nonNegativeInteger_DurationAuto_NSEC"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="stringSeq">
+        <xs:annotation>
+            <xs:documentation>
+                Declares a sequence of elements, which correspond to different xs:string.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="element" type="string" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="integerSeq">
+        <xs:annotation>
+            <xs:documentation>
+                Declares a sequence of elements, which correspond to different xs:integer.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="element" type="integer" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- RTI extension -->
+	<xs:complexType name="sequenceNumber">
+		<xs:annotation>
+			<xs:documentation>
+				Sequence number specified in high and low, or as a 64-bit decimal value
+			</xs:documentation>
+		</xs:annotation>
+		<xs:choice>
+			<xs:sequence>
+				<xs:element name="high"
+    						type="integer"
+    						minOccurs="0"
+    						maxOccurs="1"/>
+				<xs:element name="low"
+    						type="positiveInteger"
+    						minOccurs="0"
+    						maxOccurs="1"/>
+			</xs:sequence>
+			<xs:element name ="value"
+						type="integer_SEQUENCE_NUMBER"
+						minOccurs="0"
+						maxOccurs="1"/>
+		</xs:choice>
+	</xs:complexType>
+
+	<xs:complexType name="allocationSettings">
+        <xs:annotation>
+            <xs:documentation>
+                Resource allocation settings.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="initial_count"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_count"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="incremental_count"
+                        type="integer"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="inetAddressSeq">
+        <xs:annotation>
+            <xs:documentation>
+                A sequence of elements with valid IP addresses.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="element" type="inetAddress" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="rtpsWellKnownPorts">
+        <xs:annotation>
+            <xs:documentation>
+                RTPS well-known port mapping configuration.
+                RTI Message Service uses the RTPS wire protocol.
+                The discovery protocols defined by RTPS rely on well-known ports to initiate discovery.
+                These well-known ports define the multicast and unicast ports on which a Participant will listen for discovery
+                metatraffic from other Participants.
+                The discovery metatraffic contains all the information required to establish the presence of remote objects in the network.
+                The well-known ports are defined by RTPS in terms of port mapping expressions with several tunable parameters,
+                which allow the user to customize what network ports are used by the middleware.
+                In order for all Connections in a system to correctly
+                discover each other, it is important that they all use the
+                same port mapping expressions.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="port_base"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="domain_id_gain"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="connection_id_gain"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="builtin_multicast_port_offset"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="builtin_unicast_port_offset"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="user_multicast_port_offset"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="user_unicast_port_offset"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="rtpsReliableConsumerProtocol">
+        <xs:annotation>
+            <xs:documentation>
+                QoS related to reliable consumer protocol defined in RTPS.
+                It is used to configure a reliable consumer according to the
+                RTPS protocol.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="min_heartbeat_response_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_heartbeat_response_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="heartbeat_suppression_duration"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="nack_period"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="app_ack_period"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>  
+            <xs:element name="samples_per_app_ack"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="rtpsReliableProducerProtocol">
+        <xs:annotation>
+            <xs:documentation>
+                QoS related to the reliable writer protocol defined in RTPS.
+                It is used to configure a reliable writer according to RTPS protocol.
+                The reliability protocol settings are applied to batches instead of individual data samples when batching is enabled.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="low_watermark"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="high_watermark"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="heartbeat_period"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="fast_heartbeat_period"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="late_joiner_heartbeat_period"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="virtual_heartbeat_period"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="samples_per_virtual_heartbeat"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>                        
+            <xs:element name="max_heartbeat_retries"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="heartbeats_per_max_messages"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="min_nack_response_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_nack_response_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="nack_suppression_duration"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_bytes_per_nack_response"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="disable_positive_acks_min_message_keep_duration"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="disable_positive_acks_max_message_keep_duration"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="disable_positive_acks_enable_adaptive_sample_keep_duration"
+                        type="boolean"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="disable_positive_acks_decrease_sample_keep_duration_factor"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="disable_positive_acks_increase_sample_keep_duration_factor"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="min_send_window_size"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_send_window_size"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="send_window_update_period"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="send_window_increase_factor"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="send_window_decrease_factor"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="virtualGuid">
+        <xs:annotation>
+            <xs:documentation>
+                The virtual GUID (Global Unique Identifier).
+                The virtual GUID is used to uniquely identify different incarnations of the same DataReader.
+                The association between a DataReader and its persisted state is done using the virtual GUID.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="string_GUID_AUTO" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="threadSettings">
+        <xs:annotation>
+            <xs:documentation>
+                The properties of a thread of execution.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="mask"
+                        type="threadKindMask"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="priority"
+                        type="positiveInteger_THREAD_PRIORITY_DEFAULT"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="stack_size"
+                        type="positiveInteger_THREAD_STACK_SIZE_DEFAULT"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="cpu_list"
+                        type="integerSeq"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="cpu_rotation"
+                        type="threadSettingsCpuRotationKind"
+                        default="CPU_NO_ROTATION"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportUnicastSettings">
+        <xs:annotation>
+            <xs:documentation>
+                Type representing a list of unicast locators.
+                A unicast locator specifies a transport class, a unicast address, and a unicast port number on which messages can be received by an entity.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="transports"
+                        type="stringSeq"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="receive_port"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportUnicastSettingsSeq">
+        <xs:annotation>
+            <xs:documentation>
+                Declares a sequence of elements, which correspond to different TransportUnicastSettings_t
+                entities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="element" type="transportUnicastSettings" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="transportMulticastSettings">
+        <xs:annotation>
+            <xs:documentation>
+                Type representing a list of multicast locators.
+                A multicast locator specifies a transport class, a multicast address, and a multicast port number on which messages can be received by an entity.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="transports"
+                        type="stringSeq"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="receive_address"
+                        type="inetAddress"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="receive_port"
+                        type="nonNegativeInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportMulticastSettingsSeq">
+        <xs:annotation>
+            <xs:documentation>
+                Declares a sequence of elements, which correspond to different TransportMulticastSettings_t
+                entities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="element" type="transportMulticastSettings" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="channelSettings">
+        <xs:annotation>
+            <xs:documentation>
+                Type used to configure the properties of a channel.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="multicast_settings"
+                        type="transportMulticastSettingsSeq"
+                        minOccurs="1"
+                        maxOccurs="1"/>
+            <xs:element name="filter_expression"
+                        type="string"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="priority"
+                        type="integer"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="channelSettingsSeq">
+        <xs:annotation>
+            <xs:documentation>
+                Declares a sequence of elements, which correspond to different ChannelSettings_t
+                entities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="element" type="channelSettings" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="propertyValue">
+        <xs:annotation>
+            <xs:documentation>
+                Properties are name/value pairs objects.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="name"
+                        type="propertyName"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="value"
+                        type="string"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="propagate"
+                        type="boolean"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="propertyValueSeq">
+        <xs:annotation>
+            <xs:documentation>
+                Declares a sequence of elements, which correspond to different Property_t
+                entities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="element" type="propertyValue" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+	<xs:complexType name="endpointGroup">
+		<xs:annotation>
+			<xs:documentation>
+				TODO
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="role_name" type="string" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="quorum_count" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="endpointGroupSeq">
+		<xs:annotation>
+			<xs:documentation>
+				Declares a sequence of elements, which correspond to different xs:endpointGroup.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="element" type="endpointGroup" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+
+
+    <!-- =================================================================== -->
+    <!-- QoS Policies                                                        -->
+    <!-- =================================================================== -->
+	<xs:complexType name="availabilityQosPolicy">
+		<xs:annotation>
+			<xs:documentation>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:all>			
+                        <xs:element name="enabled_required_subscriptions" type="boolean" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="max_data_availability_waiting_time" type="duration" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="max_endpoint_availability_waiting_time" type="duration" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="required_matched_endpoint_groups" type="endpointGroupSeq" minOccurs="0" maxOccurs="1"/>			
+		</xs:all>
+	</xs:complexType>
+	
+    <xs:complexType name="deadlineQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                On a producer, this QoS policy states the maximum period in
+                which the application expects to call send() on the producer,
+                thus publishing a new message. The application may call send()
+                faster than the rate set by this QoS policy. On a consumer,
+                this QoS policy states the maximum period in which the
+                application expects to receive new messages on the Topic.
+                The application may receive messages faster than the rate set
+                by this QoS policy.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="period" type="duration" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="destinationOrderQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This policy controls how each consumer resolves the final
+                value of a data instance that is published by multiple
+                producers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="kind"
+                        type="destinationOrderKind"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="source_timestamp_tolerance"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="durabilityQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The Durability QoS policy controls whether or not, and how,
+                published messages are stored by the producing application
+                for consumers that are found after the messages were
+                initially sent.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="kind"
+                        type="durabilityKind"
+                        default="VOLATILE_DURABILITY_QOS"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="direct_communication"
+                        type="boolean"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="durabilityServiceQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy is only used if the DURABILITY QoS policy is
+                PERSISTENT or TRANSIENT
+                and you are using RTI Persistence Service, an optional product which may be
+                purchased separately.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="service_cleanup_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="history_kind"
+                        type="historyKind"
+                        default="KEEP_LAST_HISTORY_QOS"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="history_depth"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_messages"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_instances"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_messages_per_instance"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="sessionDataQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy provides an area where your application can
+                store additional information
+                related to the Session. This information is passed between applications
+                during discovery using built-in topics.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="byteData" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="historyQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy configures the number of samples that RTI
+                Message Service will store locally for producers and
+                consumers.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="kind"
+                        type="historyKind"
+                        default="KEEP_LAST_HISTORY_QOS"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="depth"
+                        type="positiveInteger"
+                        default="1"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="refilter"
+                        type="refilterKind"
+                        default="NONE_REFILTER_QOS"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="latencyBudgetQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy is used to suggest the maximum acceptable delay that is acceptable
+                between when data is written and when data is received.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="duration" type="duration" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="lifespanQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The purpose of this QoS is to avoid delivering stale messages
+                to the application. Each message published by a producer has
+                an associated expiration time, beyond which the message
+                should not be delivered to any application. Once the message
+                expires, it will be removed from the consumer caches, as well
+                as from the transient and persistent caches.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="time_to_live" type="duration" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="livelinessQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The LIVELINESS QoS policy specifies how RTI Message Service
+                determines whether a producer is "alive". A producer's
+                liveliness is used in combination with
+                the OWNERSHIP QoS policy to maintain ownership of an instance
+                (note that the DEADLINE QoS policy
+                is also used to change ownership when a producer is still alive)
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="kind"
+                        type="livelinessKind"
+                        default="AUTOMATIC_LIVELINESS_QOS"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="lease_duration"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="ownershipQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The OWNERSHIP QoS policy specifies whether a DataReader will
+                see changes to an
+                instance of a Topic from multiple DataWriters. For non-keyed Topics, there is only one
+                instance of the Topic.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="kind" type="ownershipKind" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="ownershipStrengthQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The OWNERSHIP_STRENGTH QoS policy is used to rank producers
+                of the same instance of a Topic, so that RTI Message Service
+                can decide which producer will
+                have ownership of the instance when the OWNERSHIP QoS policy
+                (Section 6.5.13) is set
+                to EXCLUSIVE.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="nonNegativeInteger" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="partitionQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The PARTITION QoS provides another way to control which
+                producers will match and thus communicate with which
+                consumers. It can be used to prevent producers and consumers
+                that would have otherwise matched with the same Topic and
+                compatible QoS policies from talking to each other. Much in
+                the same way that only applications within the same RTI
+                domain will communicate with each other, only producers and
+                consumers that belong to the same partition can talk to each
+                other.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="name"
+                        type="stringSeq"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="presentationQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                Since data samples are sent independently over networks that may deliver packets out
+                of order, the PRESENTATION QoS policy allows you to control
+                how a Subscriber sorts
+                and orders the received samples in the DataReader's queue.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="access_scope"
+                        type="presentationAccessScopeKind"
+                        default="INSTANCE_PRESENTATION_QOS"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="coherent_access"
+                        type="boolean"
+                        default="false"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="ordered_access"
+                        type="boolean"
+                        default="false"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="consumerDataLifecycleQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This policy controls the behavior of the MessageConsumer with
+                regards to the lifecycle of the
+                data instances it manages, that is, the data instances that have been received and for
+                which the MessageConsumer maintains some internal resources.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="autopurge_nowriter_messages_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="autopurge_disposed_messages_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="reliabilityQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This RELIABILITY QoS policy determines whether or not data
+                published by a
+                DataWriter will be reliably delivered by RTI Data Distribution Service to matching
+                DataReaders.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="kind"
+                        type="reliabilityKind"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_blocking_time"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="publishModeQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy determines the producer's publishing mode,
+                either asynchronous or synchronous.
+                The publishing mode controls whether messages are written
+                synchronously in the context of the user thread when calling
+                send(), or asynchronously in the context of a separate
+                thread internal to RTI Message Service.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element maxOccurs="1" minOccurs="0" name="kind" type="publishModeKind" default="SYNCHRONOUS_PUBLISH_MODE_QOS" />
+            <xs:element maxOccurs="1" minOccurs="0" name="flow_controller_name" type="string" default="null" />
+            <xs:element maxOccurs="1" minOccurs="0" name="priority" type="integer" /> 
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="resourceLimitsQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The RESOURCE_LIMITS QoS policy controls the memory resources
+                that RTI Message Service allocates and uses for a producer
+                or consumer. One of the most important fields is
+                max_messages, which sets the size and causes memory to be
+                allocated for the send or receive caches.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="max_messages"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_instances"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="max_messages_per_instance"
+                        type="positiveInteger_UNLIMITED"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="initial_messages"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="initial_instances"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+            <xs:element name="instance_hash_buckets"
+                        type="positiveInteger"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="timeBasedFilterQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This TIME_BASED_FILTER QoS policy allows you to specify that
+                messages should not be delivered more than once per-specified
+                period for each instance regardless of how fast producers are
+                publishing new messages of the instance.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="minimum_separation" type="duration" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="topicDataQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy provides an area where your application can
+                store additional information
+                related to the Topic. This information is passed between applications during discovery
+                using builtin-topics.
+                How this information is used will be up to user code. RTI
+                Message Service does
+                not do anything with the information stored as TOPIC_DATA except to pass it to other
+                applications.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="byteData" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportPriorityQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The TRANSPORT_PRIORITY QoS policy allows the user application
+                to take advantage
+                of transports that are capable of sending messages with different priorities.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="nonNegativeInteger" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="userDataQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy provides an area where your application can
+                store additional information
+                related to a Connection, MessageProducer, or MessageConsumer.
+                This information is passed
+                between applications during discovery using built-in-topics. How this information is used
+                will be up to user code.
+                RTI Message Service does not do anything with the information
+                stored as
+                USER_DATA except to pass it to other applications.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="byteData" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="producerDataLifecycleQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy determines if the MessageProducer will dispose
+                an instance when it is unregistered. When a MessageProducer
+                unregisters an instance, it means that this particular
+                MessageProducer has
+                no more information/data on this instance. When an instance is disposed, it means that
+                the instance is "dead" - there will no more information/data
+                from any MessageProducer on
+                this instance.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="autodispose_unregistered_instances" type="boolean" default="true" minOccurs="0"/>
+            <xs:element name="autopurge_unregistered_messages_delay"
+                        type="duration"
+                        minOccurs="0"
+                        maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="consumerResourceLimitsQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                Resource limits that apply only to MessageConsumer instances.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="max_remote_producers" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_remote_producers_per_instance" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="max_remote_producers_per_sample" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="max_remote_virtual_producers" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_remote_virtual_producers_per_instance" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>			
+            <xs:element name="max_messages_per_remote_producer" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_messages_per_receive" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_infos" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_remote_producers" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_remote_producers_per_instance" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="initial_remote_virtual_producers" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_remote_virtual_producers_per_instance" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_infos" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="disable_fragmentation_support" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_fragmented_messages" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_fragmented_messages" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_fragmented_messages_per_remote_producer" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_fragments_per_message" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="dynamically_allocate_fragmented_messages" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_total_instances" type="positiveInteger_UNLIMITED_AUTO_MAX_TOTAL_INSTANCES" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_outstanding_receives" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_outstanding_receives" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="payload_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="producerResourceLimitsQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                Resource limits that apply only to MessageProducer instances.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="initial_concurrent_blocking_threads" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_concurrent_blocking_threads" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_remote_consumer_message_selectors" type="nonNegativeInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_batches" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_batches" type="nonNegativeInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="instance_replacement" type="dataWriterResourceLimitsInstanceReplacementKind" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="replace_empty_instances" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="autoregister_instances" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_virtual_writers" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_virtual_writers" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>           
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="multiChannelQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy is used to partition the data published by a
+                MessageProducer across multiple
+                channels. A channel is defined by a filter expression and a sequence of multicast locators.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="channels" type="channelSettingsSeq" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="filter_name" type="elementName" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="propertyQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The PROPERTY QoS policy can be used to associate a set of
+                properties in the form of
+                (name,value) pairs with a MessageConsumer, MessageProducer,
+                or Connection. This is similar to
+                the USER_DATA QoS policy, except this policy uses
+                (name, value) pairs, and you can
+                select whether or not a particular pair should be propagated (included in the builtin
+                topic).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="value" type="propertyValueSeq" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="inherit" type="boolean"/>
+    </xs:complexType>
+
+    <xs:complexType name="entityNameQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The purpose of this QoS is to allow the user to attach naming information to created
+                objects.
+                It can only be 255 characters in length.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="name" type="entityName" minOccurs="0"/>
+            <xs:element name="role_name" type="roleName" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="typeSupportQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The purpose of this QoS is to allow the user to set padding bytes
+                to zero during serialization of CDR streams.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="cdr_padding_kind" type="cdrPaddingKind" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="consumerProtocolQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                Protocol that applies only to MessageConsumer instances.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="virtual_guid" type="virtualGuid" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_object_id" type="integer_RTPS_AUTO_ID" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="expects_inline_qos" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="disable_positive_acks" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_reliable_consumer" type="rtpsReliableConsumerProtocol" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="propagate_dispose_of_unregistered_instances" type="boolean" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="producerProtocolQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                Protocol that applies only to MessageProducer instances.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="virtual_guid" type="virtualGuid" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_object_id" type="integer_RTPS_AUTO_ID" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="disable_positive_acks" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="disable_inline_keyhash" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="serialize_key_with_dispose" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="push_on_send" type="boolean" default="true" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_reliable_producer" type="rtpsReliableProducerProtocol" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="dataWriterBatchQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy can be used to decrease the amount of
+                communication overhead associated
+                with the transmission and (in the case of reliable communication) acknowledgement
+                of small messages in order to increase throughput.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="enable" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_data_bytes" type="nonNegativeInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_meta_data_bytes" type="nonNegativeInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_messages" type="nonNegativeInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_flush_delay" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="source_timestamp_resolution" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="thread_safe_write" type="boolean" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="discoveryQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The DISCOVERY QoS configures how Connections discover each other on the
+                network.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="enabled_transports" type="stringSeq" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="multicast_receive_addresses" type="inetAddressSeq" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="metatraffic_transport_priority" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_peers" type="stringSeq" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="accept_unknown_peers" type="boolean" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="discoveryConfigQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The DISCOVERY_CONFIG QoS policy is used to tune the discovery
+                process. It controls
+                how often to send discovery packets, how to determine when connections are alive or
+                dead, and resources used by the discovery mechanism.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="connection_liveliness_lease_duration" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="connection_liveliness_assert_period" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="remote_connection_purge_kind" type="remoteConnectionPurgeKind" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_liveliness_loss_detection_period" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_connection_announcements" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="min_initial_connection_announcement_period" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_initial_connection_announcement_period" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="connection_consumer_resource_limits" type="builtinTopicReaderResourceLimits" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="publication_consumer" type="rtpsReliableConsumerProtocol" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="publication_consumer_resource_limits" type="builtinTopicReaderResourceLimits" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subscription_consumer" type="rtpsReliableConsumerProtocol" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subscription_consumer_resource_limits" type="builtinTopicReaderResourceLimits" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="publication_producer" type="rtpsReliableProducerProtocol" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="publication_producer_data_lifecycle" type="producerDataLifecycleQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subscription_producer" type="rtpsReliableProducerProtocol" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subscription_producer_data_lifecycle" type="producerDataLifecycleQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="builtin_discovery_plugins" type="discoveryPluginKindMask" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="participant_message_consumer" type="rtpsReliableConsumerProtocol" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="participant_message_producer" type="rtpsReliableProducerProtocol" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="publication_producer_publish_mode" type="publishModeQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="subscription_producer_publish_mode" type="publishModeQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="asynchronous_discovery" type="asynchronousDeliveryQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="default_domain_announcement_period" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="ignore_default_domain_announcements" type="boolean" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="connectionResourceLimitsQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The Connection Resource Limits QoS policy configures
+                the
+                resources used by a Connection. Many of these resources are
+                used by the internal RTI Message Service database to store
+                information about locally and remotely created objects. Some
+                of the parameters configure the data structures used to
+                search through the database efficiently. Finally, there are parameters that limit the sizes
+                of variable-length data fields.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="local_producer_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="local_consumer_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="session_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="local_topic_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="remote_producer_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="remote_consumer_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="remote_connection_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="matching_producer_consumer_pair_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="matching_consumer_producer_pair_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="ignored_object_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="message_selector_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="outstanding_asynchronous_message_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="flow_controller_allocation" type="allocationSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="local_producer_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="local_consumer_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="session_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="local_topic_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="remote_producer_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="remote_consumer_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="remote_connection_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="matching_producer_consumer_pair_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="matching_consumer_producer_pair_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="ignored_object_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="message_selector_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="flow_controller_hash_buckets" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_gather_destinations" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="connection_user_data_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="topic_data_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="producer_user_data_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="consumer_user_data_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_partitions" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_partition_cumulative_characters" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="type_code_max_serialized_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="type_object_max_serialized_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="type_object_max_deserialized_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="deserialized_type_object_dynamic_allocation_threshold" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="message_selector_property_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="connection_property_list_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="connection_property_string_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="producer_property_list_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="producer_property_string_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="consumer_property_list_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="consumer_property_string_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="channel_seq_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="channel_filter_expression_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_endpoint_groups" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+	     <xs:element name="max_endpoint_group_cumulative_characters" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="transport_info_list_max_length" type="nonNegativeInteger" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="wireProtocolQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The WIRE_PROTOCOL QoS policy configures some Real-Time
+                Publish Subscribe
+                (RTPS) protocol-related properties for the Connection. The
+                open RTPS protocol is used by RTI Message Service to format
+                and interpret messages between Connections.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="connection_id" type="integer" minOccurs="0" maxOccurs="1"/>
+             <xs:element name="rtps_auto_id_kind" type="WireProtocolQosPolicyAutoKind" minOccurs="0" maxOccurs="1"/>
+	    <xs:element name="rtps_host_id" type="integer_RTPS_AUTO_ID" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_app_id" type="integer_RTPS_AUTO_ID" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_instance_id" type="integer_RTPS_AUTO_ID" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_well_known_ports" type="rtpsWellKnownPorts" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="rtps_reserved_port_mask" type="rtpsReservedPortKindMask" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="eventQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The EVENT QoS policy configures the internal RTI
+                Message Service Event thread.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="thread" type="threadSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_count" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_count" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="receiverPoolQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The RECEIVER_POOL QoS policy configures the internal RTI
+                Message Service
+                thread used to process the data received from a transport.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="thread" type="threadSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="buffer_size" type="positiveInteger_AUTO" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="buffer_alignment" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="builtinTopicReaderResourceLimits">
+        <xs:annotation>
+            <xs:documentation>
+                Built-in topic consumer's resource limits. Defines the
+                resources that can be used for a built-in-topic message
+                consumer. A built-in topic consumer subscribes reliably
+                to built-in topics containing
+                declarations of new entities or updates to existing entities in the domain.
+                Keys are used to differentiate among entities of the same type.
+                RTI Message Service assigns a unique key to each entity in a
+                domain.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="initial_messages" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_messages" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_infos" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_infos" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_outstanding_receives" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_outstanding_receives" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_messages_per_receive" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="disable_fragmentation_support" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_fragmented_messages" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_fragmented_messages" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_fragmented_messages_per_remote_producer" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_fragments_per_message" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="dynamically_allocate_fragmented_messages" type="boolean" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="asynchronousDeliveryQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy is used to enable or disable asynchronous
+                publishing and asynchronous
+                batch flushing for the Session.
+                If enabled, the Session will spawn two threads, one for
+                asynchronous publishing and
+                one for asynchronous batch flushing.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="disable_asynchronous_send" type="boolean" default="false" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="asynchronous_send_thread" type="threadSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="disable_asynchronous_batch" type="boolean" default="false" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="asynchronous_batch_thread" type="threadSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="asynchronous_batch_blocking_kind" type="threadBlockingKind" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="databaseQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The DATABASE QoS policy configures the internal "database"
+                (thread and data structures)
+                used by RTI Message Service to hold information about locally
+                created objects and remote objects that are discovered
+                through the discovery process.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="thread" type="threadSettings" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="shutdown_timeout" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cleanup_period" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="shutdown_cleanup_period" type="duration" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_records" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_skiplist_level" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="table_allocation_block_size" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="initial_weak_references" type="positiveInteger" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="max_weak_references" type="positiveInteger_UNLIMITED" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="exclusiveAreaQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy controls the creation and use of Exclusive
+                Areas. An exclusive area (EA)
+                is a mutex with built-in deadlock protection when multiple EAs are in use. It is used to
+                provide mutual exclusion among different threads of execution. Multiple EAs allow
+                greater concurrency by the internal and user threads when
+                executing RTI Message
+                Service code.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="use_shared_exclusive_area" type="boolean" default="false" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportBuiltinQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The TRANSPORT_BUILTIN QoS policy specifies which built-in
+                transports can be used
+                by the Connection. RTI Message Service provides two built-in
+                transports,
+                UDPv4 and shared memory. UDPv4 uses the IPv4 UDP protocol to send and receive
+                messages. The shared memory transport uses system shared memory for inter-process
+                communications.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="mask" type="transportBuiltinKindMask" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportSelectionQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The TRANSPORT_SELECTION QoS policy allows you to select the
+                transports that have
+                been installed with the Connection to be used by the producer
+                or consumer.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="enabled_transports" type="stringSeq" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportUnicastQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                The TRANSPORT_UNICAST QoS policy allows you to specify
+                unicast network
+                addresses to be used by Connection, producers and consumers
+                for receiving messages. Connections receive messages to
+                support the discovery process. Producers may receive ACK/NACK
+                messages to support the reliable protocol.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="transportUnicastSettingsSeq" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="transportMulticastQosPolicy">
+        <xs:annotation>
+            <xs:documentation>
+                This QoS policy allows you to specify network multicast
+                addresses to be used by
+                producers when sending data samples to this consumer.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="value" type="transportMulticastSettingsSeq" minOccurs="0"/>
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="typeConsistencyEnforcementQosPolicy">
+      <xs:annotation>
+        <xs:documentation>
+          This QoS policy configures how type consistency is enforced when
+          consumers and producers match.
+        </xs:documentation>
+      </xs:annotation>
+      <xs:all>
+        <xs:element name="kind" type="typeConsistencyKind" minOccurs="0"  maxOccurs="1"/>
+      </xs:all>
+    </xs:complexType>
+
+
+    <!-- =================================================================== -->
+    <!-- Objects                                                             -->
+    <!-- =================================================================== -->
+
+    <xs:complexType name="sessionQos">
+        <xs:annotation>
+            <xs:documentation>
+                QoS policies that apply to Sessions.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="asynchronous_delivery" type="asynchronousDeliveryQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="partition" type="partitionQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="presentation" type="presentationQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="session_data" type="sessionDataQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="exclusive_area" type="exclusiveAreaQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="session_name" type="entityNameQosPolicy" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+
+    <xs:complexType name="connectionFactoryQosType">
+        <xs:annotation>
+            <xs:documentation>
+                QoS policies related to ConnectionFactories and Connections.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="user_data" type="userDataQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="transport_builtin" type="transportBuiltinQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="default_unicast" type="transportUnicastQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="discovery" type="discoveryQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="property" type="propertyQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="connection_name" type="entityNameQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="wire_protocol" type="wireProtocolQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="resource_limits" type="connectionResourceLimitsQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="event" type="eventQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="receiver_pool" type="receiverPoolQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="database" type="databaseQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="discovery_config" type="discoveryConfigQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="domain_id" type="xs:nonNegativeInteger" default="0" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="session_defaults" type="sessionQos" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="type_support" type="typeSupportQosPolicy" minOccurs="0" maxOccurs="1"/>
+        </xs:all>
+    </xs:complexType>
+
+
+    <xs:element name="connection_factory">
+        <xs:annotation>
+            <xs:documentation>
+                QoS policies related to ConnectionFactories and Connections,
+                including attributes.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="connectionFactoryQosType">
+                    <xs:attribute name="name" type="elementName"/>
+                    <xs:attribute name="base_name" type="elementBaseName"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:complexType name="topicQosType">
+        <xs:annotation>
+            <xs:documentation>
+                QoS policies related to Topics.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="keyed" type="boolean" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="topic_data" type="topicDataQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="durability" type="durabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="durability_service" type="durabilityServiceQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="deadline" type="deadlineQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="latency_budget" type="latencyBudgetQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="liveliness" type="livelinessQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="reliability" type="reliabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="destination_order" type="destinationOrderQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="history" type="historyQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="resource_limits" type="resourceLimitsQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="transport_priority" type="transportPriorityQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="lifespan" type="lifespanQosPolicy" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="ownership" type="ownershipQosPolicy" minOccurs="0" maxOccurs="1"/>
+
+            <xs:element name="consumer_defaults" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation>
+                            QoS policies related to MessageConsumers.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:all>
+                        <xs:element name="availability" type="availabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="durability" type="durabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="deadline" type="deadlineQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="latency_budget" type="latencyBudgetQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="liveliness" type="livelinessQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="reliability" type="reliabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="destination_order" type="destinationOrderQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="history" type="historyQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="resource_limits" type="resourceLimitsQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="user_data" type="userDataQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="ownership" type="ownershipQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="time_based_filter" type="timeBasedFilterQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="consumer_data_lifecycle" type="consumerDataLifecycleQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="consumer_resource_limits" type="consumerResourceLimitsQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="protocol" type="consumerProtocolQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="transport_selection" type="transportSelectionQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="unicast" type="transportUnicastQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="multicast" type="transportMulticastQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="property" type="propertyQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="consumer_name" type="entityNameQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="type_consistency" type="typeConsistencyEnforcementQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="type_support" type="typeSupportQosPolicy" minOccurs="0" maxOccurs="1"/>
+                    </xs:all>
+                </xs:complexType>
+            </xs:element>
+
+            <xs:element name="producer_defaults" minOccurs="0" maxOccurs="1">
+                <xs:complexType>
+                    <xs:annotation>
+                        <xs:documentation>
+                            QoS policies related to MessageProducers.
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:all>
+                        <xs:element name="availability" type="availabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="durability" type="durabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="durability_service" type="durabilityServiceQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="deadline" type="deadlineQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="latency_budget" type="latencyBudgetQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="liveliness" type="livelinessQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="reliability" type="reliabilityQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="destination_order" type="destinationOrderQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="history" type="historyQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="resource_limits" type="resourceLimitsQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="transport_priority" type="transportPriorityQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="lifespan" type="lifespanQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="user_data" type="userDataQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="ownership" type="ownershipQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="ownership_strength" type="ownershipStrengthQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="producer_data_lifecycle" type="producerDataLifecycleQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="producer_resource_limits" type="producerResourceLimitsQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="protocol" type="producerProtocolQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="transport_selection" type="transportSelectionQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="unicast" type="transportUnicastQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="publish_mode" type="publishModeQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="property" type="propertyQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="batch" type="dataWriterBatchQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="multi_channel" type="multiChannelQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="producer_name" type="entityNameQosPolicy" minOccurs="0" maxOccurs="1"/>
+                        <xs:element name="type_support" type="typeSupportQosPolicy" minOccurs="0" maxOccurs="1"/>
+                    </xs:all>
+                </xs:complexType>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+
+    <xs:element name="topic">
+        <xs:annotation>
+            <xs:documentation>
+                QoS policies related to Topics, including attributes.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:complexContent>
+                <xs:extension base="topicQosType">
+                    <xs:attribute name="name" type="elementName" use="required"/>
+                    <xs:attribute name="base_name"
+                                  type="elementBaseName"
+                                  use="optional"/>
+                    <xs:attribute name="registered_type_name"
+                                  type="identifierName"
+                                  use="optional"/>
+                    <xs:attribute name="class_name"
+                                  type="javaClassName"
+                                  use="optional"/>
+                </xs:extension>
+            </xs:complexContent>
+        </xs:complexType>
+    </xs:element>
+
+
+    <xs:element name="defaults">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="topic"
+                            type="topicQosType"
+                            minOccurs="0"
+                            maxOccurs="1"/>
+                <xs:element name="connection_factory"
+                            type="connectionFactoryQosType"
+                            minOccurs="0"
+                            maxOccurs="1"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- ================================================================= -->
+    <!-- Type Definitions                                                  -->
+    <!-- ================================================================= -->
+
+    <xs:simpleType name="fileName">
+        <xs:restriction base="xs:string">
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="identifierName">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="([a-zA-Z_]|::)([a-zA-Z_0-9]|::)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="allTypeKind">
+        <xs:restriction base="xs:string">             
+            <xs:enumeration value="boolean"/>
+            <xs:enumeration value="octet"/>
+            <xs:enumeration value="long"/>
+            <xs:enumeration value="float"/>
+            <xs:enumeration value="double"/>
+            <xs:enumeration value="string"/>
+            <xs:enumeration value="char"/>
+            <xs:enumeration value="wchar"/>
+            <xs:enumeration value="wstring"/>
+            <xs:enumeration value="short"/>
+            <xs:enumeration value="unsignedShort"/>
+            <xs:enumeration value="unsignedLong"/>
+            <xs:enumeration value="longLong"/>
+            <xs:enumeration value="unsignedLongLong"/>
+            <xs:enumeration value="longDouble"/>
+            <xs:enumeration value="nonBasic"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="includeDecl">
+        <xs:attribute name="file" type="fileName" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="constDecl">
+        <xs:attribute name="name" type="identifierName" use="required"/>
+        <xs:attribute name="type" type="allTypeKind" use="required"/>
+        <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+        <xs:attribute name="value" type="xs:string" use="required"/>
+        <xs:attribute name="resolveName" type="trueFalseKind" use="optional"/>
+    </xs:complexType>
+
+    <xs:simpleType name="visibilityKind">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="public"/>
+            <xs:enumeration value="private"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="trueFalseKind">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="0"/>
+            <xs:enumeration value="1"/>
+            <xs:enumeration value="true"/>
+            <xs:enumeration value="false"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="arrayDimensionsKind">
+        <xs:restriction base="xs:string">
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="typeModifierKind">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="custom"/>
+            <xs:enumeration value="abstract"/>
+            <xs:enumeration value="truncatable"/>
+            <xs:enumeration value="none"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="directiveKind">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="copy"/>
+            <xs:enumeration value="copyC"/>
+            <xs:enumeration value="copyJava"/>
+            <xs:enumeration value="copyDeclaration"/>
+            <xs:enumeration value="copyCDeclaration"/>
+            <xs:enumeration value="copyJavaDeclaration"/>
+            <xs:enumeration value="copyCppcli"/>
+            <xs:enumeration value="copyCppcliDeclaration"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="directiveDecl">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="kind" type="directiveKind" use="required"/>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:complexType name="caseDiscriminatorDecl">
+        <xs:attribute name="value" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="caseDecl">
+        <xs:sequence>
+            <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="caseDiscriminator" type="caseDiscriminatorDecl" minOccurs="1" maxOccurs="unbounded"/>
+            </xs:choice>
+            <xs:element name="member" type="memberDecl" minOccurs="1" maxOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="memberDecl">
+        <xs:attribute name="name" type="identifierName" use="optional"/>
+        <xs:attribute name="type" type="allTypeKind" use="required"/>
+        <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+        <xs:attribute name="key" type="trueFalseKind" use="optional" default="false"/>
+        <xs:attribute name="pointer" type="trueFalseKind" use="optional" default="false"/>
+        <xs:attribute name="bitField" type="xs:string" use="optional"/>
+        <xs:attribute name="stringMaxLength" type="xs:string" use="optional"/>
+        <xs:attribute name="sequenceMaxLength" type="xs:string" use="optional"/>
+        <xs:attribute name="arrayDimensions" type="arrayDimensionsKind" use="optional"/>
+        <xs:attribute name="resolveName" type="trueFalseKind" use="optional"/>
+        <xs:attribute name="visibility" type="visibilityKind" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="structDecl">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="member" type="memberDecl" minOccurs="1"/>
+                <xs:element name="directive" type="directiveDecl" minOccurs="0"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="name" type="identifierName" use="required"/>
+        <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="valuetypeDecl">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="const" type="constDecl" minOccurs="0"/>
+                <xs:element name="member" type="memberDecl" minOccurs="1"/>
+                <xs:element name="directive" type="directiveDecl" minOccurs="0"/>
+            </xs:choice>
+        </xs:sequence>
+        <xs:attribute name="name" type="identifierName" use="required"/>
+        <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+        <xs:attribute name="baseClass" type="identifierName" use="optional"/>
+        <xs:attribute name="typeModifier" type="typeModifierKind" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="discriminatorDecl">
+        <xs:attribute name="type" type="identifierName" use="required"/>
+        <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="unionDecl">
+        <xs:sequence>
+            <xs:element name="discriminator" type="discriminatorDecl" minOccurs="1"/>
+            <xs:sequence maxOccurs="unbounded">
+                <xs:element name="case" type="caseDecl" minOccurs="1"/>
+            </xs:sequence>
+        </xs:sequence>
+        <xs:attribute name="name" type="identifierName" use="required"/>
+        <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="typedefDecl">
+        <xs:sequence>
+            <xs:element name="cases" type="memberDecl" minOccurs="0"/>
+        </xs:sequence>
+        <xs:attribute name="name" type="identifierName" use="required"/>
+        <xs:attribute name="type" type="allTypeKind" use="required"/>
+        <xs:attribute name="nonBasicTypeName" type="identifierName" use="optional"/>
+        <xs:attribute name="topLevel" type="trueFalseKind" use="optional"/>
+        <xs:attribute name="stringMaxLength" type="xs:string" use="optional"/>
+        <xs:attribute name="sequenceMaxLength" type="xs:string" use="optional"/>
+        <xs:attribute name="arrayDimensions" type="arrayDimensionsKind" use="optional"/>
+        <xs:attribute name="pointer" type="trueFalseKind" use="optional"/>
+        <xs:attribute name="resolveName" type="trueFalseKind" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="enumeratorDecl">
+        <xs:attribute name="name" type="identifierName" use="required"/>
+        <xs:attribute name="value" type="xs:string" use="optional"/>
+    </xs:complexType>
+
+    <xs:complexType name="enumDecl">
+        <xs:sequence>
+            <xs:element name="enumerator" type="enumeratorDecl" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+        <xs:attribute name="name" type="identifierName" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="forwardDecl">
+        <xs:attribute name="name" type="identifierName" use="required"/>
+        <xs:attribute name="kind" type="xs:string" use="required"/>
+    </xs:complexType>
+
+    <xs:group name="moduleElements">
+        <xs:sequence>
+            <xs:choice maxOccurs="unbounded">
+                <xs:element name="include" type="includeDecl" minOccurs="0"/>
+                <xs:element name="const" type="constDecl" minOccurs="0"/>
+                <xs:element name="directive" type="directiveDecl" minOccurs="0"/>
+                <xs:element name="module" type="moduleDecl" minOccurs="0"/>
+                <xs:element name="struct" type="structDecl" minOccurs="0"/>
+                <xs:element name="valuetype" type="valuetypeDecl" minOccurs="0"/>
+                <xs:element name="union" type="unionDecl" minOccurs="0"/>
+                <xs:element name="typedef" type="typedefDecl" minOccurs="0"/>
+                <xs:element name="enum" type="enumDecl" minOccurs="0"/>
+                <xs:element name="forward_dcl" type="forwardDecl" minOccurs="0"/>
+            </xs:choice>
+        </xs:sequence>
+    </xs:group>
+
+    <xs:complexType name="moduleDecl">
+        <xs:group ref="moduleElements"/>
+        <xs:attribute name="name" type="identifierName" use="required"/>
+    </xs:complexType>
+
+    <xs:element name="type_library">
+        <xs:annotation>
+            <xs:documentation>
+                The type library provides a way to group a set of data types
+                that can be used by Destination definitions.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:group ref="moduleElements"/>
+            <xs:attribute name="name" type="elementName" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+
+    <!-- =================================================================== -->
+    <!-- Libraries                                                           -->
+    <!-- =================================================================== -->
+
+    <xs:element name="library">
+        <xs:annotation>
+            <xs:documentation>
+                The library provides a way to group a set of related objects
+                under a namespace.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="defaults" minOccurs="0" maxOccurs="1"/>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="connection_factory" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="topic" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="name" type="elementName" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="jms">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:choice maxOccurs="unbounded">
+                    <xs:element ref="library" minOccurs="0" maxOccurs="unbounded"/>
+                    <xs:element ref="type_library"
+                                minOccurs="0"
+                                maxOccurs="unbounded"/>
+                </xs:choice>
+            </xs:sequence>
+            <xs:attribute name="version" type="xs:string" fixed="[VERSION]"/>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

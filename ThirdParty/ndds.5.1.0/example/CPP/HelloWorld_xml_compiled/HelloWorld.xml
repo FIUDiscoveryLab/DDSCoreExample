@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"        
+       xsi:noNamespaceSchemaLocation="../../../resource/rtiddsgen/schema/rti_dds_topic_types.xsd">
+
+    <const name="MAX_NAME_LEN" type="long" value="64"/>
+    <const name="MAX_MSG_LEN"  type="long" value="128"/>
+
+    <struct name="HelloWorld">
+        <member name="sender"  type="string"  key="true"   stringMaxLength="MAX_NAME_LEN"/>
+        <member name="message" type="string"               stringMaxLength="MAX_MSG_LEN"/>
+        <member name="count"   type="long"/>
+    </struct>
+</types>

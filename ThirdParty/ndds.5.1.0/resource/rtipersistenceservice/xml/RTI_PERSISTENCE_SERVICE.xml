@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schema/rtipersistenceservice.xsd">
+
+    <!-- QoS LIBRARY SECTION -->
+    <qos_library name="SystemPersistenceQosLib">
+        <qos_profile name="QosProfile">
+            <datawriter_qos name="WriterQos">
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>100</depth>
+                </history>
+            </datawriter_qos>
+            <datareader_qos name="ReaderQos">
+                <reliability>
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                </reliability>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>100</depth>
+                </history>
+            </datareader_qos>
+        </qos_profile>
+    </qos_library>
+  
+    <!-- ================================================================= -->
+    <!-- Persist all data in memory -->
+    <!-- ================================================================= -->
+    <persistence_service name="default">
+        <annotation>
+            <documentation>
+                Persists in memory all topics published with TRANSIENT durability.       
+            </documentation>
+        </annotation>
+        
+        <administration>
+            <domain_id>0</domain_id>
+            <distributed_logger>
+                <enabled>true</enabled>
+                <filter_level>WARNING</filter_level>
+            </distributed_logger>
+        </administration>
+        
+        <participant name="defaultParticipant">
+            <!-- <domain_id>0</domain_id> -->
+            <persistence_group name="persistAll">
+                <filter>*</filter>
+                <single_publisher>true</single_publisher>
+                <single_subscriber>true</single_subscriber>
+                <datawriter_qos base_name="SystemPersistenceQosLib::QosProfile"/>
+                <datareader_qos base_name="SystemPersistenceQosLib::QosProfile"/>
+            </persistence_group>
+        </participant>
+        
+    </persistence_service>
+
+    <!-- ================================================================= -->
+    <!-- Persist all data in disk -->
+    <!-- ================================================================= -->
+    <persistence_service name="defaultDisk">
+        
+        <annotation>
+            <documentation>
+                Persists in the file system all topics published with PERSISTENT durability.
+            </documentation>
+        </annotation>
+                
+        <administration>
+            <domain_id>0</domain_id>
+            <distributed_logger>
+                <enabled>true</enabled>
+                <filter_level>WARNING</filter_level>
+            </distributed_logger>
+        </administration>
+        
+        <persistent_storage>
+            <filesystem>
+                <!-- <directory>MyDirectory</directory> -->
+                <file_prefix>defaultDisk_</file_prefix>
+            </filesystem>
+        </persistent_storage>
+        <participant name="defaultParticipant">
+            <!-- <domain_id>0</domain_id> -->
+            <persistence_group name="persistAll">
+                <filter>*</filter>
+                <single_publisher>true</single_publisher>
+                <single_subscriber>true</single_subscriber>
+                <datawriter_qos base_name="SystemPersistenceQosLib::QosProfile"/>
+                <datareader_qos base_name="SystemPersistenceQosLib::QosProfile"/>
+            </persistence_group>
+        </participant>
+    </persistence_service>
+
+</dds>

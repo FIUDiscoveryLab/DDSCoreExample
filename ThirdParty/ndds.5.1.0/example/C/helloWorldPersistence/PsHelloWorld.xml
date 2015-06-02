@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+Description
+File for use with the C HelloWorldPersistence example.
+-->
+
+<!-- A Configuration file may be used by several persistence services 
+     specifying multiple <persistence_service> entries 
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../resource/rtipersistenceservice/schema/rti_persistence_service.xsd">
+    <!-- Qos Library -->
+    <qos_library name="HelloWorldQosLib">
+        <datawriter_qos name="HelloWorldWriterQos">
+            <history>
+                <kind>KEEP_ALL_HISTORY_QOS</kind>
+            </history>
+            <reliability>
+                <kind>RELIABLE_RELIABILITY_QOS</kind>
+            </reliability>                    
+        </datawriter_qos>
+
+        <datareader_qos name="HelloWorldReaderQos">
+            <history>
+                <kind>KEEP_ALL_HISTORY_QOS</kind>
+            </history>
+            <reliability>
+                <kind>RELIABLE_RELIABILITY_QOS</kind>
+            </reliability>
+        </datareader_qos>        
+    </qos_library>
+
+    <!-- Persistence Service running on PERSISTENT mode and persisting into files -->
+    <persistence_service name="HelloWorldFile">
+        <persistent_storage>
+            <filesystem>
+                <!-- Use this tag to change the directory where the files are stored
+                     (the default value is the current directory)                 
+                <directory>/tmp</directory> 
+                -->
+                <file_prefix>PS</file_prefix>
+            </filesystem>
+        </persistent_storage>
+
+        <!-- Domain participant monitored by the persistence service -->
+        <participant name="HelloWorldParticipant">
+            <domain_id>0</domain_id>
+            <!-- Persistence group -->
+            <persistence_group name="HelloWorldGroup">
+                <filter>*</filter>
+                <use_durability_service>false</use_durability_service>
+                <single_publisher>true</single_publisher>
+                <single_subscriber>true</single_subscriber>
+                <datawriter_qos base_name="HelloWorldQosLib::HelloWorldWriterQos"/>
+                <datareader_qos base_name="HelloWorldQosLib::HelloWorldReaderQos"/>
+            </persistence_group>
+        </participant>
+    </persistence_service>
+
+    <!-- Persistence Service running on PERSISTENT mode with MySQL -->
+    <persistence_service name="HelloWorldMySQL">
+        <persistent_storage>
+            <external_database>
+                <dsn>HelloWorldMySQL</dsn>
+                <username>test</username>
+                <password>test</password>
+            </external_database>
+        </persistent_storage>
+        
+        <!-- Domain participant monitored by the persistence service -->
+        <participant name="HelloWorldParticipant">
+            <domain_id>0</domain_id>
+            <!-- Persistence group -->
+            <persistence_group name="HelloWorldGroup">
+                <filter>*</filter>
+                <use_durability_service>false</use_durability_service>                
+                <single_publisher>true</single_publisher>
+                <single_subscriber>true</single_subscriber>              
+                <datawriter_qos base_name="HelloWorldQosLib::HelloWorldWriterQos"/>
+                <datareader_qos base_name="HelloWorldQosLib::HelloWorldReaderQos"/>
+            </persistence_group>
+        </participant>
+    </persistence_service>
+
+</dds>

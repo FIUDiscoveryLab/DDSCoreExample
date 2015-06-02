@@ -1,0 +1,65 @@
+##/* $Id: subscriberListenerSpecification.vm,v 1.5 2013/06/27 15:59:41 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a,28may13,ajm Adding constructMap node for the example type
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,14oct11,jmt created 
+##========================================================================*/*#
+
+with DDS.DataReaderListener;
+with DDS.DataReader;
+
+package ${constructMap.nativeFQName}_SubscriberListener is
+   type My_Listener is new Standard.DDS.DataReaderListener.Ref with null record;
+   type My_Listener_Access is access all My_Listener'Class;
+
+   procedure On_Data_Available
+     (Self       : not null access My_Listener;
+      The_Reader : in out Standard.DDS.DataReader.Ref'Class);
+
+   procedure On_Subscription_Matched
+     (Self       : not null access My_Listener;
+      The_Reader : access constant Standard.DDS.DataReader.Ref'Class'Class;
+      Status     : in Standard.DDS.SubscriptionMatchedStatus)
+   is null;
+
+   procedure On_Sample_Lost
+     (Self       : not null access My_Listener;
+      The_Reader : access constant Standard.DDS.DataReader.Ref'Class'Class;
+      Status     : in Standard.DDS.SampleLostStatus)
+   is null;
+
+   procedure On_Requested_Deadline_Missed
+     (Self       : not null access My_Listener;
+      The_Reader : access constant Standard.DDS.DataReader.Ref'Class'Class;
+      Status     : in Standard.DDS.RequestedDeadlineMissedStatus)
+   is null;
+
+   procedure On_Requested_Incompatible_Qos
+     (Self       : not null access My_Listener;
+      The_Reader : access constant Standard.DDS.DataReader.Ref'Class'Class;
+      Status     : in Standard.DDS.RequestedIncompatibleQosStatus)
+   is null;
+
+   procedure On_Sample_Rejected
+     (Self       : not null access My_Listener;
+      The_Reader : access constant Standard.DDS.DataReader.Ref'Class;
+      Status     : in Standard.DDS.SampleRejectedStatus)
+   is null;
+
+   procedure On_Liveliness_Changed
+     (Self       : not null access My_Listener;
+      The_Reader : access constant Standard.DDS.DataReader.Ref'Class;
+      Status     : in Standard.DDS.LivelinessChangedStatus)
+   is null;
+
+end ${constructMap.nativeFQName}_SubscriberListener;
+

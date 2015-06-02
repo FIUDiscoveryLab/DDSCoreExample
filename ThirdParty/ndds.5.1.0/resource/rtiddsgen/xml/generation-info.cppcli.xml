@@ -1,0 +1,2108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE generationInfo SYSTEM "generationInfo.dtd" [
+<!ENTITY namespaceSeperator ".">    <!-- namespace separator -->
+]>
+
+<!--
+   $Id: generation-info.cppcli.xml,v 1.19 2013/10/28 04:48:07 fernando Exp $
+ 
+   (c) Copyright 2007, Real-Time Innovations, Inc.  All rights reserved.
+   No duplications, whole or partial, manual or electronic, may be made
+   without prior written permission.  Any such copies, or
+   revisions thereof, must display this notice unaltered.
+   This code contains trade secrets of Real-Time Innovations, Inc.
+
+Modification history
+ - - - - - - - - - -
+5.1.0,27oct13,fcs CODEGEN-564: Normal string shouldn't be initialized as 
+                  Wide String (with L) in .Net
+5.1.0,27oct13,fcs CORE-5160: Serialization/Deserialization of multidimensional 
+                  array of Enum is broken
+5.1.0,26oct13,fcs CODEGEN-561: Union mutability support in .NET
+5.1.0,25oct13,fcs CODEGEN-584: Received samples for an Extensible type may contain 
+                  invalid values for fields not present on the wire
+5.1.0,09oct13,fcs CODEGEN-494: Primitive and complex array of sequences not 
+                  supported by nddsgen on .Net
+5.1.0,07oct13,fcs Refactored bound check in sequence deserialization
+5.1.0,06oct13,fcs CODEGEN-567: The TypePlugin get_size functions do not 
+                  provide the right value for Mutable types
+10ac,10feb10,fcs Fixed bug 13844
+10ac,20aug09,fcs Added encapsulation error detection &
+                 Removed CDR_NATIVE usage
+10ac,10aug09,fcs get_serialized_sample_size support
+10ac,17aug09,fcs Fixed bug 13084, 13085, 13086, 13087
+10x,21jul09,fcs Fixed enum copy
+10x,21jul09,fcs Fixed bug 13047
+10x,15dec08,jim Fixed problem with initializers for arrays of string sequences
+10x,03jul08,rbw Bug #12375: Aligned sequence class names with names of .Net
+                primitives
+10x,22may08 rbw Made string handle syntax more robust. Fixed min/max
+                serialized bugs. Fixed multi-dimensional enum arrays.
+10x,22may08,rbw Made copying more type-safe
+10x,12may08,rbw Added multi-dimensional array support. Removed obsolete
+                finalize() method generation.
+10x,09may08,rbw Fixed generated variable names to avoid problems w/ unions.
+                Refactored printing support to our API.
+10x,08may08,rbw Added union support; fixed arraySequence support
+10x,08may08,rbw Removed unfinished pointer support: generated .Net types are
+                already reference types
+10x,08may08,rbw Added bit field support
+10v,11apr08,rbw Wrapped mix/max size serialized in managed code
+10v,10apr08,rbw Removed dead unmanaged code; replaced unmanaged primitives w/
+                managed equivalents
+10v,09apr08,rbw Type plug-in API is now managed
+10v,23mar08,rbw Check for overflows when serializing strings
+10v,22mar08,rbw Added Object::Equals() override. Fixed primitive
+                (de)serialization for types where wire size and memory size
+                don't match
+10v,21mar08,rbw Sequence buffer is now a property, not an explicit method
+10v,20mar08,rbw Don't set element_pointers_allocation property on enum seq's
+10v,19mar08,rbw Fixed primitive array/sequence (de)serialization
+10v,19mar08,rbw Improved printing; fixed enum (de)serialization
+10v,17mar08,rbw Fixed skip support
+10v,17mar08,fcs Support for get_min_size_serialized
+10v,17mar08,fcs Added skip support
+10v,13mar08,rbw Fixed key copying
+10v,13mar08,rbw Added fixes for embedded structures
+10v,12mar08,rbw Bug fixes
+10v,11mar08,rbw Completed support for primitive sequences
+10v,11mar08,rbw Added enum support and some sequence support
+10s,06mar08,rbw Extensive fixes for arrays and sequences
+10s,04mar08,rbw Fixed lots of compile errors
+10s,29feb08,rbw Added back a lot of content: we no longer depend on
+                unmanaged C++ generation
+10s,28feb08,rbw Replaced more unmanaged code w/ managed
+10s,21feb08,rbw Fixed string and array marshaling
+10s,13feb08,rbw Created based on C version
+-->
+
+<generationInfo style="RTI" language="CppCLI">
+    <typeInfoMap>
+               
+        <type idlType="short"
+              initialValue="0"
+              nativeType="System::Int16"
+              typeCode="DDS_g_tc_short"
+              nativeTypeSeq="DDS::ShortSeq"
+              typeEnum="RTI_CDR_SHORT_TYPE"
+              elementSerializeMethod="serialize_short"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_short"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_short"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printShort"
+              elementInitMethod="RTICdrType_initShort"
+              elementSize="RTI_CDR_SHORT_SIZE"
+              elementAlignment="RTI_CDR_SHORT_ALIGN"
+              elementSizeMethod="CdrSizes::SHORT-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::SHORT-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::SHORT-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="RTICdrType_printBits"/>   
+
+        <type idlType="long"
+              initialValue="0"
+              nativeType="System::Int32" 
+              typeCode="DDS_g_tc_long"
+              nativeTypeSeq="DDS::IntSeq"
+              typeEnum="RTI_CDR_LONG_TYPE"       
+              elementSerializeMethod="serialize_long"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_long"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_long"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printLong"
+              elementInitMethod="RTICdrType_initLong"
+              elementSize="RTI_CDR_LONG_SIZE"
+              elementAlignment="RTI_CDR_LONG_ALIGN"  
+              elementSizeMethod="CdrSizes::LONG-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::LONG-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::LONG-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="RTICdrType_printBits"/>   
+
+        <type idlType="longlong"
+              initialValue="0"
+              nativeType="System::Int64" 
+              typeCode="DDS_g_tc_longlong"
+              nativeTypeSeq="DDS::LongSeq"
+              typeEnum="RTI_CDR_LONG_LONG_TYPE"    
+              elementSerializeMethod="serialize_long_long"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_long_long"
+              arrayDeserializeMethod="deserialize_primitive_array"        
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_long_long"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printLongLong"
+              elementInitMethod="RTICdrType_initLongLong"
+              elementSize="RTI_CDR_LONG_LONG_SIZE"
+              elementAlignment="RTI_CDR_LONG_LONG_ALIGN"     
+              elementSizeMethod="CdrSizes::LONG_LONG-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::LONG_LONG-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::LONG_LONG-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="notUsed"/>   
+
+        <type idlType="unsignedshort"
+              initialValue="0"
+              nativeType="System::UInt16" 
+              typeCode="DDS_g_tc_ushort"
+              nativeTypeSeq="DDS::UnsignedShortSeq"
+              typeEnum="RTI_CDR_UNSIGNED_SHORT_TYPE"         
+              elementSerializeMethod="serialize_unsigned_short"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_unsigned_short"
+              arrayDeserializeMethod="deserialize_primitive_array" 
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_unsigned_short"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printUnsignedShort"
+              elementInitMethod="RTICdrType_initUnsignedShort"
+              elementSize="RTI_CDR_UNSIGNED_SHORT_SIZE"
+              elementAlignment="RTI_CDR_UNSIGNED_SHORT_ALIGN"
+              elementSizeMethod="CdrSizes::UNSIGNED_SHORT-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::UNSIGNED_SHORT-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::UNSIGNED_SHORT-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="RTICdrType_printUnsignedBits"/>   
+
+        <type idlType="unsignedlong"
+              initialValue="0"
+              nativeType="System::UInt32" 
+              typeCode="DDS_g_tc_ulong"
+              nativeTypeSeq="DDS::UnsignedIntSeq"
+              typeEnum="RTI_CDR_UNSIGNED_LONG_TYPE"                 
+              elementSerializeMethod="serialize_unsigned_long"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_unsigned_long"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_unsigned_long"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printUnsignedLong"
+              elementInitMethod="RTICdrType_initUnsignedLong"
+              elementSize="RTI_CDR_UNSIGNED_LONG_SIZE"
+              elementAlignment="RTI_CDR_UNSIGNED_LONG_ALIGN"
+              elementSizeMethod="CdrSizes::UNSIGNED_LONG-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::UNSIGNED_LONG-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::UNSIGNED_LONG-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="RTICdrType_printUnsignedBits"/>   
+
+        <type idlType="unsignedlonglong"
+              initialValue="0"
+              nativeType="System::UInt64" 
+              typeCode="DDS_g_tc_ulonglong"
+              nativeTypeSeq="DDS::UnsignedLongSeq"
+              typeEnum="RTI_CDR_UNSIGNED_LONG_LONG_TYPE"                 
+              elementSerializeMethod="serialize_unsigned_long_long"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_unsigned_long_long"
+              arrayDeserializeMethod="deserialize_primitive_array"        
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_unsigned_long_long"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printUnsignedLongLong"
+              elementInitMethod="RTICdrType_initUnsignedLongLong"
+              elementSize="RTI_CDR_UNSIGNED_LONG_LONG_SIZE"
+              elementAlignment="RTI_CDR_UNSIGNED_LONG_LONG_ALIGN"
+              elementSizeMethod="CdrSizes::LONG_LONG-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::LONG_LONG-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::LONG_LONG-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="notUsed"/>   
+
+        <type idlType="float"
+              initialValue="0"
+              nativeType="System::Single" 
+              typeCode="DDS_g_tc_float"
+              nativeTypeSeq="DDS::FloatSeq"
+              typeEnum="RTI_CDR_FLOAT_TYPE"                 
+              elementSerializeMethod="serialize_float"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_float"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_float"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printFloat"
+              elementInitMethod="RTICdrType_initFloat"
+              elementSize="RTI_CDR_FLOAT_SIZE"
+              elementAlignment="RTI_CDR_FLOAT_ALIGN"
+              elementSizeMethod="CdrSizes::FLOAT-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::FLOAT-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::FLOAT-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="notUsed"/>   
+
+        <type idlType="double"
+              initialValue="0"
+              nativeType="System::Double" 
+              typeCode="DDS_g_tc_double"
+              nativeTypeSeq="DDS::DoubleSeq"
+              typeEnum="RTI_CDR_DOUBLE_TYPE"                 
+              elementSerializeMethod="serialize_double"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_double"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_double"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printDouble"
+              elementInitMethod="RTICdrType_initDouble"
+              elementSize="RTI_CDR_DOUBLE_SIZE"
+              elementAlignment="RTI_CDR_DOUBLE_ALIGN"
+              elementSizeMethod="CdrSizes::DOUBLE-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::DOUBLE-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::DOUBLE-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="notUsed"/>   
+
+        <type idlType="longdouble"
+              initialValue="0"
+              nativeType="DDS::LongDouble" 
+              typeCode="DDS_g_tc_longdouble"
+              nativeTypeSeq="DDS::LongDoubleSeq"
+              typeEnum="RTI_CDR_LONG_DOUBLE_TYPE"                 
+              elementSerializeMethod="serialize_long_double"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_long_double"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_long_double"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printLongDouble"
+              elementInitMethod="RTICdrType_initLongDouble"
+              elementSize="RTI_CDR_LONG_DOUBLE_SIZE"
+              elementAlignment="RTI_CDR_LONG_DOUBLE_ALIGN"
+              elementSizeMethod="CdrSizes::LONG_DOUBLE-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::LONG_DOUBLE-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::LONG_DOUBLE-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="notUsed"/>   
+
+        <type idlType="char"
+              initialValue="0"
+              nativeType="System::Char"
+              typeCode="DDS_g_tc_char"
+              nativeTypeSeq="DDS::CharSeq"
+              typeEnum="RTI_CDR_CHAR_TYPE"                 
+              elementSerializeMethod="serialize_char"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_char"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_char"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printChar"
+              elementInitMethod="RTICdrType_initChar"
+              elementSize="RTI_CDR_CHAR_SIZE"
+              elementAlignment="RTI_CDR_CHAR_ALIGN"
+              elementSizeMethod="CdrSizes::CHAR-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::CHAR-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::CHAR-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="RTICdrType_printUnsignedBits"/>   
+
+        <type idlType="wchar"
+              initialValue="0"
+              nativeType="System::Char" 
+              typeCode="DDS_g_tc_wchar"
+              nativeTypeSeq="DDS::WcharSeq"
+              typeEnum="RTI_CDR_WCHAR_TYPE"                 
+              elementSerializeMethod="serialize_wchar"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_wchar"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_wchar"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printWchar"
+              elementInitMethod="RTICdrType_initWchar"
+              elementSize="RTI_CDR_WCHAR_SIZE"
+              elementAlignment="RTI_CDR_WCHAR_ALIGN"
+              elementSizeMethod="CdrSizes::WCHAR-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::WCHAR-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::WCHAR-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="RTICdrType_printBits"/>   
+
+        <type idlType="octet"
+              initialValue="0"
+              nativeType="System::Byte" 
+              typeCode="DDS_g_tc_octet"
+              nativeTypeSeq="DDS::ByteSeq"
+              typeEnum="RTI_CDR_OCTET_TYPE"                 
+              elementSerializeMethod="serialize_octet"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_octet"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_octet"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printOctet"
+              elementInitMethod="RTICdrType_initOctet"
+              elementSize="RTI_CDR_OCTET_SIZE"
+              elementAlignment="RTI_CDR_OCTET_ALIGN"
+              elementSizeMethod="CdrSizes::OCTET-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::OCTET-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::OCTET-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="RTICdrType_printBits"/>   
+
+        <type idlType="boolean"
+              initialValue="false"
+              nativeType="System::Boolean" 
+              typeCode="DDS_g_tc_boolean"
+              nativeTypeSeq="DDS::BooleanSeq"
+              typeEnum="RTI_CDR_BOOLEAN_TYPE"                 
+              elementSerializeMethod="serialize_boolean"
+              arraySerializeMethod="serialize_primitive_array"
+              sequenceSerializeMethod="serialize_primitive_sequence"
+              elementDeserializeMethod="deserialize_boolean"
+              arrayDeserializeMethod="deserialize_primitive_array"
+              sequenceDeserializeMethod="deserialize_primitive_sequence"
+              elementSkipMethod="skip_boolean"
+              arraySkipMethod="skip_primitive_array"
+              sequenceSkipMethod="skip_primitive_sequence"
+              elementPrintMethod="RTICdrType_printBoolean"
+              elementInitMethod="RTICdrType_initBoolean"
+              elementSize="RTI_CDR_BOOLEAN_SIZE"
+              elementAlignment="RTI_CDR_BOOLEAN_ALIGN"
+              elementSizeMethod="CdrSizes::BOOLEAN-&gt;serialized_size"
+              arraySizeMethod="CdrSizes::BOOLEAN-&gt;serialized_array_size"
+              sequenceSizeMethod="CdrSizes::BOOLEAN-&gt;serialized_sequence_size"
+              elementPrintBitsMethod="notUsed"/>   
+    
+    </typeInfoMap>
+    
+
+    <!-- Mapping of method kinds (serialize, deserialize, etc) to their template string.
+         Each method kind is further categorized using <method> child element that has
+         a mandetory attribute "kind" and an optional attribute "typeKind". When a
+         code generation stylesheet seeks the right template given a method and a member,
+         it should be ready to match even when the typeKind attribute is missing. This
+         avoids duplicating the template when the difference between typeKind (builtin
+         vs. user) does not matter.
+    -->
+    
+    <!-- TODO: Document the substitution strings and their meaning in form of a table -->
+    <methodInfoMap>
+    
+    <!-- ============= Struct member declaration ========================= -->
+ 
+    <!-- While not really a method, from code-generation point-of-view, the difference 
+         between declaration code and method code for a struct member is irrelevant. -->
+
+        <method kind="structMember">
+            <template kind="scalar">
+    %%nativeType%% %%rawName%%;</template>
+            <template kind="scalar" typeKind="user" enum="no">
+    %%nativeType%%^ %%rawName%%;</template>
+            <template kind="scalar" typeKind="user" baseMemberKind="array">
+    %%nativeType%%^ %%rawName%%;</template>
+            <template kind="scalar" typeKind="user" baseMemberKind="sequence">
+    %%nativeType%%^ %%rawName%%;</template>
+            <template kind="scalar" typeKind="user" baseMemberKind="araySequence">
+    %%nativeType%%^ %%rawName%%;</template>
+            <template kind="string">
+    System::String^ %%rawName%%; // maximum length = %%stringMaxLength%%</template>
+            <template kind="wstring">
+    System::String^ %%rawName%%; // maximum length = %%stringMaxLength%%</template>
+            <template kind="array">
+    array&lt;%%nativeType%%, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>
+            <template kind="array" typeKind="user" type="string">
+    array&lt;System::String^, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>
+            <template kind="array" typeKind="user" type="wstring">
+    array&lt;System::String^, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>
+            <template kind="array" typeKind="user" enum="yes">
+    array&lt;%%nativeType%%, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>
+            <template kind="array" typeKind="user">
+    array&lt;%%nativeType%%^, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>
+            <template kind="sequence" typeKind="user" type="string">
+    DDS::StringSeq^ %%rawName%%;</template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    DDS::WstringSeq^ %%rawName%%;</template>    
+            <template kind="sequence">
+    %%nativeTypeSeq%%^ %%rawName%%;</template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    array&lt;DDS::StringSeq^, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    array&lt;DDS::WstringSeq^, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>                
+            <template kind="arraySequence">
+    array&lt;%%nativeTypeSeq%%^, %%arrayDimensionCount%%&gt;^ %%rawName%%; // length = %%cardinality%%</template>                
+            <template kind="bitfield">
+    %%nativeType%% %%rawName%%;</template>
+        </method>
+    
+    
+    <!-- ============================== Serialize ========================= -->
+
+        <method kind="serialize">
+            <template kind="scalar" typeKind="builtin">
+    if (!stream.%%elementSerializeMethod%%(%%sampleAccess%%%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="scalar" typeKind="user" enum="yes">
+    if (!%%elementSerializeMethod%%(
+            endpoint_data,
+            %%sampleAccess%%%%name%%,
+            stream,
+            false, // serialize encapsulation
+            encapsulation_id,
+            true,  // serialize data 
+            endpoint_plugin_qos)) {
+        return false;
+    }
+            </template>
+            <template kind="scalar" typeKind="user">
+    if (!%%elementSerializeMethod%%(
+            endpoint_data,
+            %%sampleAccess%%%%name%%,
+            stream,
+            false, // serialize encapsulation header
+            encapsulation_id,
+            true,  // serialize data
+            endpoint_plugin_qos)) {
+        return false;
+    }
+            </template>
+            <template kind="string">
+    if (!stream.serialize_string(%%sampleAccess%%%%name%%, %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="wstring">
+    if (!stream.serialize_wide_string(%%sampleAccess%%%%name%%, %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="builtin">
+    if (!stream.%%arraySerializeMethod%%(
+            %%sampleAccess%%%%name%%, %%multiDimensionalArraySize%%, %%typeEnum%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="user" type="string">
+    if (!stream.serialize_string_array(%%sampleAccess%%%%name%%,
+                                       %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+    if (!stream.serialize_wide_string_array(%%sampleAccess%%%%name%%,
+                                            %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="user" enum="yes">
+    %%cardinalityArrayForLoopPre%%
+      if (!%%elementSerializeMethod%%(
+              endpoint_data,
+              %%sampleAccess%%%%name%%%%cardinalityCurrentElement%%,
+              stream,
+              false, // serialize encapsulation
+              encapsulation_id,
+              true,  // serialize data 
+              endpoint_plugin_qos)) {
+          return false;
+      }    
+    %%cardinalityArrayForLoopPost%%
+            </template>
+            <template kind="array" typeKind="user">
+    {
+        Int32 length = %%sampleAccess%%%%name%%->Length;
+        for (Int32 i = 0; i &lt; length; ++i) {
+            if (!%%elementSerializeMethod%%(
+                    endpoint_data,
+                    %%sampleAccess%%%%name%%[i],
+                    stream,
+                    false,
+                    encapsulation_id,
+                    true,
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="array" typeKind="user" multidim="yes">
+    for each (%%nativeType%%^ elem in %%sampleAccess%%%%name%%) {
+        if (!%%elementSerializeMethod%%(
+                endpoint_data,
+                elem,
+                stream,
+                false,
+                encapsulation_id,
+                true,
+                endpoint_plugin_qos)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    if (!stream.%%sequenceSerializeMethod%%(%%sampleAccess%%%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    if (!stream.serialize_string_sequence(%%sampleAccess%%%%name%%,
+                                              %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    if (!stream.serialize_wide_string_sequence(%%sampleAccess%%%%name%%,
+                                                   %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" enum="yes">
+    if (!stream.serialize_enum_sequence(%%sampleAccess%%%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user">
+    {
+        // Serialize %%sampleAccess%%%%name%% length:
+        UInt32 length = (UInt32) %%sampleAccess%%%%name%%->length;
+        if (!stream.serialize_unsigned_long(length)) {
+            return false;
+        }
+        // Serialize %%sampleAccess%%%%name%% elements:
+        for (UInt32 i = 0; i &lt; length; ++i) {
+            if (!%%elementSerializeMethod%%(
+                    endpoint_data,
+                    %%sampleAccess%%%%name%%->get_at(i),
+                    stream,
+                    false, // serialize encapsulation
+                    encapsulation_id,
+                    true,  // serialize sample
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.serialize_string_sequence(
+                %%sampleAccess%%%%name%%[i], %%stringMaxLength%%)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string" multidim="yes">
+    for each (StringSeq^ elem in %%sampleAccess%%%%name%%) {
+        if (!stream.serialize_string_sequence(
+                elem, %%stringMaxLength%%)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.serialize_wide_string_sequence(
+                %%sampleAccess%%%%name%%[i], %%stringMaxLength%%)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring" multidim="yes">
+    for each (WstringSeq^ elem in %%sampleAccess%%%%name%%) {
+        if (!stream.serialize_wide_string_sequence(
+                elem, %%stringMaxLength%%)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        // Serialize %%sampleAccess%%%%name%%[i] length:
+        UInt32 length = (UInt32) %%sampleAccess%%%%name%%[i]->length;
+        if (!stream.serialize_unsigned_long(length)) {
+            return false;
+        }
+        // Serialize %%sampleAccess%%%%name%%[i] elements:
+        for (UInt32 j = 0; j &lt; length; ++j) {
+            if (!%%elementSerializeMethod%%(
+                    endpoint_data,
+                    %%sampleAccess%%%%name%%[i]->get_at(j),
+                    stream,
+                    false, // serialize encapsulation
+                    encapsulation_id,
+                    true,  // serialize sample
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="builtin">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        // Serialize %%sampleAccess%%%%name%%[i] length:
+        UInt32 length = (UInt32) %%sampleAccess%%%%name%%[i]->length;
+        if (!stream.serialize_unsigned_long(length)) {
+            return false;
+        }
+        if (length != 0) {
+          if (!stream.%%arraySerializeMethod%%(
+                  %%sampleAccess%%%%name%%[i]->buffer,
+                  length,
+                  %%typeEnum%%)) {
+              return false;
+          }
+        }
+    }
+            </template>
+            <template kind="bitfield" bitKind="normal">
+    if (!stream.serialize_bits(
+            static_cast&lt;UInt32&gt;(%%sampleAccess%%%%name%%), %%bits%%)) {
+        return false;
+    }
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+    if (!stream.serialize_bits(
+            static_cast&lt;UInt32&gt;(%%sampleAccess%%%%name%%), %%bits%%)) {
+        return false;
+    }
+    if (!stream.flush_bits_buffer()) {
+        return false;
+    }
+            </template>
+        </method>
+
+    <!-- =========================== Deserialize ========================= -->
+
+        <method kind="deserialize">
+            <template kind="scalar" typeKind="builtin">
+    %%sampleAccess%%%%name%% = stream.%%elementDeserializeMethod%%();
+            </template>
+            <template kind="scalar" typeKind="user" enum="yes">
+    if (!%%elementDeserializeMethod%%(
+            endpoint_data,
+            %%sampleAccess%%%%name%%,
+            stream,
+            false, // deserialize encapsulation
+            true,  // deserialize data
+            endpoint_plugin_qos)) {
+        return false;
+    }
+            </template>
+            <template kind="scalar" typeKind="user">
+    if (!%%elementDeserializeMethod%%(
+            endpoint_data,
+            %%sampleAccess%%%%name%%,
+            stream,
+            false, // deserialize encapsulation header
+            true,  // deserialize data
+            endpoint_plugin_qos)) {
+        return false;
+    }
+            </template>
+            <template kind="string">
+    %%sampleAccess%%%%name%% = stream.deserialize_string(%%stringMaxLength%%); 
+    if (%%sampleAccess%%%%name%% == nullptr) {
+        return false;
+    }
+            </template>
+            <template kind="wstring">
+    %%sampleAccess%%%%name%% = stream.deserialize_wide_string(%%stringMaxLength%%); 
+    if (%%sampleAccess%%%%name%% == nullptr) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="builtin">
+    if (!stream.%%arrayDeserializeMethod%%(
+            %%sampleAccess%%%%name%%, %%multiDimensionalArraySize%%, %%typeEnum%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="user" type="string">                
+    if (!stream.deserialize_string_array(%%sampleAccess%%%%name%%, %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+    if (!stream.deserialize_wide_string_array(%%sampleAccess%%%%name%%, %%stringMaxLength%%)) {
+        return false;
+    }
+            </template>            
+            <template kind="array" typeKind="user" enum="yes">
+    %%cardinalityArrayForLoopPre%%
+      if (!%%elementDeserializeMethod%%(
+              endpoint_data,
+              %%sampleAccess%%%%name%%%%cardinalityCurrentElement%%,
+              stream,
+              false, // deserialize encapsulation
+              true,  // deserialize data
+              endpoint_plugin_qos)) {
+          return false;
+      }
+    %%cardinalityArrayForLoopPost%%
+            </template>
+            <template kind="array" typeKind="user">
+    {
+        Int32 length = %%sampleAccess%%%%name%%->Length;
+        for (Int32 i = 0; i &lt; length; ++i) {
+            if (!%%elementDeserializeMethod%%(
+                    endpoint_data,
+                    %%sampleAccess%%%%name%%[i],
+                    stream,
+                    false,
+                    true,
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="array" typeKind="user" multidim="yes">
+    for each (%%nativeType%%^ elem in %%sampleAccess%%%%name%%) {
+        if (!%%elementDeserializeMethod%%(
+                endpoint_data,
+                elem,
+                stream,
+                false,
+                true,
+                endpoint_plugin_qos)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    if (!stream.%%sequenceDeserializeMethod%%(
+             %%sampleAccess%%%%name%%,
+             %%sequenceMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    if (!stream.deserialize_string_sequence(
+             %%sampleAccess%%%%name%%, 
+             %%sequenceMaxLength%%, 
+             %%stringMaxLength%%)) { 
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    if (!stream.deserialize_wide_string_sequence(
+             %%sampleAccess%%%%name%%, 
+             %%sequenceMaxLength%%, 
+             %%stringMaxLength%%)) { 
+        return false;
+    }
+            </template>            
+            <template kind="sequence" typeKind="user" enum="yes">
+    if (!stream.deserialize_enum_sequence(%%sampleAccess%%%%name%%,%%sequenceMaxLength%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user">
+    {
+        UInt32 length = stream.deserialize_unsigned_long();
+        
+        if (length > %%sequenceMaxLength%%) {
+            throw gcnew Unassignable(
+                "sequence length ("+ (length) + ") "+
+                "exceeds maximum ("+ %%sequenceMaxLength%% +")");        }
+        
+        %%sampleAccess%%%%name%%->length = System::Int32(length);
+        for (UInt32 i = 0; i &lt; length; ++i) {
+            if (!%%elementDeserializeMethod%%(
+                    endpoint_data,
+                    %%sampleAccess%%%%name%%->get_at(i),
+                    stream,
+                    false, // deserialize encapsulation
+                    true,  // deserialize sample
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.deserialize_string_sequence(
+                %%sampleAccess%%%%name%%[i],
+                %%sequenceMaxLength%%, 
+                %%stringMaxLength%%)) { 
+            return false;
+        }
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="string" multidim="yes">
+    for each (StringSeq^ elem in %%sampleAccess%%%%name%%) {
+        if (!stream.deserialize_string_sequence(
+                elem,
+                %%sequenceMaxLength%%, 
+                %%stringMaxLength%%)) { 
+            return false;
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.deserialize_wide_string_sequence(
+                %%sampleAccess%%%%name%%[i],
+                %%sequenceMaxLength%%, 
+                %%stringMaxLength%%)) { 
+            return false;
+        }
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring" multidim="yes">
+    for each (WstringSeq^ elem in %%sampleAccess%%%%name%%) {
+        if (!stream.deserialize_wide_string_sequence(
+                elem,
+                %%sequenceMaxLength%%, 
+                %%stringMaxLength%%)) { 
+            return false;
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user"  enum="yes">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.deserialize_enum_sequence(%%sampleAccess%%%%name%%[i],%%sequenceMaxLength%%)) {
+            return false;
+        }
+    }    
+            </template>
+            <template kind="arraySequence" typeKind="user">
+    for (UInt32 i = 0; i &lt; (UInt32) %%multiDimensionalArraySize%%; ++i) {
+        UInt32 length = stream.deserialize_unsigned_long();
+        
+        if (length > %%sequenceMaxLength%%) {
+            throw gcnew Unassignable(
+                "sequence length ("+ (length) + ") "+
+                "exceeds maximum ("+ %%sequenceMaxLength%% +")");        }
+
+        %%sampleAccess%%%%name%%[i]->length = (System::Int32) length;
+        
+        for (UInt32 j = 0; j &lt; length; ++j) {
+            if (!%%elementDeserializeMethod%%(
+                    endpoint_data,
+                    %%sampleAccess%%%%name%%[i]->get_at(j),
+                    stream,
+                    false, // deserialize encapsulation
+                    true,  // deserialize sample
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>                            
+            <template kind="arraySequence" typeKind="builtin">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.%%sequenceDeserializeMethod%%(%%sampleAccess%%%%name%%[i],%%sequenceMaxLength%%)) {
+            return false;
+        }
+    }
+            </template>                                        
+            <template kind="bitfield" bitKind="normal">
+    %%sampleAccess%%%%name%% = static_cast&lt;%%nativeType%%&gt;(
+        stream.deserialize_bits(%%bits%%));
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+    %%sampleAccess%%%%name%% = static_cast&lt;%%nativeType%%&gt;(
+        stream.deserialize_bits(%%bits%%));
+    if (!stream.reset_bits_buffer()){
+        return false;
+    }
+            </template>
+        </method>
+
+    <!-- =========================== Skip ========================= -->
+
+        <method kind="skip">
+            <template kind="scalar" typeKind="builtin">
+    if (!stream.%%elementSkipMethod%%()) {
+        return false;
+    }
+            </template>
+            <template kind="scalar" typeKind="user">
+    if (!%%elementSkipMethod%%(
+            endpoint_data,
+            stream, 
+            false, true, 
+            endpoint_plugin_qos)) {
+        return false;
+    }
+            </template>
+            <template kind="string">
+    if (!stream.skip_string(%%stringMaxLength%% + 1)) {
+        return false;
+    }
+            </template>
+            <template kind="wstring">
+    if (!stream.skip_wstring(%%stringMaxLength%% + 1)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="builtin">
+    if (!stream.%%arraySkipMethod%%(
+            %%multiDimensionalArraySize%%, %%typeEnum%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="user" type="string">                
+    if (!stream.skip_string_array(
+            %%multiDimensionalArraySize%%, %%stringMaxLength%% + 1, RTI_CDR_CHAR_TYPE)){
+        return false;
+    }
+            </template>  
+            <template kind="array" typeKind="user" type="wstring">
+    if (!stream.skip_string_array(
+            %%multiDimensionalArraySize%%, %%stringMaxLength%% + 1, RTI_CDR_WCHAR_TYPE)){
+        return false;
+    }                
+            </template>  
+            <template kind="array" typeKind="user">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) { 
+        if (!%%elementSkipMethod%%(
+                endpoint_data,
+                stream, 
+                false,
+                true, 
+                endpoint_plugin_qos)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    if (!stream.%%sequenceSkipMethod%%(%%typeEnum%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    if (!stream.skip_string_sequence(
+            %%stringMaxLength%% + 1, RTI_CDR_CHAR_TYPE)) {
+        return false;
+    }          
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    if (!stream.skip_string_sequence(
+            %%stringMaxLength%% + 1, RTI_CDR_WCHAR_TYPE)){
+        return false;
+    }                         
+            </template>            
+            <template kind="sequence" typeKind="user">
+    {
+        UInt32 length = stream.deserialize_unsigned_long();
+        for (UInt32 i = 0; i &lt; length; ++i) {
+            if (!%%elementSkipMethod%%(
+                    endpoint_data,
+                    stream,
+                    false,
+                    true, 
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.skip_string_sequence(
+                %%stringMaxLength%% + 1, RTI_CDR_CHAR_TYPE)) {
+            return false;
+        }
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.skip_string_sequence(
+                %%stringMaxLength%% + 1, RTI_CDR_WCHAR_TYPE)) {
+            return false;
+        }
+    }
+            </template>            
+            <template kind="arraySequence" typeKind="user">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        UInt32 length = stream.deserialize_unsigned_long();
+        for (UInt32 i = 0; i &lt; length; ++i) {
+            if (!%%elementSkipMethod%%(
+                    endpoint_data,
+                    stream,
+                    false,
+                    true, 
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+            </template>                            
+            <template kind="arraySequence" typeKind="builtin">
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!stream.%%sequenceSkipMethod%%(%%typeEnum%%)) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="bitfield" bitKind="normal">
+    if (!stream.skip_bits(%%bits%%)) {
+        return false;
+    }
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+    if (!stream.skip_bits(%%bits%%)) {
+        return false;
+    }
+    if (!stream.reset_bits_buffer()) {
+        return false;
+    }
+            </template>
+        </method>
+
+    <!-- ======================= get_min_size_serialized ================== -->
+
+        <method kind="get_min_size_serialized">
+            <template kind="scalar" typeKind="builtin">
+    %%minSerializeLeading%% %%elementSizeMethod%%(
+        %%currentAlignment%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="scalar" typeKind="user">
+    %%minSerializeLeading%% %%elementSizeMethod%%(
+        endpoint_data, false, encapsulation_id, %%currentAlignment%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="string">
+    %%minSerializeLeading%% CdrSizes::STRING-&gt;serialized_size(
+        %%currentAlignment%%, 1)%%minSerializeTrailing%%;
+            </template>
+            <template kind="wstring">
+    %%minSerializeLeading%% CdrSizes::WSTRING-&gt;serialized_size(
+        %%currentAlignment%%, 1)%%minSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="builtin">
+    %%minSerializeLeading%% %%arraySizeMethod%%(
+        %%currentAlignment%%, %%multiDimensionalArraySize%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user" type="string">                
+    %%minSerializeLeading%% CdrSizes::STRING-&gt;serialized_array_size(
+        %%currentAlignment%%,%%multiDimensionalArraySize%%,1)%%minSerializeTrailing%%;                                
+            </template>
+            <template kind="array" typeKind="user" type="wstring">                
+    %%minSerializeLeading%% CdrSizes::WSTRING-&gt;serialized_array_size(
+        %%currentAlignment%%,%%multiDimensionalArraySize%%,1)%%minSerializeTrailing%%;                                                
+            </template>            
+            <template kind="array" typeKind="user">
+    {
+        UInt32 add_size = 0;
+        for (UInt32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data, false, encapsulation_id, %%currentAlignment%% + add_size);
+        }
+        %%minSerializeLeading%% add_size%%minSerializeTrailing%%;
+    }
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    %%minSerializeLeading%% %%sequenceSizeMethod%%(
+        %%currentAlignment%%, 0)%%minSerializeTrailing%%;
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    %%minSerializeLeading%% CdrSizes::STRING-&gt;serialized_sequence_size(
+        %%currentAlignment%%, 0, 1)%%minSerializeTrailing%%;                
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    %%minSerializeLeading%% CdrSizes::WSTRING-&gt;serialized_sequence_size(
+        %%currentAlignment%%, 0, 1)%%minSerializeTrailing%%;                                
+            </template>                        
+            <template kind="sequence" typeKind="user">
+    %%minSerializeLeading%% (RTICdrType_get4ByteMaxSizeSerialized(%%currentAlignment%%)) %%minSerializeTrailing%%;
+            </template>
+            <template kind="arraySequence">
+    {
+        UInt32 add_size = 0;
+
+        for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; i++) {
+            add_size += RTICdrType_get4ByteMaxSizeSerialized(%%currentAlignment%% + add_size);
+        }
+
+        %%minSerializeLeading%% add_size%%minSerializeTrailing%%;
+    }
+          </template>
+            <template kind="bitfield" bitKind="normal">
+    %%minSerializeLeading%% RTICdrType_getBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits, %%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+    %%minSerializeLeading%% RTICdrType_getBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits, %%bits%%);
+    %%minSerializeLeading%% RTICdrType_flushBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits);
+            </template>
+        </method>
+
+    <!-- ======================= get_max_size_serialized ================== -->
+
+        <method kind="get_max_size_serialized">
+            <template kind="scalar" typeKind="builtin">
+    %%maxSerializeLeading%% %%elementSizeMethod%%(
+        %%currentAlignment%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="scalar" typeKind="user">
+    %%maxSerializeLeading%% %%elementSizeMethod%%(
+        endpoint_data, false, encapsulation_id, %%currentAlignment%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="string">
+    %%maxSerializeLeading%% CdrSizes::STRING-&gt;serialized_size(
+        %%currentAlignment%%, %%stringMaxLength%% + 1)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="wstring">
+    %%maxSerializeLeading%% CdrSizes::WSTRING-&gt;serialized_size(
+        %%currentAlignment%%, %%stringMaxLength%% + 1)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="builtin">
+    %%maxSerializeLeading%% %%arraySizeMethod%%(
+        %%currentAlignment%%, %%multiDimensionalArraySize%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user" type="string">                
+    %%maxSerializeLeading%% CdrSizes::STRING-&gt;serialized_array_size(
+        %%currentAlignment%%,%%multiDimensionalArraySize%%,%%stringMaxLength%% + 1)%%maxSerializeTrailing%%;                                
+            </template>
+            <template kind="array" typeKind="user" type="wstring">                
+    %%maxSerializeLeading%% CdrSizes::WSTRING-&gt;serialized_array_size(
+        %%currentAlignment%%,%%multiDimensionalArraySize%%,%%stringMaxLength%% + 1)%%maxSerializeTrailing%%;                                                
+            </template>            
+            <template kind="array" typeKind="user">
+    {
+        UInt32 add_size = 0;
+        for (UInt32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data, false, encapsulation_id, %%currentAlignment%% + add_size);
+        }
+        %%maxSerializeLeading%% add_size%%maxSerializeTrailing%%;
+    }
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    %%maxSerializeLeading%% %%sequenceSizeMethod%%(
+        %%currentAlignment%%, %%sequenceMaxLength%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    %%maxSerializeLeading%% CdrSizes::STRING-&gt;serialized_sequence_size(
+        %%currentAlignment%%, %%sequenceMaxLength%%, %%stringMaxLength%% + 1)%%maxSerializeTrailing%%;                
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    %%maxSerializeLeading%% CdrSizes::WSTRING-&gt;serialized_sequence_size(
+        %%currentAlignment%%, %%sequenceMaxLength%%, %%stringMaxLength%% + 1)%%maxSerializeTrailing%%;                                
+            </template>                        
+            <template kind="sequence" typeKind="user">
+    {
+        UInt32 add_size = CdrSizes::LONG-&gt;serialized_size(%%currentAlignment%%);
+        for (UInt32 i = 0; i &lt; %%sequenceMaxLength%%; ++i) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data,
+                false /*include_encapsulation*/,
+                encapsulation_id,
+                %%currentAlignment%% + add_size);
+        }
+        %%maxSerializeLeading%% add_size%%maxSerializeTrailing%%;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    {
+        UInt32 add_size = 0;
+                
+        for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; i++) {
+            add_size += CdrSizes::STRING-&gt;serialized_sequence_size(
+                %%currentAlignment%% + add_size, %%sequenceMaxLength%%, %%stringMaxLength%% + 1);
+        }
+                
+        %%maxSerializeLeading%% add_size%%maxSerializeTrailing%%;
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    {
+        UInt32 add_size = 0;
+                
+        for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; i++) {
+              add_size += CdrSizes::WSTRING-&gt;serialized_sequence_size(
+                %%currentAlignment%% + add_size, %%sequenceMaxLength%%, %%stringMaxLength%% + 1);
+        }
+                
+        %%maxSerializeLeading%% add_size%%maxSerializeTrailing%%;
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user">
+    {
+        UInt32 add_size = 0;
+
+        for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; i++) {
+            add_size += RTICdrType_get4ByteMaxSizeSerialized(%%currentAlignment%% + add_size);
+            for (UInt32 j = 0; j &lt; %%sequenceMaxLength%%; ++j) {
+                add_size += %%elementSizeMethod%%(
+                    endpoint_data,
+                    false,  // include encapsulation
+                    encapsulation_id,
+                    %%currentAlignment%% + add_size);
+            }
+        }
+
+        %%maxSerializeLeading%% add_size%%maxSerializeTrailing%%;
+    }
+            </template>                            
+            <template kind="arraySequence" typeKind="builtin">
+    {
+        UInt32 add_size = 0;
+                
+        for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; i++) {
+              add_size += %%sequenceSizeMethod%%(
+                              %%currentAlignment%%+add_size, %%sequenceMaxLength%%);
+        }
+                
+        %%maxSerializeLeading%% add_size%%maxSerializeTrailing%%;
+    }
+            </template>                                                    
+            <template kind="bitfield" bitKind="normal">
+    %%maxSerializeLeading%% RTICdrType_getBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits, %%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+    %%maxSerializeLeading%% RTICdrType_getBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits, %%bits%%);
+    %%maxSerializeLeading%% RTICdrType_flushBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits);
+            </template>
+        </method>
+
+
+    <!-- ======================= get_serialized_sample_size ================== -->
+
+        <method kind="get_serialized_sample_size">
+            <template kind="scalar" typeKind="builtin">
+    current_alignment += %%elementSizeMethod%%(
+        %%currentAlignment%%);
+            </template>
+            <template kind="scalar" typeKind="user">
+    current_alignment += %%elementSizeMethod%%(
+        endpoint_data, false, encapsulation_id, %%currentAlignment%%, %%sampleAccess%%%%name%%);
+            </template>
+            <template kind="string">
+    current_alignment += CdrSizes::STRING-&gt;serialized_size(%%currentAlignment%%, %%sampleAccess%%%%name%%);
+            </template>
+            <template kind="wstring">
+    current_alignment += CdrSizes::WSTRING-&gt;serialized_size(%%currentAlignment%%, %%sampleAccess%%%%name%%);
+            </template>
+            <template kind="array" typeKind="builtin">
+    current_alignment += %%arraySizeMethod%%(
+        %%currentAlignment%%, %%multiDimensionalArraySize%%);
+            </template>
+            <template kind="array" typeKind="user" type="string">                
+    current_alignment += CdrSizes::STRING-&gt;serialized_array_size(
+        %%currentAlignment%%,%%sampleAccess%%%%name%%);
+            </template>
+            <template kind="array" typeKind="user" type="wstring">                
+    current_alignment += CdrSizes::WSTRING-&gt;serialized_array_size(
+        %%currentAlignment%%,%%sampleAccess%%%%name%%);                                            
+            </template>
+            <template kind="array" typeKind="user" enum="yes">
+    {
+        UInt32 add_size = 0;
+        for (UInt32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data, false, encapsulation_id, %%currentAlignment%% +add_size, %%sampleAccess%%%%name%%[i]);
+        }
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="array" typeKind="user">
+    {
+        UInt32 add_size = 0;
+        for (UInt32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data, false, encapsulation_id, %%currentAlignment%% +add_size, %%sampleAccess%%%%name%%[i]);
+        }
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="array" typeKind="user" multidim="yes" enum="yes">
+    {
+        UInt32 add_size = 0;
+        for each (%%nativeType%% elem in %%sampleAccess%%%%name%%) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data, false, encapsulation_id, %%currentAlignment%% +add_size, elem);
+        }
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="array" typeKind="user" multidim="yes">
+    {
+        UInt32 add_size = 0;
+        for each (%%nativeType%%^ elem in %%sampleAccess%%%%name%%) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data, false, encapsulation_id, %%currentAlignment%% +add_size, elem);
+        }
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    current_alignment += %%sequenceSizeMethod%%(
+        %%currentAlignment%%, %%sampleAccess%%%%name%%->length);
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    current_alignment += CdrSizes::STRING-&gt;serialized_sequence_size(
+        %%currentAlignment%%,%%sampleAccess%%%%name%%);
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    current_alignment += CdrSizes::WSTRING-&gt;serialized_sequence_size(
+        %%currentAlignment%%,%%sampleAccess%%%%name%%);
+            </template>
+            <template kind="sequence" typeKind="user">
+    {
+        UInt32 add_size = 0;
+        UInt32 length = (UInt32) %%sampleAccess%%%%name%%->length;
+        current_alignment += CdrSizes::LONG->serialized_size(%%currentAlignment%%);
+
+        for (UInt32 i = 0; i &lt; length; ++i) {
+            add_size += %%elementSizeMethod%%(
+                endpoint_data, false, encapsulation_id, 
+                %%currentAlignment%% + add_size, %%sampleAccess%%%%name%%->get_at(i));
+        }
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    {
+        UInt32 add_size = 0;
+        for (UInt32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+            add_size += CdrSizes::STRING-&gt;serialized_sequence_size(
+                %%currentAlignment%% + add_size,%%sampleAccess%%%%name%%[i]);
+        }
+        current_alignment += add_size;
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="string" multidim="yes">
+    {
+        UInt32 add_size = 0;
+        for each (StringSeq^ elem in %%sampleAccess%%%%name%%) {
+            add_size += CdrSizes::STRING-&gt;serialized_sequence_size(
+                %%currentAlignment%% + add_size,elem);
+        }
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    {
+        UInt32 add_size = 0;
+        for (UInt32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+            add_size += CdrSizes::WSTRING-&gt;serialized_sequence_size(
+                %%currentAlignment%% + add_size,%%sampleAccess%%%%name%%[i]);
+        }
+        current_alignment += add_size;
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring" multidim="yes">
+
+    {
+        UInt32 add_size = 0;
+        for each (WstringSeq^ elem in %%sampleAccess%%%%name%%) {
+            add_size += CdrSizes::WSTRING-&gt;serialized_sequence_size(
+                %%currentAlignment%% + add_size,elem);
+        }
+        current_alignment += add_size;
+    }            
+            </template>
+            <template kind="arraySequence" typeKind="user">
+    {
+        UInt32 add_size = 0;
+
+        for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; i++) {
+            UInt32 length = (UInt32) %%sampleAccess%%%%name%%[i]->length;
+            add_size += RTICdrType_get4ByteMaxSizeSerialized(%%currentAlignment%% + add_size);
+            for (UInt32 j = 0; j &lt; length; ++j) {
+                add_size += %%elementSizeMethod%%(
+                    endpoint_data, false, encapsulation_id, 
+                    %%currentAlignment%% + add_size, %%sampleAccess%%%%name%%[i]->get_at(j));
+            }
+        }
+
+        current_alignment += add_size;
+    }
+            </template>                            
+            <template kind="arraySequence" typeKind="user" multidim="yes">
+    {
+        UInt32 add_size = 0;
+
+        for each (%%nativeType%%^ elem in %%sampleAccess%%%%name%%) {
+            UInt32 length = (UInt32) elem->length;
+            add_size += RTICdrType_get4ByteMaxSizeSerialized(%%currentAlignment%% + add_size);
+            for (UInt32 j = 0; j &lt; length; ++j) {
+                add_size += %%elementSizeMethod%%(
+                    endpoint_data, false, encapsulation_id, 
+                    %%currentAlignment%% + add_size, elem->get_at(j));
+            }
+        }
+
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="builtin">
+    {
+        UInt32 add_size = 0;
+        for (UInt32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+            add_size += %%sequenceSizeMethod%%(
+                %%currentAlignment%% + add_size, %%sampleAccess%%%%name%%[i]->length);
+        }
+        current_alignment += add_size;
+    }
+            </template>                                                    
+            <template kind="arraySequence" typeKind="builtin" multidim="yes">
+    {
+        UInt32 add_size = 0;
+        for each (%%nativeType%%^ elem in %%sampleAccess%%%%name%%) {
+            add_size += %%sequenceSizeMethod%%(
+                %%currentAlignment%% + add_size, elem->length);
+        }
+        current_alignment += add_size;
+    }
+            </template>
+            <template kind="bitfield" bitKind="normal">
+    %%maxSerializeLeading%% RTICdrType_getBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits, %%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+    %%maxSerializeLeading%% RTICdrType_getBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits, %%bits%%);
+    %%maxSerializeLeading%% RTICdrType_flushBitsMaxSizeSerialized(
+        current_alignment, &amp;current_bits);
+            </template>
+        </method>
+
+    <!-- ============================== Print ========================= -->    
+
+        <method kind="print">
+            <template kind="scalar" typeKind="builtin">
+    DataPrintUtility::print_object(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="scalar" typeKind="user">
+    DataPrintUtility::print_object(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="string">
+    DataPrintUtility::print_object(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="wstring">
+    DataPrintUtility::print_object(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="array" typeKind="builtin">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="array" typeKind="user">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>                   
+            <template kind="sequence" typeKind="user">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="arraySequence" typeKind="user">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="arraySequence" typeKind="builtin">
+    DataPrintUtility::print_objects(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="bitfield" bitKind="normal">
+    DataPrintUtility::print_object(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+    DataPrintUtility::print_object(
+        %%sampleAccess%%%%name%%, "%%name%%", indent_level);
+            </template>
+        </method>
+
+    <!-- ============================== Copy ========================= -->
+
+        <method kind="copy">
+            <template kind="scalar">
+    %%dstAccess%%%%name%% = %%srcAccess%%%%name%%;</template>
+            <template kind="scalar" typeKind="user" enum="yes">
+    %%dstAccess%%%%name%% = %%srcAccess%%%%name%%;
+            </template>
+            <template kind="scalar" typeKind="user">
+    %%dstAccess%%%%name%%->copy_from(%%srcAccess%%%%name%%);
+            </template>
+            <template kind="string">
+    %%dstAccess%%%%name%% = %%srcAccess%%%%name%%;</template>
+            <template kind="wstring">
+    %%dstAccess%%%%name%% = %%srcAccess%%%%name%%;</template>
+            <template kind="array" typeKind="builtin">
+    System::Array::Copy(
+        %%srcAccess%%%%name%%, %%dstAccess%%%%name%%, %%srcAccess%%%%name%%->Length);</template>
+            <template kind="array" typeKind="user" type="string">               
+    System::Array::Copy(
+        %%srcAccess%%%%name%%, %%dstAccess%%%%name%%, %%srcAccess%%%%name%%->Length);</template>
+            <template kind="array" typeKind="user" type="wstring">
+    System::Array::Copy(
+        %%srcAccess%%%%name%%, %%dstAccess%%%%name%%, %%srcAccess%%%%name%%->Length);</template>                   
+            <template kind="array" typeKind="user" enum="yes">
+    System::Array::Copy(
+        %%srcAccess%%%%name%%, %%dstAccess%%%%name%%, %%srcAccess%%%%name%%->Length);</template>                   
+            <template kind="array" typeKind="user">
+    {
+        Int32 length = %%dstAccess%%%%name%%->Length;
+        for (Int32 i = 0; i &lt; length; ++i) {
+            if (!%%dstAccess%%%%name%%[i]->copy_from(%%srcAccess%%%%name%%[i])) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="array" typeKind="user" multidim="yes">
+    {
+        IEnumerator^ src_elems = %%srcAccess%%%%name%%->GetEnumerator();
+        IEnumerator^ dst_elems = %%dstAccess%%%%name%%->GetEnumerator();
+        while (src_elems->MoveNext() &amp;&amp; dst_elems->MoveNext()) {
+            %%nativeType%%^ src = safe_cast&lt;%%nativeType%%^&gt;(src_elems->Current);
+            %%nativeType%%^ dst = safe_cast&lt;%%nativeType%%^&gt;(dst_elems->Current);
+            if (!dst->copy_from(src)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    if (!%%dstAccess%%%%name%%->copy_from_no_alloc(%%srcAccess%%%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    if (!%%dstAccess%%%%name%%->copy_from_no_alloc(%%srcAccess%%%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    if (!%%dstAccess%%%%name%%->copy_from_no_alloc(%%srcAccess%%%%name%%)) {
+        return false;
+    }
+            </template>                   
+            <template kind="sequence" typeKind="user">
+    if (!%%dstAccess%%%%name%%->copy_from_no_alloc(%%srcAccess%%%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    for (Int32 i = 0; i &lt; %%srcAccess%%%%name%%->Length; ++i) {
+        if (!%%dstAccess%%%%name%%[i]->copy_from_no_alloc(%%srcAccess%%%%name%%[i])) {
+            return false;
+        }
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    for (Int32 i = 0; i &lt; %%srcAccess%%%%name%%->Length; ++i) {
+        if (!%%dstAccess%%%%name%%[i]->copy_from_no_alloc(%%srcAccess%%%%name%%[i])) {
+            return false;
+        }
+    }
+            </template>                
+            <template kind="arraySequence" typeKind="user">
+    for (Int32 i = 0; i &lt; %%srcAccess%%%%name%%->Length; ++i) {
+        if (!%%dstAccess%%%%name%%[i]->copy_from_no_alloc(%%srcAccess%%%%name%%[i])) {
+            return false;
+        }
+    }
+            </template>                       
+            <template kind="arraySequence" typeKind="builtin">
+    for (Int32 i = 0; i &lt; %%srcAccess%%%%name%%->Length; ++i) {
+        if (!%%dstAccess%%%%name%%[i]->copy_from_no_alloc(%%srcAccess%%%%name%%[i])) {
+            return false;
+        }
+    }
+            </template>                                          
+            <template kind="bitfield" bitKind="normal">
+    %%dstAccess%%%%name%% = %%srcAccess%%%%name%%;</template>
+            <template kind="bitfield" bitKind="lastBitField">
+    %%dstAccess%%%%name%% = %%srcAccess%%%%name%%;</template>
+        </method>
+
+    <!-- ============================== equals ========================= -->    
+
+        <method kind="equals">
+            <template kind="scalar" typeKind="builtin">
+    if (%%name%% != otherObj->%%name%%) {
+        return false;
+    }
+            </template>
+            <template kind="scalar" typeKind="user" enum="yes">
+    if (%%name%% != otherObj->%%name%%) {
+        return false;
+    }
+            </template>
+            <template kind="scalar" typeKind="user">
+    if (!%%name%%->Equals(otherObj->%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="string">
+    if (!%%name%%->Equals(otherObj->%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="wstring">
+    if (!%%name%%->Equals(otherObj->%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="array" typeKind="builtin">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (%%name%%[i] != otherObj->%%name%%[i]) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="array" typeKind="builtin" multidim="yes">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    {
+        IEnumerator^ src_elems = %%name%%->GetEnumerator();
+        IEnumerator^ dst_elems = otherObj->%%name%%->GetEnumerator();
+        while (src_elems->MoveNext() &amp;&amp; dst_elems->MoveNext()) {
+            if (!dst_elems->Current->Equals(src_elems->Current)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="array" typeKind="user" enum="yes">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (%%name%%[i] != otherObj->%%name%%[i]) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="array" typeKind="user" enum="yes" multidim="yes">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        IEnumerator^ src_elems = %%name%%->GetEnumerator();
+        IEnumerator^ dst_elems = otherObj->%%name%%->GetEnumerator();
+        while (src_elems->MoveNext() &amp;&amp; dst_elems->MoveNext()) {
+            if (!dst_elems->Current->Equals(src_elems->Current)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="array" typeKind="user">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (!%%name%%[i]->Equals(otherObj->%%name%%[i])) {
+            return false;
+        }
+    }
+            </template>
+            <template kind="array" typeKind="user" multidim="yes">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    {
+        IEnumerator^ src_elems = %%name%%->GetEnumerator();
+        IEnumerator^ dst_elems = otherObj->%%name%%->GetEnumerator();
+        while (src_elems->MoveNext() &amp;&amp; dst_elems->MoveNext()) {
+            if (!dst_elems->Current->Equals(src_elems->Current)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="sequence">
+    if (!%%name%%->Equals(otherObj->%%name%%)) {
+        return false;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="builtin">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (%%name%%[i]->length != otherObj->%%name%%[i]->length) {
+            return false;
+        }
+        for (Int32 j = 0; j &lt; %%name%%[i]->length; ++j) {
+            if (%%name%%[i]->get_at(j) != otherObj->%%name%%[i]->get_at(j)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (%%name%%[i]->length != otherObj->%%name%%[i]->length) {
+            return false;
+        }
+        for (Int32 j = 0; j &lt; %%name%%[i]->length; ++j) {
+            if (!%%name%%[i]->get_at(j)->Equals(otherObj->%%name%%[i]->get_at(j))){
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (%%name%%[i]->length != otherObj->%%name%%[i]->length) {
+            return false;
+        }
+        for (Int32 j = 0; j &lt; %%name%%[i]->length; ++j) {
+            if (!%%name%%[i]->get_at(j)->Equals(otherObj->%%name%%[i]->get_at(j))){
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" enum="yes">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (%%name%%[i]->length != otherObj->%%name%%[i]->length) {
+            return false;
+        }
+        for (Int32 j = 0; j &lt; %%name%%[i]->length; ++j) {
+            if (%%name%%[i]->get_at(j) != otherObj->%%name%%[i]->get_at(j)) {
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user">
+    if (%%name%%->Length != otherObj->%%name%%->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i &lt; %%multiDimensionalArraySize%%; ++i) {
+        if (%%name%%[i]->length != otherObj->%%name%%[i]->length) {
+            return false;
+        }
+        for (Int32 j = 0; j &lt; %%name%%[i]->length; ++j) {
+            if (!%%name%%[i]->get_at(j)->Equals(otherObj->%%name%%[i]->get_at(j))){
+                return false;
+            }
+        }
+    }
+            </template>
+            <template kind="bitfield">
+    {
+        UInt64 bits = static_cast&lt;UInt64&gt;(%%name%%);
+        UInt64 bits_other = static_cast&lt;UInt64&gt;(otherObj->%%name%%);
+        bits = bits &amp; ((UInt64(1) &lt;&lt; (%%bits%%)) - 1);
+        bits_other = bits_other &amp; ((UInt64(1) &lt;&lt; (%%bits%%)) - 1);
+        if (bits != bits_other) {
+            return false;
+        }
+    }
+            </template>
+        </method>
+        
+    <!-- ============================== initialize======================== -->
+
+        <method kind="initialize">
+            <!-- Nothing to be done for built-in scalars -->
+            <template kind="scalar" typeKind="builtin">
+    %%name%% = %%initialValue%%;
+            </template>
+            <template kind="scalar">
+    %%name%% = %%initialValue%%;
+            </template>
+            <template kind="scalar" typeKind="user" enum="no">
+    %%name%% = gcnew %%nativeType%%();</template>
+            <template kind="scalar" typeKind="user" baseMemberKind="array">
+    %%name%% = gcnew %%nativeType%%();</template>
+            <template kind="scalar" typeKind="user" baseMemberKind="sequence">
+    %%name%% = gcnew %%nativeType%%();</template>
+            <template kind="scalar" typeKind="user" baseMemberKind="arraySequence">
+    %%name%% = gcnew %%nativeType%%();</template>
+            <template kind="string">
+    %%name%% = "";
+            </template>
+            <template kind="wstring">
+    %%name%% = L"";
+            </template>
+            <template kind="array" typeKind="builtin">    
+    %%name%% = gcnew array&lt;%%nativeType%%, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% = %%initialValue%%;
+    %%cardinalityArrayForLoopPost%%
+            </template>
+            <template kind="array" typeKind="user" type="string">
+    %%name%% = gcnew array&lt;%%nativeType%%, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% = "";
+    %%cardinalityArrayForLoopPost%%
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+    %%name%% = gcnew array&lt;%%nativeType%%, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% = L"";
+    %%cardinalityArrayForLoopPost%%
+            </template>
+            <template kind="array" typeKind="user" enum="yes">
+    %%name%% = gcnew array&lt;%%nativeType%%, %%arrayDimensionCount%%&gt;%%cardinality%%;
+            </template>
+            <template kind="array" typeKind="user">
+    %%name%% = gcnew array&lt;%%nativeType%%^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% =  gcnew %%nativeType%%();
+    %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="sequence" typeKind="builtin">
+    %%name%% = gcnew %%nativeTypeSeq%%(%%sequenceMaxLength%%);
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+    %%name%% = gcnew DDS::StringSeq(%%sequenceMaxLength%%);
+            </template>            
+            <template kind="sequence" typeKind="user" type="wstring">
+    %%name%% = gcnew DDS::WstringSeq(%%sequenceMaxLength%%);
+            </template>                   
+            <template kind="sequence" typeKind="user">
+    %%name%% = gcnew %%nativeTypeSeq%%(%%sequenceMaxLength%%);</template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    %%name%% = gcnew array&lt;StringSeq^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    for (Int32 i = 0; i &lt; %%name%%->Length; ++i) {
+        %%name%%[i] = gcnew StringSeq(%%sequenceMaxLength%%);
+        %%name%%[i]->length = 0;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string" multidim="yes">
+    %%name%% = gcnew array&lt;StringSeq^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    for each (StringSeq^ elem in %%name%%) {
+        elem = gcnew StringSeq(%%sequenceMaxLength%%);
+        elem->length = 0;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    %%name%% = gcnew array&lt;WstringSeq^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    for (Int32 i = 0; i &lt; %%name%%->Length; ++i) {
+        %%name%%[i] = gcnew WstringSeq(%%sequenceMaxLength%%);
+        %%name%%[i]->length = 0;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring" multidim="yes">
+    %%name%% = gcnew array&lt;WstringSeq^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    for each (WstringSeq^ elem in %%name%%) {
+        elem = gcnew WstringSeq(%%sequenceMaxLength%%);
+        elem ->length = 0;
+    }
+            </template>
+            <template kind="arraySequence" typeKind="user" enum="yes">
+    %%name%% = gcnew array&lt;%%nativeTypeSeq%%^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    for (Int32 i = 0; i &lt; %%name%%->Length; ++i) {
+        %%name%%[i] = gcnew %%nativeTypeSeq%%(%%sequenceMaxLength%%);
+        %%name%%[i]->length = 0;
+    }
+            </template>            
+            <template kind="arraySequence" typeKind="user">
+    %%name%% = gcnew array&lt;%%nativeTypeSeq%%^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    for (Int32 i = 0; i &lt; %%name%%->Length; ++i) {
+        %%name%%[i] = gcnew %%nativeTypeSeq%%(%%sequenceMaxLength%%);
+        %%name%%[i]->length = 0;
+    }
+            </template>            
+            <template kind="arraySequence" typeKind="builtin">
+    %%name%% = gcnew array&lt;%%nativeTypeSeq%%^, %%arrayDimensionCount%%&gt;%%cardinality%%;
+    for (Int32 i = 0; i &lt; %%name%%->Length; ++i) {
+        %%name%%[i] = gcnew %%nativeTypeSeq%%(%%sequenceMaxLength%%);
+        %%name%%[i]->length = 0;
+    }
+            </template>
+            <!-- Nothing necessary for bitfields. -->            
+            <template kind="bitfield" bitKind="normal"/>
+            <template kind="bitfield" bitKind="lastBitField"/>
+        </method>
+
+
+      <!-- ============================== clear======================== -->
+
+        <method kind="clear">
+          <template kind="scalar" typeKind="builtin">
+    %%name%% = %%initialValue%%;
+          </template>
+          <template kind="scalar">
+    %%name%% = %%initialValue%%;
+          </template>
+          <template kind="scalar" typeKind="user" enum="no">
+    if (%%name%% != nullptr) {
+        %%name%%-&gt;clear();
+    }
+          </template>
+          <template kind="scalar" typeKind="user" baseMemberKind="array">
+    if (%%name%% != nullptr) {
+        %%name%%-&gt;clear();
+    }
+          </template>
+          <template kind="scalar" typeKind="user" baseMemberKind="sequence">
+    if (%%name%% != nullptr) {
+        %%name%%-&gt;clear();
+    }
+          </template>
+          <template kind="scalar" typeKind="user" baseMemberKind="arraySequence">
+    if (%%name%% != nullptr) {
+        %%name%%-&gt;clear();
+    }
+          </template>
+          <template kind="string">
+    %%name%% = "";
+          </template>
+          <template kind="wstring">
+    %%name%% = L"";
+          </template>
+          <template kind="array" typeKind="builtin">
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% = %%initialValue%%;
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+          <template kind="array" typeKind="user" type="string">
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% = "";
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+          <template kind="array" typeKind="user" type="wstring">
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% = L"";
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+          <template kind="array" typeKind="user" enum="yes">
+    %%cardinalityArrayForLoopPre%%
+        %%name%%%%cardinalityCurrentElement%% = %%initialValue%%;
+    %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="user">
+    %%cardinalityArrayForLoopPre%%
+        if (%%name%%%%cardinalityCurrentElement%% != nullptr) {
+            %%name%%%%cardinalityCurrentElement%%-&gt;clear();
+        }
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+          <template kind="sequence" typeKind="builtin">
+    %%name%%->length = 0;
+          </template>
+          <template kind="sequence" typeKind="user" type="string">
+    %%name%%->length = 0;
+          </template>
+          <template kind="sequence" typeKind="user" type="wstring">
+    %%name%%->length = 0;
+          </template>
+          <template kind="sequence" typeKind="user">
+    %%name%%->length = 0;
+          </template>
+          <template kind="arraySequence" typeKind="user" type="string">
+    %%cardinalityArrayForLoopPre%%
+      %%name%%%%cardinalityCurrentElement%%->length = 0;   
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+          <template kind="arraySequence" typeKind="user" type="wstring">
+    %%cardinalityArrayForLoopPre%%
+      %%name%%%%cardinalityCurrentElement%%->length = 0;   
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+          <template kind="arraySequence" typeKind="user">
+    %%cardinalityArrayForLoopPre%%
+      %%name%%%%cardinalityCurrentElement%%->length = 0;   
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+          <template kind="arraySequence" typeKind="builtin">
+    %%cardinalityArrayForLoopPre%%
+      %%name%%%%cardinalityCurrentElement%%->length = 0;   
+    %%cardinalityArrayForLoopPost%%                                                          
+          </template>
+        </method>
+
+    </methodInfoMap>
+
+
+    <sourcePreamble kind="type-plugin-source">
+#pragma unmanaged
+#include "ndds/ndds_cpp.h"
+#include "osapi/osapi_utility.h"
+#pragma managed
+
+using namespace System::Runtime::InteropServices;
+    </sourcePreamble>
+
+    <sourcePreamble kind="type-plugin-header">
+    </sourcePreamble>
+
+    <sourcePreamble kind="type-header">
+struct DDS_TypeCode;
+    </sourcePreamble>
+
+    <sourcePreamble kind="type-source">
+#pragma unmanaged
+#include "ndds/ndds_cpp.h"
+#pragma managed
+
+using namespace System;
+using namespace System::Collections;
+using namespace DDS;
+    </sourcePreamble>
+
+    <sourcePreamble kind="support-source">
+using namespace System;
+using namespace DDS;
+    </sourcePreamble>
+
+    <sourcePreamble kind="support-header">
+class DDSDataWriter;
+class DDSDataReader;
+    </sourcePreamble>
+
+</generationInfo>

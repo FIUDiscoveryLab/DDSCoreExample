@@ -1,0 +1,1412 @@
+##/* $Id: typePluginMacros.vm,v 1.15 2013/03/12 15:27:15 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##10a,29oct13,ajm CODEGENII-143 and nddsgen1.0 fixes for CODEGEN-561 
+##10a,28oct13,ajm CODEGENII-143 nddsgen1.0 fixes for CODEGEN-564 CODEGEN-494 CODEGEN-632
+##2.0,21oct13,ajm CODEGENII-143 CODEGEN-494 and CODEGEN-626 .Net Bug fixes
+##2.0,12sep13,ajm CODEGENII-143 and CODEGEN-567 
+##           The TypePlugin get_size functions do not provide the right value for Mutable types
+##10a,02Apr13,ajm Adding support for XTypes in .Net
+##10a,26mar13,ajm Bug fixing
+##10a,26mar13,ajm Adding support for unions in .Net
+##10a,25mar13,ajm Adding support for enums and inheritance 
+##10a,19mar13,ajm Adding support for typedefs and const  
+##10a,18mar13,ajm created 
+##
+##----------------------------------------------------------------
+##-----------------------------------------------------------------
+##               
+##             Macros for the TypePluginBody in CPP/CLI
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+
+##******************************************************************************
+##Macro to print a member of a type
+##******************************************************************************
+
+#macro(print $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*-----*##if($member.directive)
+#*-----*##copyDirectiveNoDeclaration($member)
+#*-----*##else
+#*------*##if($node.constructKind=="union")
+#*------*##initCases($member)
+#*------*##end
+#*------*##printMember($member)
+#*------*##if($node.constructKind=="union")
+#*------*#        } #if(!($member.labelList.contains("(default)")))break #end;
+#*------*##end
+#*------*##end
+
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to print a member
+###-----------------------------------------------------------------------------
+#macro(printMember $member)
+##note the s in object
+#*--*##if($member.dimensionList || $member.seqSize)
+DataPrintUtility::print_objects(
+        sample->$member.printName, "$member.printName", indent_level);
+#*--*##else
+DataPrintUtility::print_object(
+        sample->$member.printName, "$member.printName", indent_level);
+#*--*##end
+#end
+
+##******************************************************************************
+##Macro to serialize the members of a type
+##******************************************************************************
+
+#macro(serialize $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*-----*##if($member.directive)
+#*-----*##copyDirectiveNoDeclaration($member)
+#*-----*##else
+#*-------*##if($node.constructKind=="union")
+#*-------*##initCases($member)
+#*-------*##end
+#*-------*##serializeMember( $member "" $node)
+#*-------*##if($node.constructKind=="union")
+#*---------*#        }  #if(!($member.labelList.contains("(default)")))break #end;
+#*-------*##end
+#*-----*##end
+#*--*##end
+#end
+
+
+##------------------------------------------------------------------------------
+##Macro to serialize a member of a type
+##------------------------------------------------------------------------------
+
+#macro(serializeMember $member $serializeSuffix $node)
+#*--*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+// next member 
+memberId = $member.id;
+#*----*##if($member.needExtendedId=="no")
+memberLengthPosition = stream.serialize_member_id((UInt16)memberId);
+#*----*##elseif($member.needExtendedId=="yes")
+memberLengthPosition = stream.serialize_member_id((UInt32)memberId);
+#*----*##else
+if (stream.useExtendedMemberId == true) {
+    memberLengthPosition = stream.serialize_member_id((UInt32)memberId);
+} else {
+    memberLengthPosition = stream.serialize_member_id((UInt16)memberId);
+}
+#*----*##end
+#*--*##end
+#*--*##if($member.dimensionList && $member.seqSize) 
+#*----*##serializeArrayOfSeq($member $serializeSuffix)
+#*--*##elseif($member.dimensionList)
+#*----*##serializeArray($member $serializeSuffix)
+#*--*##elseif($member.seqSize)
+#*----*##serializeSeq($member $serializeSuffix)
+#*--*##elseif($member.typeKind=="user")
+#*----*##serializeUser($member $serializeSuffix)
+#*--*##else
+if (!stream.${member.elementSerializeMethod}(${member.sample} #if($member.strSize) , ($member.strSize)#end)) {
+        return false;
+}
+#*--*##end
+#*--*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*----*##if($member.needExtendedId=="no")
+stream.serialize_member_length(memberLengthPosition, false);
+#*----*##elseif($member.needExtendedId=="yes")
+stream.serialize_member_length(memberLengthPosition, true);
+#*----*##else
+if (stream.useExtendedMemberId == true) {
+    stream.serialize_member_length(memberLengthPosition, true);
+} else {
+    stream.serialize_member_length(memberLengthPosition, false);
+}
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to serialize an array of Sequences
+##------------------------------------------------------------------------------
+
+#macro(serializeArrayOfSeq$member $serializeSuffix)
+#*--*##if($member.dimensionList.size()==1 || !$member.strSize)
+for (Int32 i = 0; i <#arrayDimensionWithMultiplication($member) ; ++i) {
+#*----*##if($member.strSize)
+if (!stream.${member.sequenceSerializeMethod}(
+                ${member.sample}[i], ($member.strSize))) {
+            return false;
+        }
+#*----*##else
+       // Serialize ${member.sample}[i] length:
+        UInt32 length = (UInt32) ${member.sample}[i]->length;
+        if (!stream.serialize_unsigned_long(length)) {
+            return false;
+        }
+#*------*##if($member.typeKind.equals("user"))  
+for (UInt32 j = 0; j < length; ++j) {
+            if (!${member.nativeTypeFQName}Plugin::get_instance()->serialize${serializeSuffix}(
+                    endpoint_data,
+                    ${member.sample}[i]->get_at(j),
+                    stream,
+                    false, // serialize encapsulation
+                    encapsulation_id,
+                    true,  // serialize sample
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }      
+        
+#*------*##else
+        if(length!=0){
+            if (!stream.${member.arraySerializeMethod}(
+                    ${member.sample}[i]->buffer,
+                    length,
+                    $member.typeEnum)) {
+                return false;
+            }    
+        }
+#*------*##end        
+#*----*##end        
+}
+#*--*##else
+for each (${member.nativeTypeSeqFQName}^ elem in ${member.sample}) {
+        if (!stream.${member.sequenceSerializeMethod}(
+                elem, ($member.strSize))) {
+            return false;
+        }
+}        
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to serialize an array
+##------------------------------------------------------------------------------
+
+#macro(serializeArray $member $serializeSuffix)
+#*--*##if($member.isEnum)
+#*----*##openForLoopIfArray($member)
+if (!${member.nativeTypeFQName}Plugin::get_instance()->serialize${serializeSuffix}(
+              endpoint_data,
+              ${member.sample}#arraydimensionListsWithIndex($member),
+              stream,
+              false, // serialize encapsulation
+              encapsulation_id,
+              true,  // serialize data 
+              endpoint_plugin_qos)) {
+          return false;
+      }   
+#*----*##closeForLoopIfArray($member)
+#*--*##elseif($member.dimensionList.size()==1 &&($member.typeKind.equals("user")))
+{
+        Int32 length = ${member.sample}->Length;
+        for (Int32 i = 0; i < length; ++i) {
+            if (!${member.nativeTypeFQName}Plugin::get_instance()->serialize${serializeSuffix}(
+                    endpoint_data,
+                    ${member.sample}[i],
+                    stream,
+                    false,
+                    encapsulation_id,
+                    true,
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+#*--*##elseif($member.typeKind.equals("user"))
+for each ($member.nativeTypeFQName^ elem in ${member.sample}) {
+    if (!${member.nativeTypeFQName}Plugin::get_instance()->serialize${serializeSuffix}(
+            endpoint_data,
+            elem,
+            stream,
+            false,
+            encapsulation_id,
+            true,
+            endpoint_plugin_qos)) {
+        return false;
+    }
+}    
+#*--*##elseif($member.strSize)
+if (!stream.${member.arraySerializeMethod}(${member.sample}, 
+                                           ($member.strSize))) {
+        return false;
+}
+#*--*##else
+if (!stream.${member.arraySerializeMethod}(
+            ${member.sample}, #arrayDimensionWithMultiplication($member), $member.typeEnum)) {
+        return false;
+}
+#*--*##end
+
+#end
+
+##------------------------------------------------------------------------------
+##Macro to serialize seq
+##------------------------------------------------------------------------------
+
+#macro (serializeSeq $member $serializeSuffix)
+#*--*##if($member.isEnum)
+if (!stream.serialize_enum_sequence(
+            ${member.sample})) {
+        return false;
+    }
+#*--*##elseif($member.typeKind.equals("user"))
+ {
+        // Serialize sample->${member.nativeTypeSeqFQName} length:
+        UInt32 length = (UInt32) ${member.sample}->length;
+        if (!stream.serialize_unsigned_long(length)) {
+            return false;
+        }
+        // Serialize ${member.sample} elements:
+        for (UInt32 i = 0; i < length; ++i) {
+            if (!${member.nativeTypeFQName}Plugin::get_instance()->serialize${serializeSuffix}(
+                    endpoint_data,
+                    ${member.sample}->get_at(i),
+                    stream,
+                    false, // serialize encapsulation
+                    encapsulation_id,
+                    true,  // serialize sample
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+#*--*##else
+  if (!stream.${member.sequenceSerializeMethod}(${member.sample}#if($member.strSize),($member.strSize)#end)) {
+        return false;
+    }
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to serialize a user member
+##------------------------------------------------------------------------------
+#macro (serializeUser $member $serializeSuffix)
+if (!${member.nativeTypeFQName}Plugin::get_instance()->serialize${serializeSuffix}(
+            endpoint_data,
+            ${member.sample},
+            stream,
+            false, // serialize encapsulation header
+            encapsulation_id,
+            true,  // serialize data
+            endpoint_plugin_qos)) {
+        return false;
+}
+#end
+
+##------------------------------------------------------------------------------
+##Macro that generates code required before serializing a mutable type
+##------------------------------------------------------------------------------
+
+#macro (serializeHeaderMutable)
+    UInt32 memberId = 0;
+    CdrStreamPosition memberLengthPosition;
+    Boolean skipListEndId_tmp = false;
+    UInt32 maxLength = 0;
+     
+    if (!stream.dirty) {
+        // Top level
+        stream.dirty = true;
+
+        maxLength = get_serialized_sample_max_size(endpoint_data, false, encapsulation_id,0);
+
+        if (maxLength > 65535) {
+            stream.useExtendedMemberId = true;
+        }
+        else{
+            stream.useExtendedMemberId = false;
+        }
+    }
+
+    //reset the skipListEndId flag
+    skipListEndId_tmp =  stream.skipListEndId;
+    stream.skipListEndId = false;
+#end    
+
+##------------------------------------------------------------------------------
+##Macro that generates code checking the encaupsulation id
+##------------------------------------------------------------------------------
+#macro (serializeEncapsulationMutable)
+if (encapsulation_id == DDS::CdrEncapsulation::CDR_ENCAPSULATION_ID_CDR_BE) {
+    encapsulation_id = DDS::CdrEncapsulation::CDR_ENCAPSULATION_ID_PL_CDR_BE;
+} else if (encapsulation_id == DDS::CdrEncapsulation::CDR_ENCAPSULATION_ID_CDR_LE) {
+    encapsulation_id = DDS::CdrEncapsulation::CDR_ENCAPSULATION_ID_PL_CDR_LE;
+}         
+#end            
+##------------------------------------------------------------------------------
+##Macro that generates code required after serializing a mutable type
+##------------------------------------------------------------------------------
+
+#macro (serializeEndMutable)
+if (!(skipListEndId_tmp)) {
+          memberLengthPosition = stream.serialize_member_id(
+          (UInt16)DDS::CdrEncapsulation::CDR_ENCAPSULATION_MEMBER_ID_LIST_END);
+          stream.serialize_member_length(memberLengthPosition, false);
+}
+    stream.skipListEndId = skipListEndId_tmp;
+#end    
+##******************************************************************************
+## Macros to Deserialize 
+##******************************************************************************
+
+
+#macro(deserialize $node $method)
+#*----*##set($deserializeSuffix="deserialize_sample")
+#*--*##foreach($member in $node.memberFieldMapList)
+#*-----*##if($member.directive)
+#*-----*##copyDirectiveNoDeclaration($member)
+#*-----*##else
+#*-------*##if($node.constructKind=="union")
+#*-------*##initCases($member)
+#*-------*##end
+#*----*##deserializeMember($member $deserializeSuffix)
+#*----*##if($node.constructKind=="union")
+    } #if(!($member.labelList.contains("(default)")))break #end;
+#*----*##end
+#*----*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to deserialize a member of a type
+##------------------------------------------------------------------------------
+
+#macro(deserializeMember $member $deserializeSuffix)
+#*--*##if($member.dimensionList && $member.seqSize) 
+#*----*##deserializeArrayOfSeq( $member $deserializeSuffix)
+#*--*##elseif($member.dimensionList)
+#*----*##deserializeArray( $member $deserializeSuffix)
+#*--*##elseif($member.seqSize)
+#*----*##deserializeSeq( $member $deserializeSuffix)
+#*--*##elseif($member.typeKind=="user")
+#*----*##deserializeUser( $member $deserializeSuffix)
+#*--*##else
+${member.sample} = stream.${member.elementDeserializeMethod}(#if($member.strSize) ($member.strSize)#end);
+#if($member.strSize)
+ if (${member.sample}  == nullptr) {
+        return false;
+    }
+#end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to deserialize an array of sequences
+##------------------------------------------------------------------------------
+
+#macro (deserializeArrayOfSeq $member $deserializeSuffix)
+#*--*##if($member.dimensionList.size()==1 || !$member.strSize)
+for (UInt32 i = 0; i <(UInt32) #arrayDimensionWithMultiplication($member); ++i) {
+#*----*##deserializeSeq ($member $deserializeSuffix)
+}
+    
+#*--*##else
+for each (${member.nativeTypeSeqFQName}^ elem in ${member.sample}) {
+        if (!stream.${member.sequenceDeserializeMethod}(
+                elem,
+                (${member.seqSize}),
+                (${member.strSize}))) {
+            return false;
+        }
+    }    
+#*--*##end    
+#end
+
+##------------------------------------------------------------------------------
+##Macro to deserialize an array 
+##------------------------------------------------------------------------------
+
+#macro(deserializeArray $member $deserializeSuffix)
+#*--*##if($member.isEnum)
+#*----*##openForLoopIfArray($member)
+ if (!${member.nativeTypeFQName}Plugin::get_instance()->$deserializeSuffix(
+                    endpoint_data,
+                    ${member.sample}#arraydimensionListsWithIndex($member),
+                    stream,
+                    false,
+                    true,
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+#*----*##closeForLoopIfArray($member)    
+#*--*##elseif($member.dimensionList.size()==1 && $member.typeKind.equals("user"))
+{
+        Int32 length = ${member.sample}->Length;
+        for (Int32 i = 0; i < length; ++i) {
+            if (!${member.nativeTypeFQName}Plugin::get_instance()->$deserializeSuffix(
+                    endpoint_data,
+                    ${member.sample}[i],
+                    stream,
+                    false,
+                    true,
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+    
+#*--*##elseif($member.typeKind.equals("user"))
+for each ($member.nativeTypeFQName^ elem in ${member.sample}) {
+    if (!${member.nativeTypeFQName}Plugin::get_instance()->$deserializeSuffix(
+            endpoint_data,
+            elem,
+            stream,
+            false,
+            true,
+            endpoint_plugin_qos)) {
+        return false;
+    }
+}
+
+#*--*##elseif($member.strSize)
+if (!stream.${member.arrayDeserializeMethod}(${member.sample},($member.strSize))) {
+        return false;
+}
+#*--*##else
+if (!stream.${member.arrayDeserializeMethod}(
+            ${member.sample},  #arrayDimensionWithMultiplication($member), $member.typeEnum)) {
+        return false;
+    }
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to deserialize an seq 
+##------------------------------------------------------------------------------
+
+#macro(deserializeSeq $member $deserializeSuffix)
+#*--*##if($member.isEnum)
+if (!stream.deserialize_enum_sequence(
+            ${member.sample}#if($member.dimensionList)[i]#end)) {
+        return false;
+    }
+#*--*##elseif($member.typeKind.equals("user"))
+{
+       
+      UInt32 length = stream.deserialize_unsigned_long();
+  
+      if (length > (${member.seqSize})) {
+              throw gcnew Unassignable(
+                  "sequence length ("+ (length) + ") "+
+                  "exceeds maximum ("+  (${member.seqSize}) +")");
+      }
+        
+       
+        ${member.sample}#if($member.dimensionList)[i]#end->length = (System::Int32)length;
+        for (UInt32 j = 0; j < length; ++j) {
+                if (!${member.nativeTypeFQName}Plugin::get_instance()->$deserializeSuffix(
+                        endpoint_data,
+                        ${member.sample}#if($member.dimensionList)[i]#end->get_at(j),
+                        stream,
+                        false, // deserialize encapsulation
+                        true,  // deserialize sample
+                        endpoint_plugin_qos)) {
+                    return false;
+                }
+        }
+    }
+#*--*##elseif($member.strSize)
+if (!stream.${member.sequenceDeserializeMethod}(
+            ${member.sample}#if($member.dimensionList)[i]#end,
+            (${member.seqSize}), 
+            (${member.strSize}))) {
+        return false;
+    }
+
+#*--*##else    
+if (!stream.${member.sequenceDeserializeMethod}(
+        ${member.sample}#if($member.dimensionList)[i]#end,
+        (${member.seqSize}))) {
+        return false;
+    }
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to deserialize a user 
+##------------------------------------------------------------------------------
+
+#macro (deserializeUser $member $serializeSuffix)
+if (!${member.nativeTypeFQName}Plugin::get_instance()->$deserializeSuffix(
+            endpoint_data,
+            ${member.sample},
+            stream,
+            false, // deserialize encapsulation header
+            true,  // deserialize data
+            endpoint_plugin_qos)) {
+        return false;
+    }
+#end
+
+##------------------------------------------------------------------------------
+##Macro to deserialize a discriminator
+##------------------------------------------------------------------------------
+
+#macro (deserializeDiscriminator $member)
+#*--*##if($member.typeKind=="user")
+if (!${member.nativeTypeFQName}Plugin::get_instance()->$deserializeSuffix(
+            endpoint_data,
+            disc,
+            stream,
+            false, // deserialize encapsulation header
+            true,  // deserialize data
+            endpoint_plugin_qos)) {
+        return false;
+    }
+#*--*##else
+disc = stream.${member.elementDeserializeMethod}(#if($member.strSize) ($member.strSize)#end);
+#*----*##if($member.strSize)
+ if (disc  == nullptr) {
+        return false;
+    }
+#*----*##end
+#*--*##end
+#end
+
+##******************************************************************************
+## Macro to deserializeMutableTypes
+##******************************************************************************
+#macro (deserializeMutableType $node $method)
+#*--*##if($method=="deserialize_key")
+#*----*##set($deserializeSuffix="_key")
+#*--*##elseif($method=="deserialize_sample")
+#*----*##set($deserializeSuffix="deserialize_sample")
+#*--*##else
+#*----*##set($deserializeSuffix="")
+#*--*##end
+#*--*##mutableTypeStartDesBlock()
+#*--*##if($node.constructKind=="union")
+    case 0:
+#*----*##deserializeMember( $node.unionDiscriminatorMap $deserializeSuffix)
+    break;
+#*--*##end
+#*--*##foreach($member in $node.memberFieldMapList)
+#*-----*##if($member.directive)
+#*-----*##copyDirectiveNoDeclaration($member)
+#*-----*##else
+    case $member.id:
+#*----*##deserializeMember($member $deserializeSuffix)
+      break;
+#*----*##end
+#*--*##end
+     #mutableTypeEndDesBlock($node)
+#end
+
+
+##******************************************************************************
+## Macro to Skip
+##******************************************************************************
+
+#macro(skip  $node)
+#*--*##if($node.constructKind=="union")
+#*----*##if($node.unionDiscriminatorMap.isEnum)
+    $node.unionDiscriminatorMap.nativeTypeFQName disc;
+
+    if (!${node.unionDiscriminatorMap.nativeTypeFQName}Plugin::get_instance()->deserialize_sample(
+            endpoint_data,
+            disc,
+            stream,
+            false, // deserialize encapsulation
+            true,  // deserialize data
+            endpoint_plugin_qos)) {
+        return false;
+    }
+#*----*##else    
+    System::Int32 disc;
+    disc = stream.deserialize_long();
+#*----*##end
+    switch(disc){
+#*--*##end
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*###copyDirectiveNoDeclaration($member)
+#*----*##else
+#*------*##if($node.constructKind=="union")
+#*------*##initCases($member)
+#*------*##end
+#*----*##skipMember($member)
+#*----*##if($node.constructKind=="union")
+#*----*#        }  #if(!($member.labelList.contains("(default)")))break #end;
+#*----*##end
+#*----*##end
+#*--*##end
+#*--*##if($node.constructKind=="union")
+}
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to skip a member 
+##------------------------------------------------------------------------------
+
+#macro(skipMember $member)
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*##skipArrayOfSeq($member)
+#*--*##elseif($member.seqSize)
+#*----*##skipSeq($member)
+#*--*##elseif($member.dimensionList)
+#*----*##skipArray($member)
+#*--*##elseif($member.typeKind=="user")
+#*----*##skipUser($member)
+#*--*##else
+if (!stream.${member.elementSkipMethod}(#if($member.strSize)($member.strSize) + 1#end)) {
+    return false;
+}
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to skip an Array of Sequences 
+##------------------------------------------------------------------------------
+
+#macro(skipArrayOfSeq $member)
+for (Int32 i = 0; i < #arrayDimensionWithMultiplication($member); ++i) {
+#*--*##if($member.typeKind.equals("user"))
+UInt32 length = stream.deserialize_unsigned_long();
+        for (UInt32 i = 0; i < length; ++i) {
+            if (!${member.nativeTypeFQName}Plugin::get_instance()->skip(
+                    endpoint_data,
+                    stream,
+                    false,
+                    true, 
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+#*--*##else        
+        if (!stream.${member.sequenceSkipMethod}( 
+        #if($member.strSize) ($member.strSize) + 1,#end $member.typeEnum)) {
+            return false;
+        }
+
+#*--*##end
+    }
+#end
+
+##------------------------------------------------------------------------------
+##Macro to skip an Array 
+##------------------------------------------------------------------------------
+#macro (skipArray $member)
+#*--*##if($member.typeKind.equals("user"))
+for (Int32 i = 0; i < #arrayDimensionWithMultiplication($member); ++i) {
+    if (!${member.nativeTypeFQName}Plugin::get_instance()->skip(
+            endpoint_data,
+            stream,
+            false,
+            true,
+            endpoint_plugin_qos)) {
+        return false;
+    }
+}
+#*--*##elseif($member.strSize)
+if (!stream.${member.arraySkipMethod}(
+            #arrayDimensionWithMultiplication($member), ($member.strSize) + 1, $member.typeEnum)){
+        return false;
+    }
+#*--*##else
+if (!stream.${member.arraySkipMethod}(
+            #arrayDimensionWithMultiplication($member), $member.typeEnum)) {
+        return false;
+}
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to skip sequence 
+##------------------------------------------------------------------------------
+
+#macro (skipSeq $member)
+#*--*##if($member.typeKind.equals("user"))
+ {
+        UInt32 length = stream.deserialize_unsigned_long();
+        for (UInt32 i = 0; i < length; ++i) {
+            if (!${member.nativeTypeFQName}Plugin::get_instance()->skip(
+                    endpoint_data,
+                    stream,
+                    false,
+                    true, 
+                    endpoint_plugin_qos)) {
+                return false;
+            }
+        }
+    }
+#*--*##else
+if (!stream.${member.sequenceSkipMethod}(
+      #if($member.strSize)($member.strSize) + 1,#end$member.typeEnum)) {
+        return false;
+    }
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to skip user 
+##------------------------------------------------------------------------------
+#macro(skipUser $member)
+    if (!${member.nativeTypeFQName}Plugin::get_instance()->skip(
+            endpoint_data,
+            stream, 
+            false, true, 
+            endpoint_plugin_qos)) {
+        return false;
+    }
+#end
+
+##******************************************************************************
+## Macro to skipMutableTypes
+##******************************************************************************
+
+#macro (skipMutableType $node)
+#*--*##mutableTypeStartDesBlock()
+#*--*##if($node.constructKind=="union")
+System::Int32 disc;
+    case 0:
+         disc = stream.deserialize_long();
+    break;
+#*--*##end
+#*--*##foreach($member in $node.memberFieldMapList)
+#*-----*##if($member.directive)
+#*-----*##copyDirectiveNoDeclaration($member)
+#*-----*##else
+    case $member.id:
+#*----*##skipMember($member)
+      break;
+#*----*##end
+#*--*##end
+     #mutableTypeEndDesBlock($node)
+#end
+
+
+
+##******************************************************************************
+## Macro to alignmentaxSize
+##******************************************************************************
+
+#macro(alignmentMaxSize $node  $currentAlignment)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*###copyDirectiveNoDeclaration($member)
+#*----*##else
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+        current_alignment += RTICdrStream_getExtendedParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end
+#*------*##alignmentMaxSizeMember($member "sample" $currentAlignment)
+#*--*##end 
+
+#*--*##end ##We need an intro before to separate each member
+#end
+
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSizeUnion 
+##------------------------------------------------------------------------------
+
+#macro (alignmentMaxSizeUnion $node $currentAlignment )
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+        current_alignment += RTICdrStream_getExtendedParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end
+#*--------*##alignmentMaxSizeMember($node.unionDiscriminatorMap "sample" $node.currentAlignment)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##else
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+        current_alignment += RTICdrStream_getExtendedParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end
+#*------*##if($member.dimensionList && $member.seqSize)
+#alignmentMaxSizeUnionArrayOfSeq($member  $currentAlignment)
+#*------*##elseif($member.seqSize)
+#alignmentMaxSizeUnionSeq($member  $currentAlignment)
+#*------*##elseif($member.dimensionList)
+#alignmentMaxSizeUnionArray($member $currentAlignment )
+#*------*##elseif($member.typeKind.equals("user"))
+ union_max_size_serialized = RTIOsapiUtility_max( ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_max_size(
+        endpoint_data, false, encapsulation_id, $currentAlignment ), union_max_size_serialized);
+#*------*##else       
+union_max_size_serialized = RTIOsapiUtility_max( ${member.elementSizeMethod}(
+$currentAlignment#if(${member.strSize}), ($member.strSize)+1#end), union_max_size_serialized);
+#*------*##end
+#*----*##end 
+#*--*##end
+#end
+
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSizeUnion for arrays of Seq 
+##------------------------------------------------------------------------------
+#macro (alignmentMaxSizeUnionArrayOfSeq $member  $currentAlignment)
+{
+        UInt32 add_size = 0;
+   for (Int32 i = 0; i < #arrayDimensionWithMultiplication($member); ++i) {
+#*--*##if($member.typeKind.equals("user") )  
+        add_size += RTICdrType_get4ByteMaxSizeSerialized($currentAlignment + add_size);
+        for (UInt32 j = 0; j < ($member.seqSize); ++j) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_max_size(
+                endpoint_data,
+                false,  // include encapsulation
+                encapsulation_id,
+                $currentAlignment + add_size);
+        }
+        
+#*--*##else
+        add_size += ${member.sequenceSizeMethod}(
+             $currentAlignment +add_size, ($member.seqSize)#if($member.strSize),($member.strSize) + 1#end);
+#*--*##end             
+    }
+     union_max_size_serialized = RTIOsapiUtility_max( add_size, union_max_size_serialized);
+    }
+#end    
+
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSizeUnion for Seq 
+##------------------------------------------------------------------------------
+#macro (alignmentMaxSizeUnionSeq $member   $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+ {
+        UInt32 add_size = CdrSizes::LONG->serialized_size($currentAlignment);
+        for (UInt32 i = 0; i < ($member.seqSize); ++i) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_max_size(
+                endpoint_data,
+                false /*include_encapsulation*/,
+                encapsulation_id,
+                $currentAlignment + add_size);
+        }
+        union_max_size_serialized = RTIOsapiUtility_max( add_size, union_max_size_serialized);
+    }
+#*--*##else
+union_max_size_serialized = RTIOsapiUtility_max( ${member.sequenceSizeMethod}(
+        $currentAlignment, (${member.seqSize})#if(${member.strSize}), ($member.strSize)+1#end),union_max_size_serialized);
+
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSizeUnion for Arrays 
+##------------------------------------------------------------------------------
+
+#macro (alignmentMaxSizeUnionArray $member  $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+{
+    UInt32 add_size = 0;
+    for (UInt32 i = 0; i <  #arrayDimensionWithMultiplication($member); ++i) {
+        add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_max_size(
+            endpoint_data, false, encapsulation_id, $currentAlignment + add_size);
+    }
+    union_max_size_serialized  = RTIOsapiUtility_max( add_size, union_max_size_serialized);
+}
+
+#*--*##else    
+union_max_size_serialized = RTIOsapiUtility_max(${member.arraySizeMethod}(
+        $currentAlignment, #arrayDimensionWithMultiplication($member)#if(${member.strSize}), ($member.strSize)+1#end),union_max_size_serialized );
+
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSize for a member
+##------------------------------------------------------------------------------
+
+#macro (alignmentMaxSizeMember $member $serializeSuffix $currentAlignment)
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*##alignmentMaxSizeArrayOfSeq($member $serializeSuffix $currentAlignment)
+#*--*##elseif($member.seqSize)#*
+------*##alignmentMaxSizeSeq($member $serializeSuffix $currentAlignment)#*
+---*##elseif($member.dimensionList)#*
+------*##alignmentMaxSizeArray($member $serializeSuffix  $currentAlignment)#*
+---*##elseif($member.typeKind=="user")#*
+------*##alignmentMaxSizeUser($member $serializeSuffix $currentAlignment)#*
+---*##else
+current_alignment +=${member.elementSizeMethod}(
+$currentAlignment #if(${member.strSize}), ($member.strSize)+1#end);#*
+----*##end
+
+#end 
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSize of an array of sequence 
+##------------------------------------------------------------------------------
+
+#macro (alignmentMaxSizeArrayOfSeq $member $serializeSuffix $currentAlignment)
+{
+   UInt32 add_size = 0;
+   for (Int32 i = 0; i < #arrayDimensionWithMultiplication($member); i++) {
+#*--*##if($member.typeKind.equals("user") )  
+        add_size += RTICdrType_get4ByteMaxSizeSerialized($currentAlignment + add_size);
+        for (UInt32 j = 0; j < ($member.seqSize); ++j) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_${serializeSuffix}_max_size(
+                endpoint_data,
+                false,  // include encapsulation
+                encapsulation_id,
+                $currentAlignment + add_size);
+        }
+        
+#*--*##else
+         add_size +=  ${member.sequenceSizeMethod}(
+             $currentAlignment + add_size, ($member.seqSize)#if($member.strSize),($member.strSize) + 1#end);
+#*--*##end             
+    }
+    current_alignment +=  add_size;
+}
+    
+#end    
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSize of an array 
+##------------------------------------------------------------------------------
+
+#macro(alignmentMaxSizeArray $member $serializeSuffix  $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+{
+    UInt32 add_size = 0;
+    for (UInt32 i = 0; i <  #arrayDimensionWithMultiplication($member); ++i) {
+        add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_${serializeSuffix}_max_size(
+            endpoint_data, false, encapsulation_id, $currentAlignment + add_size);
+    }
+    current_alignment +=  add_size;
+}
+
+#*--*##else    
+current_alignment +=${member.arraySizeMethod}(
+        $currentAlignment, #arrayDimensionWithMultiplication($member)#if(${member.strSize}), ($member.strSize)+1#end);
+
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSize of a sequence
+##------------------------------------------------------------------------------
+
+#macro (alignmentMaxSizeSeq $member $serializeSuffix $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+ {
+        UInt32 add_size = CdrSizes::LONG->serialized_size($currentAlignment);
+        for (UInt32 i = 0; i < ($member.seqSize); ++i) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_${serializeSuffix}_max_size(
+                endpoint_data,
+                false /*include_encapsulation*/,
+                encapsulation_id,
+                $currentAlignment + add_size);
+        }
+        current_alignment +=  add_size;
+    }
+#*--*##else
+current_alignment +=  ${member.sequenceSizeMethod}(
+        $node.currentAlignment, (${member.seqSize})#if(${member.strSize}), ($member.strSize)+1#end);
+
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSize of a user member
+##------------------------------------------------------------------------------
+
+#macro(alignmentMaxSizeUser $member $serializeSuffix $currentAlignment)
+current_alignment +=  ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_${serializeSuffix}_max_size(
+        endpoint_data, false, encapsulation_id, $currentAlignment);
+#end
+##******************************************************************************
+## Macro to alignmentMinSize
+##******************************************************************************
+
+#macro (alignmentMinSizeUnion $node $currentAlignment )
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+        current_alignment += RTICdrStream_getParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end
+#*--------*##alignmentMinSizeMember($node.unionDiscriminatorMap $node.currentAlignment)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##if($member.needExtendedId=="no")
+        current_alignment += RTICdrStream_getParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##else
+        current_alignment += RTICdrStream_getExtendedParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end 
+#*------*##end
+#*----*##if($member.directive)
+#*----*##elseif($member.seqSize &&$member.dimensionList)
+#*--------*##alignmentMinSizeUnionArrayOfSeq($member $node.currentAlignment)
+#*----*##elseif($member.dimensionList)
+#*--------*##alignmentMinSizeUnionArray($member $node.currentAlignment)
+#*----*##elseif($member.seqSize)
+#*--------*##alignmentMinSizeUnionSeq($member $node.currentAlignment)
+#*----*##elseif($member.typeKind.equals("user"))
+ union_min_size_serialized = RTIOsapiUtility_min( ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_min_size(
+        endpoint_data, false, encapsulation_id, $currentAlignment), union_min_size_serialized);
+#*----*##else       
+union_min_size_serialized = RTIOsapiUtility_min( ${member.elementSizeMethod}(
+$node.currentAlignment #if($member.strSize), 1#end), union_min_size_serialized);
+#*--*##end 
+#end
+#end
+
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMinSizeUnionArrayOfSeq for Seq 
+##------------------------------------------------------------------------------
+
+#macro (alignmentMinSizeUnionArrayOfSeq $member $currentAlignment)
+ {
+        UInt32 add_size = 0;
+
+        for (Int32 i = 0; i < #arrayDimensionWithMultiplication($member); i++) {
+             add_size += RTICdrType_get4ByteMaxSizeSerialized($currentAlignment + add_size);       
+        }
+        union_min_size_serialized = RTIOsapiUtility_min( add_size , union_min_size_serialized);
+}   
+#end    
+
+#macro (alignmentMinSizeUnionSeq $member  $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+union_min_size_serialized = RTIOsapiUtility_min( (RTICdrType_get4ByteMaxSizeSerialized(current_alignment)) , union_min_size_serialized);
+   
+#*--*##else
+union_min_size_serialized = RTIOsapiUtility_min( ${member.sequenceSizeMethod}(
+       $currentAlignment, 0#if(${member.strSize}),1#end), union_min_size_serialized);
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMinSizeUnionArray
+##------------------------------------------------------------------------------
+
+#macro(alignmentMinSizeUnionArray $member $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+{
+    UInt32 add_size = 0;
+    for (UInt32 i = 0; i <  #arrayDimensionWithMultiplication($member); ++i) {
+        add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_min_size(
+            endpoint_data, false, encapsulation_id, $currentAlignment + add_size);
+    }
+     union_min_size_serialized = RTIOsapiUtility_min( add_size, union_min_size_serialized);
+}
+
+#*--*##else  
+union_min_size_serialized =RTIOsapiUtility_min( ${member.arraySizeMethod}(
+        $currentAlignment , #arrayDimensionWithMultiplication($member)#if(${member.strSize}), 1#end),union_min_size_serialized);
+
+#*--*##end
+#end
+
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMinSize
+##------------------------------------------------------------------------------
+
+#macro(alignmentMinSize $node $currentAlignment)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*###copyDirectiveNoDeclaration($member)
+#*----*##else
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##if($member.needExtendedId=="no")
+        current_alignment += RTICdrStream_getParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##else
+        current_alignment += RTICdrStream_getExtendedParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end 
+#*------*##end
+#*----*##alignmentMinSizeMember($member $currentAlignment)
+#*----*##end
+#*--*##end
+
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMaxSize of a member
+##------------------------------------------------------------------------------
+
+#macro(alignmentMinSizeMember $member $currentAlignment)
+#*--*##if($member.seqSize &&$member.dimensionList)
+#alignmentMinSizeArrayOfSeq($member $currentAlignment)#*
+--*##elseif($member.dimensionList)#*
+*##alignmentMinSizeArray($member $currentAlignment)#*
+--*##elseif($member.seqSize)#*
+*##alignmentMinSizeSeq($member $currentAlignment)#*
+--*##elseif($member.typeKind=="user")#*
+*##alignmentMinSizeUser($member $currentAlignment)#*
+--*##else
+current_alignment +=${member.elementSizeMethod}(
+    $currentAlignment#if($member.strSize), 1#end);#*
+--*##end
+
+#end
+
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMinSize of an array of sequences
+##------------------------------------------------------------------------------
+
+#macro (alignmentMinSizeArrayOfSeq $member $currentAlignment)
+ {
+        UInt32 add_size = 0;
+
+        for (Int32 i = 0; i < #arrayDimensionWithMultiplication($member); i++) {
+               add_size += RTICdrType_get4ByteMaxSizeSerialized($currentAlignment + add_size);
+        }
+
+        current_alignment +=  add_size ;
+}   
+#end    
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMinSize of an array 
+##------------------------------------------------------------------------------
+
+#macro(alignmentMinSizeArray $member $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+{
+    UInt32 add_size = 0;
+    for (UInt32 i = 0; i <  #arrayDimensionWithMultiplication($member); ++i) {
+        add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_min_size(
+            endpoint_data, false, encapsulation_id, $currentAlignment + add_size);
+    }
+    current_alignment +=  add_size;
+}
+
+#*--*##else  
+current_alignment +=${member.arraySizeMethod}(
+        $currentAlignment , #arrayDimensionWithMultiplication($member)#if(${member.strSize}), 1#end);
+
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMinSize of a sequence 
+##------------------------------------------------------------------------------
+
+#macro(alignmentMinSizeSeq $member $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+current_alignment +=  (RTICdrType_get4ByteMaxSizeSerialized($currentAlignment)) ;
+#else
+current_alignment +=  ${member.sequenceSizeMethod}(
+        $currentAlignment, 0#if(${member.strSize}),1#end);
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentMinSize of an user member 
+##------------------------------------------------------------------------------
+
+#macro(alignmentMinSizeUser $member $currentAlignment)
+current_alignment +=  ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_min_size(
+        endpoint_data, false, encapsulation_id, $currentAlignment);
+#end
+
+
+##******************************************************************************
+## Macro to Aligment
+##******************************************************************************
+
+#macro(alignmentSample $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*###copyDirectiveNoDeclaration($member)
+#*----*##else
+#*------*##if($node.constructKind.equals("union"))
+#*--------*##initCases($member)
+#*------*##end
+#*------*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*------*##if($member.needExtendedId=="no")
+        current_alignment += RTICdrStream_getParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##else
+        current_alignment += RTICdrStream_getExtendedParameterHeaderMaxSizeSerialized(current_alignment);
+#*------*##end 
+#*--*##end
+#*----*##alignmentSampleMember($member $node.currentAlignment)
+#*----*##end
+#*------*##if($node.constructKind.equals("union"))
+} #if(!($member.labelList.contains("(default)")))break #end;
+#*------*##end
+#*--*##end
+#end
+
+##------------------------------------------------------------------------------
+##Macro to alignmentSample of a member 
+##------------------------------------------------------------------------------
+
+#macro (alignmentSampleMember $member $currentAlignment)
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*##alignmentSampleArrayOfSeq($member  $currentAlignment)
+#*--*##elseif($member.dimensionList)
+#*----*##alignmentSampleArray($member  $currentAlignment)
+#*--*##elseif($member.seqSize)
+#*----*##alignmentSampleSeq($member  $currentAlignment)
+#*--*##elseif($member.typeKind=="user")
+#*----*##alignmentSampleUser($member  $currentAlignment)
+#*--*##elseif($member.strSize)
+current_alignment += ${member.elementSizeMethod}(
+                          $currentAlignment, ${member.sample});
+#*--*##else
+current_alignment += ${member.elementSizeMethod}(
+                          $currentAlignment);
+#*--*##end
+#end
+          
+##------------------------------------------------------------------------------
+##Macro to alignmentSample of an array of sequences 
+##------------------------------------------------------------------------------
+          
+#macro (alignmentSampleArrayOfSeq $member  $currentAlignment)
+{
+       UInt32 add_size = 0;
+       
+#*--*##if($member.dimensionList.size()==1)
+ for (UInt32 i = 0; i < #arrayDimensionWithMultiplication($member); i++) {
+#*----*##if($member.typeKind.equals("user"))
+ UInt32 length = (UInt32) ${member.sample}[i]->length;
+        add_size += RTICdrType_get4ByteMaxSizeSerialized($currentAlignment +add_size);
+        for (UInt32 j = 0; j < length; ++j) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_size(
+                endpoint_data, false, encapsulation_id, 
+                $currentAlignment + add_size, ${member.sample}[i]->get_at(j));
+        }
+#*----*##else
+        add_size += ${member.sequenceSizeMethod}(
+#*------*##if ($member.strSize)
+           $currentAlignment + add_size, ${member.sample}[i]);
+#*------*##else
+            $currentAlignment +add_size, ${member.sample}[i]->length);
+#*------*##end
+#*----*##end            
+    } 
+    
+#*--*##else
+#*----*##if ($member.typeKind.equals("user")) 
+for each (${member.nativeTypeFQName}^ elem in ${member.sample}) {
+UInt32 length = (UInt32) elem->length;
+        add_size += RTICdrType_get4ByteMaxSizeSerialized($currentAlignment +add_size);
+        for (UInt32 i = 0; i < length; ++i) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_size(
+                endpoint_data, false, encapsulation_id, 
+                $currentAlignment +add_size, elem->get_at(i));
+        }
+}        
+#*---*##elseif($member.strSize)
+for each (${member.nativeTypeSeqFQName}^ elem in ${member.sample}) {
+        add_size += ${member.sequenceSizeMethod}(
+            $currentAlignment + add_size, elem);
+}
+#*----*##else
+for each (${member.nativeTypeFQName}^ elem in ${member.sample}) {
+        add_size += ${member.sequenceSizeMethod}(
+            $currentAlignment + add_size, elem->length);
+}
+#*----*##end    
+#*--*##end  
+ current_alignment += add_size;
+}  
+#end 
+
+##------------------------------------------------------------------------------
+##Macro to alignmentSample of an array
+##------------------------------------------------------------------------------
+
+#macro(alignmentSampleArray $member  $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+{
+        UInt32 add_size = 0;
+
+#*----*##if($member.dimensionList.size()==1)
+
+        for (UInt32 i = 0; i < #arrayDimensionWithMultiplication($member); ++i) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_size(
+                endpoint_data, false, encapsulation_id, $currentAlignment + add_size, ${member.sample}[i]);
+        }
+
+#*----*##elseif($member.isEnum)  
+for each (${member.nativeTypeFQName} elem in ${member.sample}) {
+        add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_size(
+            endpoint_data, false, encapsulation_id, $currentAlignment + add_size, elem);
+           
+}
+#*----*##else
+for each (${member.nativeTypeFQName}^ elem in ${member.sample}) {
+        add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_size(
+            endpoint_data, false, encapsulation_id, $currentAlignment + add_size, elem);
+           
+}
+
+#*----*##end
+ current_alignment += add_size;
+} 
+
+#*--*##else
+ current_alignment +=${member.arraySizeMethod}(
+        $currentAlignment ,#if(${member.strSize})${member.sample}#else  #arrayDimensionWithMultiplication($member)#end);
+#*--*##end  
+       
+#end     
+
+##------------------------------------------------------------------------------
+##Macro to alignmentSample of a Sequence
+##------------------------------------------------------------------------------
+#macro(alignmentSampleSeq $member  $currentAlignment)
+#*--*##if($member.typeKind.equals("user"))
+{
+        UInt32 add_size = 0;
+        UInt32 length = (UInt32) ${member.sample}->length;
+        current_alignment += CdrSizes::LONG->serialized_size($currentAlignment);
+
+        for (UInt32 i = 0; i < length; ++i) {
+            add_size += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_size(
+                endpoint_data, false, encapsulation_id, 
+                $currentAlignment + add_size, ${member.sample}->get_at(i));
+        }
+        current_alignment += add_size;
+}
+#*--*##elseif($member.strSize)
+current_alignment +=${member.sequenceSizeMethod}(
+        $currentAlignment,${member.sample});
+#*--*##else
+current_alignment += ${member.sequenceSizeMethod}(
+        $currentAlignment, ${member.sample}->length);
+#*--*##end
+#end  
+
+##------------------------------------------------------------------------------
+##Macro to alignmentSample of a User 
+##------------------------------------------------------------------------------
+
+#macro (alignmentSampleUser $member  $currentAlignment)
+current_alignment += ${member.nativeTypeFQName}Plugin::get_instance()->get_serialized_sample_size(
+        endpoint_data, false, encapsulation_id, $currentAlignment, ${member.sample});
+#end
+
+
+
+#macro (mutableTypeStartDesBlock)
+while (end != true && stream.get_remainder() > 0) {
+   DDS::CdrMemberInfo memberInfo = stream.deserialize_member_info();
+   char* tmpPosition = stream.get_current_position().toChar();
+   UInt32 tmpSize = stream.get_buffer_length();
+   UInt32 tmpLength = memberInfo.length;
+   stream.set_buffer_length((UInt32)((UInt64)tmpPosition - (UInt64)stream.get_buffer_begin()) + memberInfo.length);
+   switch (memberInfo.memberId) {
+       case RTI_CDR_PID_IGNORE:
+              break;
+       case RTI_CDR_PID_LIST_END:
+             end = true;
+             break;
+
+#end
+
+#macro (mutableTypeEndDesBlock $node)
+    default:
+#if (!$node.constructKind.equals("union"))    
+        if (memberInfo.flagMustUnderstand) {
+#end        
+             throw gcnew Unassignable("Unknown member ID: "+ memberInfo.memberId);
+        
+#if (!$node.constructKind.equals("union"))        
+        }
+#end   
+   }
+   stream.set_buffer_length(tmpSize);
+   stream.set_current_position((char *)(tmpPosition + tmpLength)); 
+}      
+#end

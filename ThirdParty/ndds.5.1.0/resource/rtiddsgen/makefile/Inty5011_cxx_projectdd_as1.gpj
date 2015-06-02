@@ -1,0 +1,17 @@
+#!gbuild
+[Program]
+	-I.
+	:sourceDir=.
+        -lnet
+        -lposix
+        -lshm_client
+        -lsocket
+        -lnddscppz
+        -lnddscz
+        -lnddscorez
+%%IDLFileBaseName%%_%%ProjectName%%.cxx
+%%IDLFileBaseName%%Support.cxx
+%%IDLFileBaseName%%Plugin.cxx
+%%IDLFileBaseName%%.cxx
+shm_area.c
+%%IDLFileBaseName%%_%%ProjectName%%dd_INTEGRITY.ld

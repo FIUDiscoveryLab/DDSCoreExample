@@ -1,0 +1,223 @@
+##/* $Id: typeSupportKeyElement.vm,v 1.9 2013/09/24 17:39:28 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##2.0,24sept13,ajm CODEGENII-92 Support for optional members
+##10a,13jun13,ajm CODEGENII-109 joining the type variables in the constructMap 
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,8mar13, ajm CODEGENII-30 and CODEGENII-87 Code reviews and Xtypes in Java 
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,21oct11,ajm Adding a return at the end of the file
+##10a,22sep11,jmt adding valuetypes support
+##10a,19sep11,jmt Adding non-primitive support
+##10a,15sep11,jmt Fixing more typedef issues
+##10a,14sep11,jmt Refactor typedef
+##10a,7sep11,jmt Adding typedef for arrays, sequences and arrays of sequences
+##10a,29ag11,jmt created 
+##========================================================================*/*#
+##-----------------------------------------------------------------------
+##
+## If you have a key member you need to add this code to the type support
+## file before the callbacks.
+##
+##----------------------------------------------------------------------- 
+#macro(addTypeSupportKeyCode $constructMap)
+
+
+    /* Fill in the key fields of the given instance sample based on the key.
+     */
+    public void key_to_instance(Object endpoint_data,
+                                Object instance,
+                                Object key) {
+        ${constructMap.name} typedDst
+            = (${constructMap.name}) instance;
+        ${constructMap.name} typedSrc
+            = (${constructMap.name}) key;
+#if($constructMap.baseTypeFQName && $constructMap.hasKeyBaseType)
+        ${constructMap.baseTypeFQName}TypeSupport.get_instance().key_to_instance(endpoint_data,instance,key);
+#end            
+#copyKeyMembers($constructMap)
+
+    }
+
+    /* Fill in the given key based on the key fields of the given instance
+     * sample.
+     */
+    public void instance_to_key(Object endpoint_data,
+                                Object key,
+                                Object instance) {
+        ${constructMap.name} typedDst
+            = (${constructMap.name})key;
+        ${constructMap.name} typedSrc
+            = (${constructMap.name}) instance;
+#if($constructMap.baseTypeFQName && $constructMap.hasKeyBaseType)
+        ${constructMap.baseTypeFQName}TypeSupport.get_instance().instance_to_key(endpoint_data,key,instance);
+#end
+#copyKeyMembers($constructMap)
+            
+    }
+
+    /* Fill in the fields of the given KeyHash based on the key field(s)
+     * of the given instance sample.
+     * Important: The fields of the instance ID cannot all be set to zero!
+     */
+    public void instance_to_keyhash(Object endpoint_data,
+                                    KeyHash_t keyhash,
+                                    Object instance) {
+        DefaultEndpointData endpointData = (DefaultEndpointData) endpoint_data;
+        CdrOutputStream md5Stream = endpointData.get_stream();
+        CdrBuffer buffer = null;
+
+        if (md5Stream == null) {
+              throw new RETCODE_ERROR("Missing MD5 stream");
+        }
+
+        buffer = md5Stream.getBuffer();
+        buffer.resetBufferToZero();
+
+        md5Stream.resetAndSetDirtyBit(true);
+
+        serialize_key(endpoint_data,instance,md5Stream,false,CdrEncapsulation.CDR_ENCAPSULATION_ID_CDR_BE,true,null);
+
+        if (endpointData.get_serialized_key_max_size() > KeyHash_t.KEY_HASH_MAX_LENGTH) {
+            md5Stream.computeMD5(keyhash.value);
+        } else {
+            System.arraycopy(buffer.getBuffer(), 0, 
+                             keyhash.value, 0,
+                             buffer.currentPosition());
+            System.arraycopy(KeyHash_t.ZERO_KEYHASH.value,buffer.currentPosition(),
+                             keyhash.value,buffer.currentPosition(),
+                             KeyHash_t.KEY_HASH_MAX_LENGTH - buffer.currentPosition());
+        }
+
+        keyhash.length = KeyHash_t.KEY_HASH_MAX_LENGTH;
+    }
+
+    public void serialized_sample_to_keyhash(
+        Object endpoint_data,
+        CdrInputStream src,
+        KeyHash_t keyhash,
+        boolean include_encapsulation,
+        Object endpoint_plugin_qos)
+    {
+        int position = 0;
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") || $constructMap.hasOptionalMember)        
+        CdrMemberInfo memberInfo;
+        long length = 0;
+        boolean end = false;
+        int tmpPosition, tmpSize;
+        long tmpLength;
+#end  
+#if($envMap.rtidds42e)
+        boolean topLevel;          
+#end 
+
+        DefaultEndpointData endpointData = (DefaultEndpointData) endpoint_data;
+        Object sample = null;
+
+        sample = endpointData.get_sample();
+
+        if (sample == null) {
+            throw new RETCODE_ERROR("Missing intermediate sample");
+        }
+
+        ${constructMap.name} typedDst = (${constructMap.name}) sample;
+#if($envMap.rtidds42e)
+        topLevel = !src.isDirty();
+        src.setDirtyBit(true);
+#end 
+
+        if (include_encapsulation) {
+            src.deserializeAndSetCdrEncapsulation();
+
+#if(!$envMap.rtidds42e)
+            position = src.resetAlignment();
+#else
+           } else if (topLevel) {
+            position = src.resetAlignmentWithOffset(4);
+#end            
+        }
+#if($constructMap.baseTypeFQName && $constructMap.hasKeyBaseType)
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+{
+                int begin = src.getBuffer().currentPosition();
+#end
+        ${constructMap.baseTypeFQName}TypeSupport.get_instance().serialized_sample_to_key(endpoint_data,sample,
+                             src, false, true,
+                             endpoint_plugin_qos);
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ src.getBuffer().setCurrentPosition(begin);
+}
+#end                             
+#elseif($constructMap.baseTypeFQName)
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+{
+                int begin = src.getBuffer().currentPosition();
+#end
+        ${constructMap.baseTypeFQName}TypeSupport.get_instance().skip(endpoint_data, src,
+         false, true,
+         endpoint_plugin_qos);
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ src.getBuffer().setCurrentPosition(begin);
+}         
+#end
+#end
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ 
+while (end != true && src.available() > 0) {
+#preDeserializeBufferLength()
+            switch (memberInfo.memberId) {
+                case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_IGNORE:
+                        break; 
+                case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_LIST_END: 
+                    end = true;
+                    break;
+#end
+#if($constructMap.hasKey)
+
+#serializedToKeyHash($constructMap)
+#if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+default:
+#if(!$constructMap.constructKind.equals("union"))
+
+                   if (memberInfo.flagMustUnderstand) {
+#end                   
+                            throw new RETCODE_ERROR(
+                                          "unknown member ID "+ 
+                                          memberInfo.memberId);
+#if(!$constructMap.constructKind.equals("union"))                                          
+                     } break;
+#end  
+}
+#postDeserializeBufferLength()
+
+}
+#end
+#end     
+
+#if($envMap.rtidds42e)
+        if (!include_encapsulation && topLevel) {
+            src.restoreAlignment(position);
+        }
+#else               
+        if (include_encapsulation) {
+            src.restoreAlignment(position);
+        }
+#end
+
+        instance_to_keyhash(endpoint_data, keyhash, sample);
+    }
+
+#end
+
+

@@ -1,0 +1,10 @@
+c_cc_ppc64Linux2.6gcc4.3.0 = gcc
+c_cc_flags_ppc64Linux2.6gcc4.3.0 = -m64
+c_ld_ppc64Linux2.6gcc4.3.0 = gcc
+c_ld_flags_ppc64Linux2.6gcc4.3.0 = -m64
+cxx_cc_ppc64Linux2.6gcc4.3.0 = g++
+cxx_cc_flags_ppc64Linux2.6gcc4.3.0 = -m64
+cxx_ld_ppc64Linux2.6gcc4.3.0 = g++
+cxx_ld_flags_ppc64Linux2.6gcc4.3.0 = -m64 -static-libgcc
+syslibs_ppc64Linux2.6gcc4.3.0 = -ldl -lnsl -lm -lpthread -lrt
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_LINUX -DRTI_64BIT

@@ -1,0 +1,10 @@
+c_cc_p5AIX5.3xlc9.0 = xlC_r
+c_cc_flags_p5AIX5.3xlc9.0 = -q64 -g -qlongdouble
+c_ld_p5AIX5.3xlc9.0 = xlC_r
+c_ld_flags_p5AIX5.3xlc9.0 = -q64
+cxx_cc_p5AIX5.3xlc9.0 = xlC_r
+cxx_cc_flags_p5AIX5.3xlc9.0 = -q64
+cxx_ld_p5AIX5.3xlc9.0 = xlC-r
+cxx_ld_flags_p5AIX5.3xlc9.0 = -q64 
+syslibs_p5AIX5.3xlc9.0 = -ldl -lnsl -lm -lpthread
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX -DRTI_AIX

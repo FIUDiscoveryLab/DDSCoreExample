@@ -1,0 +1,262 @@
+##/* $Id: typeSupportBody.vm,v 1.9 2013/11/08 13:10:37 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##modification history:
+##---------------------
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,08mar13, ajm CODEGENII-30: Code reviews
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,21oct11,ajm Adding a return at the end of the template
+##10a,16ag11,ajm Adding funcionality for basic types, const and arrays
+##10a,15ag11,ajm created 
+##
+##========================================================================*/
+##-----------------------------------------------------------------
+##               
+##       Template for type Support Body file
+## 
+##------------------------------------------------------------------
+--  ============================================================================
+--
+--         WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+--
+--  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+--  The rtiddsgen tool is part of the RTI Connext distribution.
+--  For more information, type 'rtiddsgen -help' at a command shell
+--  or consult the RTI Connext manual.
+--
+--  ============================================================================
+
+with System; use System;
+pragma Warnings (OFF);
+with Ada.Unchecked_Conversion;
+
+with RTIDDS.Low_Level.dds_c.domain_impl_h;
+with RTIDDS.Low_Level.pres.typePlugin_h;
+with RTIDDS.Low_Level.osapi.alignment_impl_h;
+with RTIDDS.Low_Level.pres.common_h;
+with Interfaces.C.Strings;
+with ${constructMap.nativeFQName}_DataReader;
+with ${constructMap.nativeFQName}_DataWriter;
+with DDS.DomainParticipant_Impl;
+package body ${constructMap.nativeFQName}_TypeSupport is
+
+   use RTIDDS.Low_Level.dds_c.domain_impl_h;
+   use RTIDDS.Low_Level.pres.typePlugin_h;
+   use RTIDDS.Low_Level.osapi.alignment_impl_h;
+
+   The_Instance : aliased Ref;
+   Instance_Ref : constant Standard.DDS.TypeSupport.Ref_Access := The_Instance'Access;
+
+   function Create_TypedDataReaderI
+     (Self : access Ref) return Standard.DDS.DataReader.Ref_Access is
+   begin
+      return ${constructMap.nativeFQName}_DataReader.CreateTypedI;
+   end  Create_TypedDataReaderI;
+
+   procedure Destroy_TypedDataReaderI
+     (Self   : access Ref;
+      Reader : in out Standard.DDS.DataReader.Ref_Access) is
+   begin
+      ${constructMap.nativeFQName}_DataReader.DestroyTypedI (Reader);
+   end  Destroy_TypedDataReaderI;
+
+   function Create_TypedDataWriterI
+     (Self : access Ref) return Standard.DDS.DataWriter.Ref_Access is
+   begin
+      return ${constructMap.nativeFQName}_DataWriter.CreateTypedI;
+   end  Create_TypedDataWriterI;
+
+   procedure Destroy_TypedDataWriterI
+     (Self   : access Ref;
+      Writer : in out Standard.DDS.DataWriter.Ref_Access) is
+   begin
+      Writer := null;
+   end Destroy_TypedDataWriterI;
+
+   function Get_Native_Typesupport_Ptr
+     (DeleteInstance : Standard.DDS.Boolean)
+     return System.Address;
+   pragma Import (C, Get_Native_Typesupport_Ptr, "${constructMap.nativeCFQNameInModule}TypeSupport_get_or_delete_instanceI");
+
+   function R_To_A is new Ada.Unchecked_Conversion
+     (Source => Ref_Access,
+      Target => System.Address);
+
+   procedure Set_User_Data
+     (Self : System.Address; User_Data : System.Address);
+   pragma Import (C, Set_User_Data,                  "DDS_DataTypeUtility_set_user_dataI");
+
+   -------------------
+   -- Register_Type --
+   -------------------
+
+   procedure Register_Type
+     (Participant : not null access Standard.DDS.DomainParticipant.Ref'Class;
+      Type_Name   : in Standard.DDS.String) is
+
+      P : constant Standard.DDS.DomainParticipant_Impl.Ref_Access :=
+            Standard.DDS.DomainParticipant_Impl.Ref_Access (Participant);
+
+      function Internal
+        (Participant : System.Address;
+         Type_Name   : in Interfaces.C.Strings.chars_ptr)
+         return Standard.DDS.ReturnCode_T;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_register_type");
+
+      C_DataTypeUtility_Ptr : access PRESTypePlugin;
+      type TempT is access all RTIDDS.Low_Level.pres.common_h.PRESWord;
+      function convert is new Ada.Unchecked_Conversion (Standard.DDS.TypeSupport.Ref_Access, TempT);
+   begin
+      Standard.DDS.Ret_Code_To_Exception
+        (Internal (P.GetInterface, Type_Name.data),
+         "unable to register type");
+
+      C_DataTypeUtility_Ptr :=
+        DDS_DomainParticipant_Get_Type_PluginI
+          (Participant.getInterface,
+           Type_Name.data);
+      C_DataTypeUtility_Ptr.u_userBuffer := convert (Instance_Ref).all'Unrestricted_Access;
+   end Register_Type;
+
+   -------------------
+   -- Get_Type_Name --
+   -------------------
+
+   function Get_Type_Name
+     return Standard.DDS.String is
+      function Internal return Interfaces.C.Strings.chars_ptr;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_get_type_name");
+   begin
+      return ret : Standard.DDS.String do
+         ret.data := Internal;
+      end return;
+   end Get_Type_Name;
+
+   -----------------
+   -- Create_Data --
+   -----------------
+
+   function Create_Data
+     (AllocatePointers : in Boolean := True)
+      return not null ${constructMap.name}_Access
+   is
+      function Internal (AllocatePointers : in Boolean)
+                         return ${constructMap.name}_Access;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_create_data_ex");
+      Ret : ${constructMap.name}_Access;
+   begin
+      Ret := Internal (AllocatePointers);
+      if Ret = null then
+         raise Storage_Error with "Unable to create " & "${constructMap.name}";
+      else
+         return Ret;
+      end if;
+   end Create_Data;
+
+   -----------------
+   -- Delete_Data --
+   -----------------
+
+   procedure Delete_Data
+     (A_Data         : in out ${constructMap.name}_Access;
+      DeletePointers : in Boolean := True)
+   is
+      function Internal (A_Data         : in ${constructMap.name}_Access;
+                         DeletePointers : in Boolean := True)
+                         return Standard.DDS.ReturnCode_T;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_delete_data_ex");
+   begin
+      Standard.DDS.Ret_Code_To_Exception
+        (Internal (A_Data, DeletePointers),
+         "Unable to delete data");
+      A_Data := null;
+   end Delete_Data;
+
+   ----------------
+   -- Print_Data --
+   ----------------
+
+   procedure Print_Data
+     (A_Data : not null access constant ${constructMap.name})
+   is
+      procedure Internal (A_Data : not null access constant ${constructMap.name});
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_print_data");
+   begin
+      Internal (A_Data);
+   end Print_Data;
+
+   ---------------
+   -- Copy_Data --
+   ---------------
+
+   procedure Copy_Data
+     (Dest   : not null access ${constructMap.name};
+      Source : not null access constant ${constructMap.name})
+   is
+      function Internal (Dest   : not null access ${constructMap.name};
+                         Source : not null access constant ${constructMap.name})
+                         return Standard.DDS.ReturnCode_T;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_copy_data");
+   begin
+      Standard.DDS.Ret_Code_To_Exception
+        (Internal (Dest, Source),
+         "Unable to copy data");
+   end Copy_Data;
+
+   ---------------------
+   -- Initialize_Data --
+   ---------------------
+
+   procedure Initialize_Data
+     (Dest             : not null access ${constructMap.name};
+      AllocatePointers : in Boolean := True)
+   is
+      function Internal (Dest             : not null access ${constructMap.name};
+                         AllocatePointers : in Boolean := True)
+                         return Standard.DDS.ReturnCode_T;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_initialize_data_ex");
+   begin
+      Standard.DDS.Ret_Code_To_Exception
+        (Internal (Dest, AllocatePointers),
+         "Unable to initialize data");
+   end Initialize_Data;
+
+   -------------------
+   -- Finalize_Data --
+   -------------------
+
+   procedure Finalize_Data
+     (Dest           : not null access ${constructMap.name};
+      DeletePointers : in Boolean := True)
+   is
+      function Internal (Dest           : not null access ${constructMap.name};
+                         DeletePointers : in Boolean := True)
+                         return Standard.DDS.ReturnCode_T;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_finalize_data_ex");
+   begin
+      Standard.DDS.Ret_Code_To_Exception
+        (Internal (Dest, DeletePointers),
+         "Unable to finalize data");
+   end Finalize_Data;
+
+   --------------
+   -- Finalize --
+   --------------
+
+   procedure Finalize is
+      function Internal return Standard.DDS.ReturnCode_T;
+      pragma Import (C, Internal, "${constructMap.nativeCFQNameInModule}TypeSupport_finalize");
+   begin
+      Standard.DDS.Ret_Code_To_Exception (Internal, "Unable to finalize");
+   end Finalize;
+
+end ${constructMap.nativeFQName}_TypeSupport;

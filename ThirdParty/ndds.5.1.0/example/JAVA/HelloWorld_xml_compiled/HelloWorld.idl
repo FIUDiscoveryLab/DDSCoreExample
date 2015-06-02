@@ -1,0 +1,21 @@
+/*****************************************************************************/
+/*         (c) Copyright, Real-Time Innovations, All rights reserved.        */
+/*                                                                           */
+/*         Permission to modify and use for internal purposes granted.       */
+/* This software is provided "as is", without warranty, express or implied.  */
+/*                                                                           */
+/*****************************************************************************/
+
+/* The following constants will be available in the generated code as macros.
+ * If you use #define in an IDL file, the value will be substituite by a
+ * preprocessor before generating the code (this constant won't be available
+ * in your program).
+ */
+const long MAX_NAME_LEN = 64;
+const long MAX_MSG_LEN  = 128;
+
+struct HelloWorld {
+    string<MAX_NAME_LEN> sender; //@key
+    string<MAX_MSG_LEN> message;
+    long count;
+};

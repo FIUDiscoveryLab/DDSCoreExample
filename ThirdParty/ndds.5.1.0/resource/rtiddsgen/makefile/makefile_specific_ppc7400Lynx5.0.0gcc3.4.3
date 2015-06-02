@@ -1,0 +1,12 @@
+c_cc_ppc7400Lynx5.0.0gcc3.4.3 = gcc
+c_cc_flags_ppc7400Lynx5.0.0gcc3.4.3 = -maltivec -mabi=altivec -mthreads
+c_ld_ppc7400Lynx5.0.0gcc3.4.3 = gcc
+c_ld_flags_ppc7400Lynx5.0.0gcc3.4.3 = -maltivec -mabi=altivec
+cxx_cc_ppc7400Lynx5.0.0gcc3.4.3 = g++
+cxx_cc_flags_ppc7400Lynx5.0.0gcc3.4.3 = -maltivec -mabi=altivec -mthreads
+cxx_ld_ppc7400Lynx5.0.0gcc3.4.3 = g++
+cxx_ld_flags_ppc7400Lynx5.0.0gcc3.4.3 = -maltivec -mabi=altivec -static-libgcc
+syslibs_ppc7400Lynx5.0.0gcc3.4.3 = -ldbposix -lrpc -lbsd -lm -lc -mthreads -mshared
+DEFINES_ARCH_SPECIFIC = -DRTI_LYNX
+
+#export ENV_PREFIX = /usr/lynx/5.0.0/ppc

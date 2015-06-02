@@ -1,0 +1,54 @@
+##/* $Id: samples.vm,v 1.5 2013/06/27 15:59:41 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,28may13,ajm Adding constructMap node for the example type
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,21oct11,ajm Fixing bug with type in lowerCase in fileName
+##10a,17oct11,ajm variable name changes acording to the emitters
+##10a,14oct11,jmt created 
+##========================================================================*/*#
+
+with "../${envMap.idlFileNameLC}.gpr";
+with "../${envMap.idlFileNameLC}_c.gpr";
+Project ${envMap.idlFileName}.Samples is
+   for languages use ("Ada");
+   for Source_Dirs use (".");
+   for Main use ("${constructMap.gprPath}_publisher.adb",
+                 "${constructMap.gprPath}_subscriber.adb");
+
+   for Object_Dir use ${envMap.idlFileName}'Object_Dir;
+   for Exec_Dir use ${envMap.idlFileName}'Exec_Dir;
+
+
+   package Binder is
+      for Default_Switches ("ada") use
+        ${envMap.idlFileName}.Binder'Default_Switches ("ada");
+   end Binder;
+
+   package Compiler is
+      for Default_Switches ("ada") use
+        ${envMap.idlFileName}.Compiler'Default_Switches ("ada");
+      for Default_Switches ("C") use
+        ${envMap.idlFileName}.Compiler'Default_Switches ("C");
+   end Compiler;
+
+   package Builder is
+      for Default_Switches ("ada") use
+        ${envMap.idlFileName}.Builder'Default_Switches ("ada");
+   end Builder;
+
+   package Linker is
+      for Default_Switches ("ada") use
+        ${envMap.idlFileName}.Linker'Default_Switches ("ada");
+   end Linker;
+   
+end ${envMap.idlFileName}.Samples;
+

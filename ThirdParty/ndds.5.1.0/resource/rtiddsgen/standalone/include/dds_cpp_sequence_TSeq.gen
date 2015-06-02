@@ -1,0 +1,334 @@
+/*
+(c) Copyright, Real-Time Innovations, Inc. 2003-2010.  All rights reserved.
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+
+/* ================================================================== */
+/*i
+   \st_impl \st_generic
+
+   Defines:   TSeq, T
+*/
+
+#if defined(TSeq) && defined(T)
+
+#define concatenate(A, B)   A ## B
+
+#define get_element_pointers_allocation_c(TSeq) concatenate(TSeq, _get_element_pointers_allocation)
+#define TSeq_get_element_pointers_allocation get_element_pointers_allocation_c(TSeq)
+
+#define set_element_pointers_allocation_c(TSeq) concatenate(TSeq, _set_element_pointers_allocation)
+#define TSeq_set_element_pointers_allocation set_element_pointers_allocation_c(TSeq)
+
+#define get_element_allocation_params_c(TSeq) concatenate(TSeq, _get_element_allocation_params)
+#define TSeq_get_element_allocation_params get_element_allocation_params_c(TSeq)
+
+#define set_element_allocation_params_c(TSeq) concatenate(TSeq, _set_element_allocation_params)
+#define TSeq_set_element_allocation_params set_element_allocation_params_c(TSeq)
+
+#define get_element_deallocation_params_c(TSeq) concatenate(TSeq, _get_element_deallocation_params)
+#define TSeq_get_element_deallocation_params get_element_deallocation_params_c(TSeq)
+
+#define set_element_deallocation_params_c(TSeq) concatenate(TSeq, _set_element_deallocation_params)
+#define TSeq_set_element_deallocation_params set_element_deallocation_params_c(TSeq)
+
+#define get_maximum_c(TSeq) concatenate(TSeq, _get_maximum)
+#define TSeq_get_maximum get_maximum_c(TSeq)
+
+#define set_maximum_c(TSeq) concatenate(TSeq, _set_maximum)
+#define TSeq_set_maximum set_maximum_c(TSeq)
+
+#define get_length_c(TSeq) concatenate(TSeq, _get_length)
+#define TSeq_get_length get_length_c(TSeq)
+
+#define set_length_c(TSeq) concatenate(TSeq, _set_length)
+#define TSeq_set_length set_length_c(TSeq)
+
+#define ensure_length_c(TSeq) concatenate(TSeq, _ensure_length)
+#define TSeq_ensure_length ensure_length_c(TSeq)
+
+#define get_c(TSeq) concatenate(TSeq, _get)
+#define TSeq_get get_c(TSeq)
+
+#define get_address_c(TSeq) concatenate(TSeq, _get_reference)
+#define TSeq_get_reference get_address_c(TSeq)
+
+#define copy_no_alloc_c(TSeq) concatenate(TSeq, _copy_no_alloc)
+#define TSeq_copy_no_alloc copy_no_alloc_c(TSeq)
+
+#define copy_c(TSeq) concatenate(TSeq, _copy)
+#define TSeq_copy copy_c(TSeq)
+
+#define from_array_c(TSeq) concatenate(TSeq, _from_array)
+#define TSeq_from_array from_array_c(TSeq)
+
+#define loan_contiguousC(TSeq) concatenate(TSeq, _loan_contiguous)
+#define TSeq_loan_contiguous loan_contiguousC(TSeq)
+
+#define loan_discontiguous_c(TSeq) concatenate(TSeq, _loan_discontiguous)
+#define TSeq_loan_discontiguous loan_discontiguous_c(TSeq)
+
+#define unloan_c(TSeq) concatenate(TSeq, _unloan)
+#define TSeq_unloan unloan_c(TSeq)
+
+#define get_contiguous_bufferIC(TSeq) concatenate(TSeq, _get_contiguous_bufferI)
+#define TSeq_get_contiguous_bufferI get_contiguous_bufferIC(TSeq)
+
+#define get_contiguous_bufferC(TSeq) concatenate(TSeq, _get_contiguous_buffer)
+#define TSeq_get_contiguous_buffer get_contiguous_bufferC(TSeq)
+
+#define get_discontiguous_bufferI_c(TSeq) concatenate(TSeq, _get_discontiguous_bufferI)
+#define TSeq_get_discontiguous_bufferI get_discontiguous_bufferI_c(TSeq)
+
+#define has_ownership_c(TSeq) concatenate(TSeq, _has_ownership)
+#define TSeq_has_ownership has_ownership_c(TSeq)
+
+#define destroy_c(TSeq) concatenate(TSeq, _destroy)
+#define TSeq_destroy destroy_c(TSeq)
+
+#define get_read_tokenI_c(TSeq) concatenate(TSeq, _get_read_tokenI)
+#define TSeq_get_read_tokenI get_read_tokenI_c(TSeq)
+
+#define set_read_tokenI_c(TSeq) concatenate(TSeq, _set_read_tokenI)
+#define TSeq_set_read_tokenI set_read_tokenI_c(TSeq)
+
+
+/* ----------------------------------------------------------------- */
+/* Defines submodule for logging purposes
+ */
+#define DDS_CURRENT_SUBMODULE  DDS_SUBMODULE_MASK_SEQUENCE
+
+/* ----------------------------------------------------------------- */
+/*i
+   TSeq
+*/
+TSeq::TSeq(DDS_Long new_max)
+        : _owned(RTI_TRUE), _contiguous_buffer(NULL),
+          _discontiguous_buffer(NULL), _maximum(0),
+          _length(0), _sequence_init(DDS_SEQUENCE_MAGIC_NUMBER),
+          _read_token1(NULL), _read_token2(NULL)
+          
+{
+    DDS_SeqElementTypeAllocationParams_from_type_alloc_settings(
+        &_elementAllocParams, &DDS_TYPE_ALLOCATION_PARAMS_DEFAULT);  
+    DDS_SeqElementTypeDeallocationParams_from_type_dealloc_settings(
+        &_elementDeallocParams, &DDS_TYPE_DEALLOCATION_PARAMS_DEFAULT);  
+    maximum(new_max);
+}
+
+TSeq::TSeq(const struct TSeq& seq)
+        : _owned(RTI_TRUE), _contiguous_buffer(NULL),
+          _discontiguous_buffer(NULL), _maximum(0),
+          _length(0), _sequence_init(DDS_SEQUENCE_MAGIC_NUMBER),
+          _read_token1(NULL), _read_token2(NULL)
+{
+    DDS_Long new_max = seq.maximum();
+
+    DDS_SeqElementTypeAllocationParams_from_type_alloc_settings(
+        &_elementAllocParams, &DDS_TYPE_ALLOCATION_PARAMS_DEFAULT);  
+    DDS_SeqElementTypeDeallocationParams_from_type_dealloc_settings(
+        &_elementDeallocParams, &DDS_TYPE_DEALLOCATION_PARAMS_DEFAULT);  
+
+    maximum(new_max);
+    TSeq_copy_no_alloc(this, &seq);
+}
+
+TSeq::~TSeq() {
+    maximum(0);
+}
+                                                 
+bool TSeq::element_pointers_allocation(bool allocatePointers) {
+    return TSeq_set_element_pointers_allocation(this,allocatePointers) ? true : false;
+}
+
+bool TSeq::element_pointers_allocation() {
+    return _elementAllocParams.allocate_pointers ? true:false;
+}
+
+bool TSeq::element_allocation_params(DDS_TypeAllocationParams_t & params) {
+    return (bool)TSeq_set_element_allocation_params(this, &params);
+}
+
+DDS_TypeAllocationParams_t TSeq::element_allocation_params() {
+    return TSeq_get_element_allocation_params(this);
+}
+
+bool TSeq::element_deallocation_params(
+         DDS_TypeDeallocationParams_t & params) {
+    return (bool)TSeq_set_element_deallocation_params(this,&params);    
+}
+
+DDS_TypeDeallocationParams_t TSeq::element_deallocation_params() {
+    return TSeq_get_element_deallocation_params(this);    
+}
+
+DDS_Long TSeq::maximum() const {
+    return _maximum;
+}                                      
+
+bool TSeq::maximum(DDS_Long new_max) {
+    return TSeq_set_maximum(this, new_max) ? true : false;
+}
+                                                                     
+DDS_Long TSeq::length() const {
+    return _length;
+}                                       
+
+bool TSeq::length(DDS_Long new_length) {
+    return TSeq_set_length(this, new_length) ? true : false;
+}
+
+bool TSeq::ensure_length(DDS_Long length, DDS_Long max) {
+    return TSeq_ensure_length(this, length, max) ? true : false;
+}
+
+const T& TSeq::operator[] (DDS_Long i) const {
+    return *(const T*)TSeq_get_reference(this, i);
+}                        
+
+T& TSeq::operator[] (DDS_Long i) {
+    return *TSeq_get_reference(this, i);
+}                                    
+
+bool TSeq::has_ownership()
+{
+    return _owned ? true : false;
+}
+
+TSeq& TSeq::operator=(const struct TSeq& src) {
+    TSeq_copy(this, &src);
+    return *this;
+}
+
+bool TSeq::copy_no_alloc(const struct TSeq& src) {
+    return TSeq_copy_no_alloc(this, &src) ? true : false;
+}
+
+bool TSeq::from_array(const T array[], DDS_Long length) {
+    return TSeq_from_array(this, array, length) ? true : false;    
+}
+
+bool TSeq::loan_contiguous(T* buffer, DDS_Long new_length, DDS_Long new_max)
+{
+    return TSeq_loan_contiguous(this, buffer, new_length, new_max)
+        ? true : false;
+}
+
+bool TSeq::loan_discontiguous(T** buffer, DDS_Long new_length, DDS_Long new_max)
+{
+    return TSeq_loan_discontiguous(this, buffer, new_length, new_max)
+        ? true : false;
+}
+
+bool TSeq::unloan()
+{
+    return TSeq_unloan(this) ? true : false;
+}
+
+T* TSeq::get_contiguous_bufferI() const
+{
+    return _contiguous_buffer;
+}
+
+T* TSeq::get_contiguous_buffer() const
+{
+    return _contiguous_buffer;
+}
+
+T** TSeq::get_discontiguous_bufferI() const
+{
+    return _discontiguous_buffer;
+}
+
+
+void TSeq::get_read_tokenI(void** token1,
+                           void** token2) const {
+    TSeq_get_read_tokenI(this, token1, token2);
+}
+
+
+void TSeq::set_read_tokenI(void* token1, void* token2) {
+    TSeq_set_read_tokenI(this, token1, token2);
+}
+
+
+#undef concatenate
+
+#undef get_read_tokenI_c
+#undef TSeq_get_read_tokenI
+
+#undef set_read_tokenI_c
+#undef TSeq_set_read_tokenI
+
+#undef get_element_pointers_allocation_c
+#undef TSeq_get_element_pointers_allocation
+
+#undef set_element_pointers_allocation_c
+#undef TSeq_set_element_pointers_allocation
+
+#undef get_maximum_c
+#undef TSeq_get_maximum
+
+#undef set_maximum_c
+#undef TSeq_set_maximum
+
+#undef get_length_c
+#undef TSeq_get_length 
+
+#undef set_length_c
+#undef TSeq_set_length 
+
+#undef get_c
+#undef TSeq_get 
+
+#undef get_address_c
+#undef TSeq_get_reference
+
+#undef copy_no_alloc_c
+#undef TSeq_copy_no_alloc
+
+#undef loan_contiguous_c
+#undef TSeq_loan_contiguous
+
+#undef loan_discontiguous_c
+#undef TSeq_loan_discontiguous
+
+#undef unloan_c
+#undef TSeq_unloan 
+
+#undef get_contiguous_bufferI_c
+#undef TSeq_get_contiguous_bufferI
+
+#undef get_contiguous_buffer_c
+#undef TSeq_get_contiguous_buffer
+
+#undef get_discontiguous_bufferI_c
+#undef TSeq_get_discontiguous_bufferI
+
+#undef has_ownership_c
+#undef TSeq_has_ownership
+
+#undef destroy_c
+#undef TSeq_destroy
+
+#undef copy_c
+#undef TSeq_copy
+
+#undef get_element_allocation_params_c
+#undef TSeq_get_element_allocation_params
+
+#undef set_element_allocation_params_c
+#undef TSeq_set_element_allocation_params
+
+#undef get_element_deallocation_params_c
+#undef TSeq_get_element_deallocation_params
+
+#undef set_element_deallocation_params_c
+#undef TSeq_set_element_deallocation_params
+
+#undef DDS_CURRENT_SUBMODULE
+#endif /* defined(TSeq) && defined(T) */
+/* ----------------------------------------------------------------- */
+/* End $Id: dds_cpp_sequence_TSeq.gen,v 1.4 2013/09/12 14:22:28 fernando Exp $ */

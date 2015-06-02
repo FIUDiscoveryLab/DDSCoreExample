@@ -1,0 +1,35 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld_publisher", "HelloWorld_publisher-VS2012.vcxproj", "{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld_subscriber", "HelloWorld_subscriber-VS2012.vcxproj", "{86CABDCE-9723-D621-8548-1464091D4D0B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug DLL|Win32 = Debug DLL|Win32
+		Debug|Win32 = Debug|Win32
+		Release DLL|Win32 = Release DLL|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Debug DLL|Win32.ActiveCfg = Debug DLL|Win32
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Debug DLL|Win32.Build.0 = Debug DLL|Win32
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Debug|Win32.ActiveCfg = Debug|Win32
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Debug|Win32.Build.0 = Debug|Win32
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Release DLL|Win32.ActiveCfg = Release DLL|Win32
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Release DLL|Win32.Build.0 = Release DLL|Win32
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Release|Win32.ActiveCfg = Release|Win32
+		{32C5A83D-28A7-F3A6-4735-CC16D89B1A11}.Release|Win32.Build.0 = Release|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Debug DLL|Win32.ActiveCfg = Debug DLL|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Debug DLL|Win32.Build.0 = Debug DLL|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Debug|Win32.Build.0 = Debug|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Release DLL|Win32.ActiveCfg = Release DLL|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Release DLL|Win32.Build.0 = Release DLL|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Release|Win32.ActiveCfg = Release|Win32
+		{86CABDCE-9723-D621-8548-1464091D4D0B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

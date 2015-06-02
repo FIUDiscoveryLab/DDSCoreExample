@@ -1,0 +1,9 @@
+c_cc_pentium64Vx6.9gcc4.3.3 = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccpentium
+c_ld_pentium64Vx6.9gcc4.3.3 = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ldpentium
+c_ld_flags_pentium64Vx6.9gcc4.3.3 = -m elf_x86_64_vxworks
+cxx_cc_pentium64Vx6.9gcc4.3.3 = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccpentium
+cxx_ld_pentium64Vx6.9gcc4.3.3 = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ldpentium
+cxx_ld_flags_pentium64Vx6.9gcc4.3.3 = -m elf_x86_64_vxworks
+syslibs_pentium64Vx6.9gcc4.3.3 =
+DEFINES_ARCH_SPECIFIC = -m64 -DRTI_VXWORKS -march=core2 -fno-builtin -mcmodel=large -mno-red-zone -DTOOL=gnu -DCPU=X86_64 -DRTI_64BIT -D_WRS_KERNEL
+

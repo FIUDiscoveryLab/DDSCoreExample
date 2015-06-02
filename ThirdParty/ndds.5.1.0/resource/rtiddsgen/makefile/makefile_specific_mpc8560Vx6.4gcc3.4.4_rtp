@@ -1,0 +1,8 @@
+c_cc_mpc8560Vx6.4gcc3.4.4_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/ccppc
+c_ld_mpc8560Vx6.4gcc3.4.4_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/ccppc
+c_ld_flags_mpc8560Vx6.4gcc3.4.4_rtp = -msoft-float -mrtp
+cxx_cc_mpc8560Vx6.4gcc3.4.4_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/c++ppc
+cxx_ld_mpc8560Vx6.4gcc3.4.4_rtp = \$(WIND_GNU_PATH)/sun4-solaris2/bin/c++ppc
+cxx_ld_flags_mpc8560Vx6.4gcc3.4.4_rtp = -msoft-float -mrtp
+syslibs_mpc8560Vx6.4gcc3.4.4_rtp = -L\$(WIND_BASE)/target/usr/lib/ppc/PPC32/sfcommon  -lstdc++
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -msoft-float -mcpu=8540 -fno-builtin -mlongcall -DTOOL=sfgnu -DCPU=PPC85XX

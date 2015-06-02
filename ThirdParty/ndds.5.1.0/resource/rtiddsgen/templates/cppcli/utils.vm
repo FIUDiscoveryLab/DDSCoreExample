@@ -1,0 +1,511 @@
+##/* $Id: utils.vm,v 1.13 2013/03/12 15:27:15 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##10a,29oct13,ajm CODEGENII-143 and nddsgen1.0 fixes for CODEGEN-561 
+##10a,28oct13,ajm CODEGENII-143 nddsgen1.0 fixes for CODEGEN-564 CODEGEN-494 CODEGEN-632
+##2.0,12sep13,ajm CODEGENII-143 and CODEGEN-567 
+##           The TypePlugin get_size functions do not provide the right value for Mutable types
+##2.0,12sep13,ajm CODEGENII-92: Support for optional members
+##10a,02Apr13,ajm Adding support for XTypes in .Net
+##10a,26mar13,ajm Bug fixing
+##10a,26mar13,ajm Adding support for unions in .Net
+##10a,19mar13,ajm Adding support for typedefs and const 
+##10a,18mar13,ajm created 
+##
+##========================================================================*/*#
+#* --------------------------------------------------- *#
+#* --------------------------------------------------- *#
+#* This file contains macros used by more than one     *#
+#* template.                                           *#
+#* --------------------------------------------------- *#
+
+#macro(assignTypeVariables $node)
+#*--*##if($node.constructKind.equals("union"))
+#*--*##assignNeedExtendedId($node.unionDiscriminatorMap)
+#*--*##end
+#*--*##if (!$node.memberFieldMapList.initialized)
+#*----*##set($node.memberFieldMapList.initialized="true") ##We check that this set is only done once
+#*--*##if($node.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*----*##set($node.currentAlignment="0")
+#*--*##else
+#*----*##set($node.currentAlignment="current_alignment")
+#*--*##end
+#*----*##foreach ($member in $node.memberFieldMapList)
+#*------*##assignMemberVariables ($member $node)
+#*----*##end##foreach
+#*--*##end##if
+#end##macro
+
+ 
+#macro(assignMemberVariables $member $type)
+#*--*##if (!$member.initialized)
+#*----*##set($member.initialized="true") ##We check that this set is only done once
+#*----*##if($member.name.equals("Value"))
+#*------*##set($member.typeCodeSeq="${member.nativeFQNameInModule}_g_tc_sequence")
+#*------*##set($member.typeCodeArray="${member.nativeFQNameInModule}_g_tc_array")
+#*------*##set($member.typeCodeDimension="${member.nativeFQNameInModule}_g_tc_dimensions")
+#*----*##elseif(!$member.name.equals("_d")) ##We don't need this for the discriminator
+#*------*##set($member.typeCodeSeq="${member.nativeFQNameInModule}_g_tc_${member.name}_sequence")
+#*------*##set($member.typeCodeArray="${member.nativeFQNameInModule}_g_tc_${member.name}_array")
+#*------*##set($member.typeCodeDimension="${member.nativeFQNameInModule}_g_tc_${member.name}_dimensions")
+#*----*##end
+#if($member.typeKind.equals("user")) 
+#*------*##set($member.nativeTypeSeqFQName="${member.nativeTypeFQName}Seq") ###nativeTypeSeqFQName
+#*------*##set($member.typeCode="${member.nativeTypeFQName}_get_typecode()")
+#*----*##if($member.isEnum && !$member.isEnumCollection)
+#*------*##set($member.initialValue="${member.nativeTypeFQName}_get_default_value()")
+#*----*##else
+#*------*##set($member.initialValue="gcnew $member.nativeTypeFQName ()")
+#*----*##end
+#*----*##elseif($member.typeName.equals("char")) ##nativeTypeFQName
+#*------*##set($member.typeCode="DDS_g_tc_char")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::CharSeq") ###nativeTypeSeqFQName
+#*------*##set($member.typeEnum="RTI_CDR_CHAR_TYPE")                 
+#*------*##set($member.elementSerializeMethod="serialize_char") 
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array") 
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence") 
+#*------*##set($member.elementDeserializeMethod="deserialize_char") 
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array") 
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence") 
+#*------*##set($member.elementSkipMethod="skip_char") 
+#*------*##set($member.arraySkipMethod="skip_primitive_array") 
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence") 
+#*------*##set($member.elementPrintMethod="RTICdrType_printChar") 
+#*------*##set($member.elementInitMethod="RTICdrType_initChar") 
+#*------*##set($member.elementCopyMethod="RTICdrType_copyChar") 
+#*------*##set($member.elementSize="RTI_CDR_CHAR_SIZE") 
+#*------*##set($member.elementAlignment="RTI_CDR_CHAR_ALIGN") 
+#*------*##set($member.elementSizeMethod="CdrSizes::CHAR->serialized_size") 
+#*------*##set($member.arraySizeMethod="CdrSizes::CHAR->serialized_array_size") 
+#*------*##set($member.sequenceSizeMethod="CdrSizes::CHAR->serialized_sequence_size") 
+#*------*##set($member.elementPrintBitsMethod="RTICdrType_printUnsignedBits")    
+#*----*##elseif($member.typeName.equals("wchar"))
+#*------*##set($member.typeCode="DDS_g_tc_wchar")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::WcharSeq")
+#*------*##set($member.typeEnum="RTI_CDR_WCHAR_TYPE")                 
+#*------*##set($member.elementSerializeMethod="serialize_wchar")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_wchar")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_wchar")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printWchar")
+#*------*##set($member.elementInitMethod="RTICdrType_initWchar")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyWchar")
+#*------*##set($member.elementSize="RTI_CDR_WCHAR_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_WCHAR_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::WCHAR->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::WCHAR->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::WCHAR->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="RTICdrType_printBits")    
+#*----*##elseif($member.typeName.equals("octet"))
+#*------*##set($member.typeCode="DDS_g_tc_octet")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::ByteSeq")
+#*------*##set($member.typeEnum="RTI_CDR_OCTET_TYPE")                
+#*------*##set($member.elementSerializeMethod="serialize_octet")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_octet")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_octet")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printOctet")
+#*------*##set($member.elementInitMethod="RTICdrType_initOctet")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyOctet")
+#*------*##set($member.elementSize="RTI_CDR_OCTET_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_OCTET_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::OCTET->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::OCTET->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::OCTET->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="RTICdrType_printBits")  
+#*----*##elseif($member.typeName.equals("short")) 
+#*------*##set($member.typeCode="DDS_g_tc_short")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::ShortSeq")
+#*------*##set($member.typeEnum="RTI_CDR_SHORT_TYPE")
+#*------*##set($member.elementSerializeMethod="serialize_short")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_short")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_short")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printShort")
+#*------*##set($member.elementInitMethod="RTICdrType_initShort")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyShort")
+#*------*##set($member.elementSize="RTI_CDR_SHORT_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_SHORT_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::SHORT->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::SHORT->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::SHORT->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="RTICdrType_printBits")  
+#*----*##elseif($member.typeName.equals("long"))
+#*------*##set($member.typeCode="DDS_g_tc_long")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::IntSeq")
+#*------*##set($member.typeEnum="RTI_CDR_LONG_TYPE")    
+#*------*##set($member.elementSerializeMethod="serialize_long")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_long")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_long")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printLong")
+#*------*##set($member.elementInitMethod="RTICdrType_initLong")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyLong")
+#*------*##set($member.elementSize="RTI_CDR_LONG_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_LONG_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::LONG->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::LONG->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::LONG->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="RTICdrType_printBits")
+#*----*##elseif($member.typeName.equals("long long")) 
+#*------*##set($member.typeCode="DDS_g_tc_longlong")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::LongSeq")
+#*------*##set($member.typeEnum="RTI_CDR_LONG_LONG_TYPE")
+#*------*##set($member.elementSerializeMethod="serialize_long_long")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_long_long")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")        
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_long_long")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printLongLong")
+#*------*##set($member.elementInitMethod="RTICdrType_initLongLong")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyLongLong")
+#*------*##set($member.elementSize="RTI_CDR_LONG_LONG_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_LONG_LONG_ALIGN")    
+#*------*##set($member.elementSizeMethod="CdrSizes::LONG_LONG->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::LONG_LONG->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::LONG_LONG->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed")   
+#*----*##elseif($member.typeName.equals("float"))
+#*------*##set($member.typeCode="DDS_g_tc_float")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::FloatSeq")
+#*------*##set($member.typeEnum="RTI_CDR_FLOAT_TYPE")                 
+#*------*##set($member.elementSerializeMethod="serialize_float")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_float")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_float")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printFloat")
+#*------*##set($member.elementInitMethod="RTICdrType_initFloat")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyFloat")
+#*------*##set($member.elementSize="RTI_CDR_FLOAT_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_FLOAT_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::FLOAT->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::FLOAT->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::FLOAT->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed") 
+#*----*##elseif($member.typeName.equals("double"))
+#*------*##set($member.typeCode="DDS_g_tc_double")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::DoubleSeq")
+#*------*##set($member.typeEnum="RTI_CDR_DOUBLE_TYPE")                
+#*------*##set($member.elementSerializeMethod="serialize_double")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_double")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_double")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printDouble")
+#*------*##set($member.elementInitMethod="RTICdrType_initDouble")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyDouble")
+#*------*##set($member.elementSize="RTI_CDR_DOUBLE_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_DOUBLE_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::DOUBLE->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::DOUBLE->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::DOUBLE->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed")  
+#*----*##elseif($member.typeName.equals("boolean"))
+#*------*##set($member.typeCode="DDS_g_tc_boolean")
+#*------*##set($member.initialValue="false") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::BooleanSeq")
+#*------*##set($member.typeEnum="RTI_CDR_BOOLEAN_TYPE")                
+#*------*##set($member.elementSerializeMethod="serialize_boolean")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_boolean")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_boolean")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printBoolean")
+#*------*##set($member.elementInitMethod="RTICdrType_initBoolean")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyBoolean")
+#*------*##set($member.elementSize="RTI_CDR_BOOLEAN_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_BOOLEAN_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::BOOLEAN->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::BOOLEAN->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::BOOLEAN->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed")  
+#*----*##elseif($member.typeName.equals("unsigned long long"))
+#*------*##set($member.typeCode="DDS_g_tc_ulonglong")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::UnsignedLongSeq")
+#*------*##set($member.typeEnum="RTI_CDR_UNSIGNED_LONG_LONG_TYPE")                 
+#*------*##set($member.elementSerializeMethod="serialize_unsigned_long_long")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_unsigned_long_long")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")        
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_unsigned_long_long")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printUnsignedLongLong")
+#*------*##set($member.elementInitMethod="RTICdrType_initUnsignedLongLong")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyUnsignedLongLong")
+#*------*##set($member.elementSize="RTI_CDR_UNSIGNED_LONG_LONG_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_UNSIGNED_LONG_LONG_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::LONG_LONG->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::LONG_LONG->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::LONG_LONG->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed")    
+#*----*##elseif($member.typeName.equals("unsigned long"))
+#*------*##set($member.typeCode="DDS_g_tc_ulong")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::UnsignedIntSeq")
+#*------*##set($member.typeEnum="RTI_CDR_UNSIGNED_LONG_TYPE")                 
+#*------*##set($member.elementSerializeMethod="serialize_unsigned_long")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_unsigned_long")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_unsigned_long")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printUnsignedLong")
+#*------*##set($member.elementInitMethod="RTICdrType_initUnsignedLong")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyUnsignedLong")
+#*------*##set($member.elementSize="RTI_CDR_UNSIGNED_LONG_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_UNSIGNED_LONG_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::UNSIGNED_LONG->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::UNSIGNED_LONG->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::UNSIGNED_LONG->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="RTICdrType_printUnsignedBits")  
+#*----*##elseif($member.typeName.equals("unsigned short")) 
+#*------*##set($member.typeCode="DDS_g_tc_ushort")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::UnsignedShortSeq")
+#*------*##set($member.typeEnum="RTI_CDR_UNSIGNED_SHORT_TYPE")        
+#*------*##set($member.elementSerializeMethod="serialize_unsigned_short")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_unsigned_short")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array") 
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_unsigned_short")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printUnsignedShort")
+#*------*##set($member.elementInitMethod="RTICdrType_initUnsignedShort")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyUnsignedShort")
+#*------*##set($member.elementSize="RTI_CDR_UNSIGNED_SHORT_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_UNSIGNED_SHORT_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::UNSIGNED_SHORT->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::UNSIGNED_SHORT->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::UNSIGNED_SHORT->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="RTICdrType_printUnsignedBits")   
+#*----*##elseif($member.typeName.equals("long double"))
+#*------*##set($member.typeCode="DDS_g_tc_longdouble")
+#*------*##set($member.initialValue="0") 
+#*------*##set($member.nativeTypeSeqFQName="DDS::LongDoubleSeq")
+#*------*##set($member.typeEnum="RTI_CDR_LONG_DOUBLE_TYPE")                
+#*------*##set($member.elementSerializeMethod="serialize_long_double")
+#*------*##set($member.arraySerializeMethod="serialize_primitive_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_primitive_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_long_double")
+#*------*##set($member.arrayDeserializeMethod="deserialize_primitive_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_primitive_sequence")
+#*------*##set($member.elementSkipMethod="skip_long_double")
+#*------*##set($member.arraySkipMethod="skip_primitive_array")
+#*------*##set($member.sequenceSkipMethod="skip_primitive_sequence")
+#*------*##set($member.elementPrintMethod="RTICdrType_printLongDouble")
+#*------*##set($member.elementInitMethod="RTICdrType_initLongDouble")
+#*------*##set($member.elementCopyMethod="RTICdrType_copyLongDouble")
+#*------*##set($member.elementSize="RTI_CDR_LONG_DOUBLE_SIZE")
+#*------*##set($member.elementAlignment="RTI_CDR_LONG_DOUBLE_ALIGN")
+#*------*##set($member.elementSizeMethod="CdrSizes::LONG_DOUBLE->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::LONG_DOUBLE->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::LONG_DOUBLE->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed")  
+#*----*##elseif($member.typeName.equals("string")) 
+#*------*##if($member.name.equals("Value"))
+#*--------*##set($member.typeCode="${member.nativeFQNameInModule}_g_tc_string")
+#*------*##else
+#*--------*##set($member.typeCode="${member.nativeFQNameInModule}_g_tc_${member.name}_string")
+#*------*##end
+#*------*##set($member.nativeTypeSeqFQName="DDS::StringSeq")
+#*------*##set($member.typeEnum="RTI_CDR_CHAR_TYPE")        
+#*------*##set($member.initialValue='""')        
+#*------*##set($member.elementSerializeMethod="serialize_string")
+#*------*##set($member.arraySerializeMethod="serialize_string_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_string_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_string")
+#*------*##set($member.arrayDeserializeMethod="deserialize_string_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_string_sequence")
+#*------*##set($member.elementSkipMethod="skip_string")
+#*------*##set($member.arraySkipMethod="skip_string_array")
+#*------*##set($member.sequenceSkipMethod="skip_string_sequence")
+#*------*##set($member.elementPrintMethod="")
+#*------*##set($member.elementInitMethod="")
+#*------*##set($member.elementCopyMethod="")
+#*------*##set($member.elementSize="")
+#*------*##set($member.elementAlignment="")
+#*------*##set($member.elementSizeMethod="CdrSizes::STRING->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::STRING->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::STRING->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed")  
+#*----*##elseif($member.typeName.equals("wstring"))
+#*------*##if($member.name.equals("Value"))
+#*--------*##set($member.typeCode="${member.nativeFQNameInModule}_g_tc_string")
+#*------*##else
+#*--------*##set($member.typeCode="${member.nativeFQNameInModule}_g_tc_${member.name}_string")
+#*------*##end
+#*------*##set($member.nativeTypeSeqFQName="DDS::WstringSeq")
+#*------*##set($member.typeEnum="RTI_CDR_WCHAR_TYPE")        
+#*------*##set($member.initialValue='L""')          
+#*------*##set($member.elementSerializeMethod="serialize_wide_string")
+#*------*##set($member.arraySerializeMethod="serialize_wide_string_array")
+#*------*##set($member.sequenceSerializeMethod="serialize_wide_string_sequence")
+#*------*##set($member.elementDeserializeMethod="deserialize_wide_string")
+#*------*##set($member.arrayDeserializeMethod="deserialize_wide_string_array")
+#*------*##set($member.sequenceDeserializeMethod="deserialize_wide_string_sequence")
+#*------*##set($member.elementSkipMethod="skip_wstring")
+#*------*##set($member.arraySkipMethod="skip_string_array")
+#*------*##set($member.sequenceSkipMethod="skip_string_sequence")
+#*------*##set($member.elementPrintMethod="")
+#*------*##set($member.elementInitMethod="")
+#*------*##set($member.elementCopyMethod="")
+#*------*##set($member.elementSize="")
+#*------*##set($member.elementAlignment="")
+#*------*##set($member.elementSizeMethod="CdrSizes::WSTRING->serialized_size")
+#*------*##set($member.arraySizeMethod="CdrSizes::WSTRING->serialized_array_size")
+#*------*##set($member.sequenceSizeMethod="CdrSizes::WSTRING->serialized_sequence_size")
+#*------*##set($member.elementPrintBitsMethod="notUsed")
+#*----*##end##if
+
+#*----*##if($member.aliasNativeTypeFQName)##we need to change the typecode for the alias
+#*------*##set($member.typeCode="${member.aliasNativeTypeFQName}_get_typecode()")
+#*----*##end
+#*----*##if($type.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#*----*##assignNeedExtendedId($member)
+#*----*##end
+#*----*##if($type.constructKind.equals("union") && ${member.name}!="_d")
+#*--------*##set($member.sample="sample->_u->${member.name}")
+#*--------*##set($member.srcSample="src->_u->${member.name}")
+#*--------*##set($member.dstSample="dst->_u->${member.name}")
+#*--------*##set($member.printName="_u->${member.name}")
+#*----*##else
+#*--------*##set($member.sample="sample->${member.name}")
+#*--------*##set($member.srcSample="src->${member.name}")
+#*--------*##set($member.dstSample="dst->${member.name}")
+#*--------*##set($member.printName="${member.name}")
+#end
+#*--*##end
+#end
+
+#**TODO: Review the cases with aliasalias**#
+#macro (assignNeedExtendedId $member)
+#*--*##if($member.name.equals("_d"))
+#*----*##set($member.needExtendedId="no")
+#*--*##elseif($member.id >16128  )
+#*----*##set($member.needExtendedId="yes")
+#*--*##elseif(($member.typeKind=="builtin" ||($member.isEnum)) 
+               && (!$member.strSize) 
+               && (!$member.seqSize)
+               && (!$member.dimensionList))
+#*----*##set($member.needExtendedId="no")
+#*--*##else
+#*----*##set($member.needExtendedId="maybe")
+#*--*##end
+#end
+
+#macro(initCases $member)
+#*--*##foreach($l in $member.labelList)    
+#*----*##if($l=="(default)")
+          default:
+#*----*##else
+          case $l:
+#*----*##end
+#*--*##end
+          {  
+#end
+
+
+#macro(commaIfNeeded $index $v)
+#if( $index < $v.size()), #end 
+#end
+
+#macro(arrayDimensionWithComma $member)
+(#*
+*##foreach ($d in $member.dimensionList)
+$d#if( $velocityCount <$member.dimensionList.size()), #end  
+#end
+)#*
+*##end
+
+#macro(arrayDimensionWithMultiplication $member)
+#foreach($element in $member.dimensionList)#*
+*#($element)#if( $velocityCount <= $member.dimensionList.size() - 1)*#*
+*##end#end#end
+
+#macro (copyDirective $element)
+$element.value
+#end
+
+#macro(openForLoopIfArray $member)
+#*--*##if($member.dimensionList)
+#*----*##foreach($element in $member.dimensionList)
+    for(Int32 i${velocityCount}__ = 0; i${velocityCount}__< $element; ++i${velocityCount}__){
+    
+#*----*##end ##for
+#*--*##end ##if
+#end ##macro
+
+#macro(closeForLoopIfArray $member)
+#*--*##if($member.dimensionList)
+#*----*##foreach($element in $member.dimensionList)
+    }
+    
+#*----*##end ##for
+#*--*##end ##if
+#end ##macro
+
+#macro(arraydimensionListsWithIndex $member)#if($member.dimensionList)[#foreach($element in $member.dimensionList)#*
+*#i${velocityCount}__#if($velocityCount<= $member.dimensionList.size() - 1),#end#end]#end#end

@@ -1,0 +1,89 @@
+<!-- 
+ (c) Copyright, Real-Time Innovations, $Date: 2012/10/26 14:32:49 $.
+ All rights reserved.
+ Permission to modify and use for internal purposes granted.
+ This software is provided "as is", without warranty, express or implied.
+-->
+    <!-- =================================================================== -->
+    <!-- Distributed Logger                                                  -->
+    <!-- =================================================================== -->
+
+    <xs:simpleType name="FilterLevelType">
+        <xs:annotation>
+        	<xs:documentation>Enumeration type for the specification of Distributed Logger's filter level.</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+    		<xs:enumeration value="SILENT">
+    			<xs:annotation>
+    				<xs:documentation>Silent filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="FATAL">
+    			<xs:annotation>
+    				<xs:documentation>Fatal filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="SEVERE">
+    			<xs:annotation>
+    				<xs:documentation>Severe filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="ERROR">
+    			<xs:annotation>
+    				<xs:documentation>Error filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="WARNING">
+    			<xs:annotation>
+    				<xs:documentation>Warning filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="NOTICE">
+    			<xs:annotation>
+    				<xs:documentation>Notice filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="INFO">
+    			<xs:annotation>
+    				<xs:documentation>Info filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="DEBUG">
+    			<xs:annotation>
+    				<xs:documentation>Debug filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    		<xs:enumeration value="TRACE">
+    			<xs:annotation>
+    				<xs:documentation>Trace filter level</xs:documentation>
+    			</xs:annotation></xs:enumeration>
+    	</xs:restriction>
+    </xs:simpleType>
+
+
+    <xs:complexType name="DistributedLoggerType">
+        <xs:annotation>
+        	<xs:documentation>Main type for the definition of Distributed Logger configuration.</xs:documentation>
+        </xs:annotation>
+        <xs:all>
+        	<xs:element name="filter_level" type="FilterLevelType"
+        		minOccurs="0" maxOccurs="1">
+        		<xs:annotation>
+        			<xs:documentation>
+        				The filter level to apply to the log messages.
+        			</xs:documentation>
+        		</xs:annotation>
+        	</xs:element>
+        	<xs:element name="enabled" type="xs:boolean">
+        		<xs:annotation>
+        			<xs:documentation>
+        				Whether the remote administration of Distributed
+        				Logger is active (true) or not (false).
+        			</xs:documentation>
+        		</xs:annotation>
+        	</xs:element>
+        	<xs:element name="thread" type="threadSettings" minOccurs="0">
+        		<xs:annotation>
+        			<xs:documentation>
+        				Thread settings for Distributed Logger.
+        			</xs:documentation>
+        		</xs:annotation>
+        	</xs:element>
+        	<xs:element name="queue_size" type="xs:positiveInteger" minOccurs="0">
+        		<xs:annotation>
+        			<xs:documentation>Size of the Distributed Logger queue for incoming log messages to be written.</xs:documentation>
+        		</xs:annotation></xs:element>
+        </xs:all>
+    </xs:complexType>

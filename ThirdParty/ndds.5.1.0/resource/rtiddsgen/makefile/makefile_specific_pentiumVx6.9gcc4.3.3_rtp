@@ -1,0 +1,9 @@
+c_cc_pentiumVx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccpentium
+c_ld_pentiumVx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/ccpentium
+c_ld_flags_pentiumVx6.9gcc4.3.3_rtp = -mrtp
+cxx_cc_pentiumVx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++pentium
+cxx_ld_pentiumVx6.9gcc4.3.3_rtp = \$(WIND_GNU_PATH)/\$(WIND_HOST_TYPE)/bin/c++pentium
+cxx_ld_flags_pentiumVx6.9gcc4.3.3_rtp = -mrtp
+syslibs_pentiumVx6.9gcc4.3.3_rtp = -L\$(WIND_BASE)/target/lib/usr/lib/pentium/PENTIUM/common -lstdc++
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -march=pentium -fno-builtin -DTOOL=gnu -DCPU=PENTIUM
+

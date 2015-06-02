@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{9c59286f-06f8-410d-aade-368fc4ee5b01}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{cc30ad40-b86d-4ba0-bb7f-839d84a7e764}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Type Plugin Files">
+      <UniqueIdentifier>{455600d0-0d96-479f-8356-f173e3b37482}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Hello.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\HelloPublisher.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\HelloSubscriber.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\idl\HelloWorld.c">
+      <Filter>Type Plugin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\idl\HelloWorldPlugin.c">
+      <Filter>Type Plugin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\idl\HelloWorldSupport.c">
+      <Filter>Type Plugin Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\Hello.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\HelloPublisher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\HelloSubscriber.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\idl\HelloWorld.h">
+      <Filter>Type Plugin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\idl\HelloWorldPlugin.h">
+      <Filter>Type Plugin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\idl\HelloWorldSupport.h">
+      <Filter>Type Plugin Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\src\HelloWorld.idl">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

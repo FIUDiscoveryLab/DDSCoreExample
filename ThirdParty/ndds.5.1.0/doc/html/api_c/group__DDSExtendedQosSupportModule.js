@@ -1,0 +1,45 @@
+var group__DDSExtendedQosSupportModule =
+[
+    [ "Thread Settings", "group__DDSThreadSettingsModule.html", "group__DDSThreadSettingsModule" ],
+    [ "DDS_RtpsReliableReaderProtocol_t", "structDDS__RtpsReliableReaderProtocol__t.html", [
+      [ "min_heartbeat_response_delay", "structDDS__RtpsReliableReaderProtocol__t.html#ab4d96a016eefca4dcd8ce001e03f7a90", null ],
+      [ "max_heartbeat_response_delay", "structDDS__RtpsReliableReaderProtocol__t.html#aafc2e6ec3a3c039e88355c683a7a622e", null ],
+      [ "heartbeat_suppression_duration", "structDDS__RtpsReliableReaderProtocol__t.html#a5fae078d8236e53962649d860087cd6b", null ],
+      [ "nack_period", "structDDS__RtpsReliableReaderProtocol__t.html#a9c299ef4fe921b91a7bdedadcd38c2a8", null ],
+      [ "receive_window_size", "structDDS__RtpsReliableReaderProtocol__t.html#aa33820f31d05477329cade249b50c8d0", null ],
+      [ "round_trip_time", "structDDS__RtpsReliableReaderProtocol__t.html#a94e7f68d46c1f0fa2805fd21be8c505b", null ],
+      [ "app_ack_period", "structDDS__RtpsReliableReaderProtocol__t.html#a9c87af40207de4455bdaddf7789b956b", null ],
+      [ "min_app_ack_response_keep_duration", "structDDS__RtpsReliableReaderProtocol__t.html#a1125d92d4365d62a00d6a9b5f899391a", null ],
+      [ "samples_per_app_ack", "structDDS__RtpsReliableReaderProtocol__t.html#acd2d05d1562c1adf755fbb1eccb6b62b", null ]
+    ] ],
+    [ "DDS_RtpsReliableWriterProtocol_t", "structDDS__RtpsReliableWriterProtocol__t.html", [
+      [ "low_watermark", "structDDS__RtpsReliableWriterProtocol__t.html#ab603712e435cc4369366afa770700b80", null ],
+      [ "high_watermark", "structDDS__RtpsReliableWriterProtocol__t.html#a7dc8a8bb8168a5acc3041f8970e95665", null ],
+      [ "heartbeat_period", "structDDS__RtpsReliableWriterProtocol__t.html#a47229dfbfde987f8bbebe67e789e0908", null ],
+      [ "fast_heartbeat_period", "structDDS__RtpsReliableWriterProtocol__t.html#a0a0198e6baba89dfa5231950814f2a8f", null ],
+      [ "late_joiner_heartbeat_period", "structDDS__RtpsReliableWriterProtocol__t.html#a26a476a46b1b4f03171c12c0e4ef784d", null ],
+      [ "virtual_heartbeat_period", "structDDS__RtpsReliableWriterProtocol__t.html#a86cca4ae688897f712260e830a9127ed", null ],
+      [ "samples_per_virtual_heartbeat", "structDDS__RtpsReliableWriterProtocol__t.html#a2692a857d018a3543ffc513631f219ba", null ],
+      [ "max_heartbeat_retries", "structDDS__RtpsReliableWriterProtocol__t.html#a5be67d978618b5995cb517b51231d39d", null ],
+      [ "inactivate_nonprogressing_readers", "structDDS__RtpsReliableWriterProtocol__t.html#a0b7adb7146cac9e462b9ffe65dd557cc", null ],
+      [ "heartbeats_per_max_samples", "structDDS__RtpsReliableWriterProtocol__t.html#a9dd9360fe1f9c8a7f251576c8878a139", null ],
+      [ "min_nack_response_delay", "structDDS__RtpsReliableWriterProtocol__t.html#a7a95278d5204acf040ec49a6348ada46", null ],
+      [ "max_nack_response_delay", "structDDS__RtpsReliableWriterProtocol__t.html#afad848d4636d4c72de4e3b08deddce1e", null ],
+      [ "nack_suppression_duration", "structDDS__RtpsReliableWriterProtocol__t.html#a57a6534419a7d0f53714dc88694f2b09", null ],
+      [ "max_bytes_per_nack_response", "structDDS__RtpsReliableWriterProtocol__t.html#a13a5686ae6a9b77271bacc39c4d8e80a", null ],
+      [ "disable_positive_acks_min_sample_keep_duration", "structDDS__RtpsReliableWriterProtocol__t.html#ad659354923989e244b61fbb67461b578", null ],
+      [ "disable_positive_acks_max_sample_keep_duration", "structDDS__RtpsReliableWriterProtocol__t.html#ac14a89d1a5ac916982b0966b48fc38f9", null ],
+      [ "disable_positive_acks_sample_min_separation", "structDDS__RtpsReliableWriterProtocol__t.html#a50dc3ecaf6069c15f91c9a0f5fb4280a", null ],
+      [ "disable_positive_acks_enable_adaptive_sample_keep_duration", "structDDS__RtpsReliableWriterProtocol__t.html#a31c48f82088f918774d67d2b045629b0", null ],
+      [ "disable_positive_acks_enable_spin_wait", "structDDS__RtpsReliableWriterProtocol__t.html#a59c730bad4a6f2be4664198edd26eb4f", null ],
+      [ "disable_positive_acks_decrease_sample_keep_duration_factor", "structDDS__RtpsReliableWriterProtocol__t.html#a2ebabf07c0eef5ecd3a24dfa177cf547", null ],
+      [ "disable_positive_acks_increase_sample_keep_duration_factor", "structDDS__RtpsReliableWriterProtocol__t.html#a3d73821b40894e0d511c29df94bc1443", null ],
+      [ "min_send_window_size", "structDDS__RtpsReliableWriterProtocol__t.html#a20be408ce0f25d4631d637e982213d02", null ],
+      [ "max_send_window_size", "structDDS__RtpsReliableWriterProtocol__t.html#a20f5ce40d2c1f5f9c1ab6673d911b0f4", null ],
+      [ "send_window_update_period", "structDDS__RtpsReliableWriterProtocol__t.html#a98e1f6a9e5da6b9c1ffc43a2925d8ffb", null ],
+      [ "send_window_increase_factor", "structDDS__RtpsReliableWriterProtocol__t.html#a62cd20d9f29e43c3c56f6411cce8b892", null ],
+      [ "send_window_decrease_factor", "structDDS__RtpsReliableWriterProtocol__t.html#a544f473d40ccf6bcb7735873c984876c", null ],
+      [ "enable_multicast_periodic_heartbeat", "structDDS__RtpsReliableWriterProtocol__t.html#a44046033c98a930c6ab24e4e95af0fa9", null ],
+      [ "multicast_resend_threshold", "structDDS__RtpsReliableWriterProtocol__t.html#adc5f7500501c036f47c51775529fa3ba", null ]
+    ] ]
+];

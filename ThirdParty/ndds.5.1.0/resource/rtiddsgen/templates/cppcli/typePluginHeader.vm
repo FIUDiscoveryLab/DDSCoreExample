@@ -1,0 +1,319 @@
+##/* $Id: typePluginHeader.vm,v 1.10 2013/03/01 16:44:20 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,21oct13,ajm CODEGENII-143 CODEGEN-494 and CODEGEN-626 .Net Bug fixes
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,26mar13,ajm Adding support for unions in .Net
+##10a,25mar13,ajm Adding support for enums and inheritance 
+##10a,19mar13,ajm Adding support for typedefs and const 
+##10a,18mar13,ajm created 
+##
+##------------------------------------------------------------------
+##-----------------------------------------------------------------
+##               
+##             Template for the TypePluginBody header file
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+## Structure:
+##
+## 
+## To use this template, the structure provided from the main program
+## to the context of the Velocity template must be as indicated here:
+##
+## The context will be feed by a list of the structs ($structList) defined in the 
+## IDL file. Each of the structs will have the following mandatory fields:
+##
+## $packageName (the path of all the modules separated by a .)
+## $name (the name of the struct)
+##
+##---------------------------------------------------------------------
+##---------------------------------------------------------------------
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+
+${envMap.POUND_CHAR}pragma once
+
+${envMap.POUND_CHAR}include "${envMap.idlFileName}.h"
+
+#*--*##foreach($node in $constructMapList)
+##if it is a directive we print its value
+#*----*##if($node.constructKind=="directive") 
+##we avoid to copy the declaration directives
+#*------*##if($node.directiveKind=="copy-c"||$node.directiveKind=="copy") 
+$node.value
+#*------*##end
+##if the module node is here is because its for c++ and namespace option
+#*----*##elseif($node.constructKind=="module") 
+namespace $node.name {
+#*----*##elseif($node.constructKind=="moduleClose") 
+} /* namespace $node.name  */
+#*----*##elseif($node.constructKind=="include")
+${envMap.POUND_CHAR}include "${node.file}Plugin.h"
+##Some of the parameters for the methods in enmus change with respect to
+##other types so we don't reuse the same code in the template
+#*----*##elseif($node.constructKind=="enum")
+/* ------------------------------------------------------------------------
+ * Enum Type: ${node.nativeFQName}
+ * ------------------------------------------------------------------------ */
+
+public ref class ${node.nativeFQNameInModule}Plugin {
+// --- (De)Serialization Methods: --------------------------------------------
+public:
+    System::Boolean serialize(
+        TypePluginEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule} sample,
+        CdrStream% stream,
+        System::Boolean serialize_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::Boolean serialize_sample,
+        System::Object^ endpoint_plugin_qos);
+
+    System::Boolean deserialize_sample(
+        TypePluginEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}% sample,
+        CdrStream% stream,
+        System::Boolean deserialize_encapsulation,
+        System::Boolean deserialize_sample, 
+        System::Object^ endpoint_plugin_qos);
+
+    System::Boolean skip(
+        TypePluginEndpointData^ endpoint_data,
+        CdrStream% stream,
+        System::Boolean skip_encapsulation,
+        System::Boolean skip_sample, 
+        System::Object^ endpoint_plugin_qos);
+
+    System::UInt32 get_serialized_sample_max_size(
+        TypePluginEndpointData^ endpoint_data,
+        System::Boolean include_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::UInt32 size);
+
+    System::UInt32 get_serialized_sample_min_size(
+        TypePluginEndpointData^ endpoint_data,
+        System::Boolean include_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::UInt32 size);
+
+    System::UInt32 get_serialized_sample_size(
+        TypePluginEndpointData^ endpoint_data,
+        Boolean include_encapsulation,
+        UInt16 encapsulation_id,
+        UInt32 current_alignment,
+        ${node.nativeFQNameInModule} sample);
+
+// --- Key Management functions: ---------------------------------------------
+public:
+    System::Boolean serialize_key(
+        TypePluginEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule} key,
+        CdrStream% stream,
+        System::Boolean serialize_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::Boolean serialize_sample,
+        System::Object^ endpoint_plugin_qos);
+
+    System::Boolean deserialize_key_sample(
+        TypePluginEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}% key,
+        CdrStream% stream,
+        System::Boolean deserialize_encapsulation,
+        System::Boolean deserialize_sample,
+        System::Object^ endpoint_plugin_qos);
+
+    System::UInt32 get_serialized_key_max_size(
+        TypePluginEndpointData^ endpoint_data,
+        System::Boolean include_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::UInt32 current_alignment);
+
+    System::Boolean serialized_sample_to_key(
+        TypePluginEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}% sample,
+        CdrStream% stream, 
+        Boolean deserialize_encapsulation,  
+        Boolean deserialize_key, 
+        Object^ endpoint_plugin_qos);
+
+// --- Support functions: ----------------------------------------------------
+public:
+    void print_data(
+        ${node.nativeFQNameInModule} sample,
+        System::String^ desc,
+        System::UInt32 indent_level);
+
+    
+
+
+
+// ---  Plug-in lifecycle management methods: --------------------------------
+public:
+    static ${node.nativeFQNameInModule}Plugin^ get_instance();
+
+    static void dispose();
+
+private:
+    ${node.nativeFQNameInModule}Plugin() { /*empty*/ }
+
+    static ${node.nativeFQNameInModule}Plugin^ _singleton;
+};        
+
+
+#*----*##elseif(($node.isAggregationType)
+||(($node.constructKind=="alias") 
+   && (($node.firstMember.typeKind.equals("user")&& !$node.firstMember.isEnum) 
+      ||($node.firstMember.dimensionList) 
+      || ($node.firstMember.seqSize)))) 
+
+    
+/* ------------------------------------------------------------------------
+ * Type: ${node.nativeFQNameInModule}
+ * ------------------------------------------------------------------------ */
+
+public ref class ${node.nativeFQNameInModule}Plugin :
+    DefaultTypePlugin<${node.nativeFQNameInModule}^> {
+// --- Support methods: ------------------------------------------------------
+public:
+    void print_data(
+        ${node.nativeFQNameInModule}^ sample,
+        System::String^ desc,
+        System::UInt32 indent);
+
+
+// --- (De)Serialize methods: ------------------------------------------------
+public:
+    virtual System::Boolean serialize(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}^ sample,
+        CdrStream% stream,
+        System::Boolean serialize_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::Boolean serialize_sample,
+        System::Object^ endpoint_plugin_qos) override;
+
+    virtual System::Boolean deserialize_sample(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}^ sample,
+        CdrStream% stream,
+        System::Boolean deserialize_encapsulation,
+        System::Boolean deserialize_sample, 
+        System::Object^ endpoint_plugin_qos) override;
+
+    System::Boolean skip(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        CdrStream% stream,
+        System::Boolean skip_encapsulation,  
+        System::Boolean skip_sample, 
+        System::Object^ endpoint_plugin_qos);
+
+    virtual System::UInt32 get_serialized_sample_max_size(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        System::Boolean include_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::UInt32 size) override;
+
+    virtual System::UInt32 get_serialized_sample_min_size(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        System::Boolean include_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::UInt32 size) override;
+
+    virtual System::UInt32 get_serialized_sample_size(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        Boolean include_encapsulation,
+        UInt16 encapsulation_id,
+        UInt32 current_alignment,
+        ${node.nativeFQNameInModule}^ sample) override;
+
+// ---  Key Management functions: --------------------------------------------
+public:
+    virtual System::UInt32 get_serialized_key_max_size(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        System::Boolean include_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::UInt32 current_alignment) override;
+
+    virtual System::Boolean serialize_key(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}^ key,
+        CdrStream% stream,
+        System::Boolean serialize_encapsulation,
+        System::UInt16  encapsulation_id,
+        System::Boolean serialize_sample,
+        System::Object^ endpoint_plugin_qos) override;
+
+    virtual System::Boolean deserialize_key_sample(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}^ key,
+        CdrStream% stream,
+        System::Boolean deserialize_encapsulation,
+        System::Boolean deserialize_sample,
+        System::Object^ endpoint_plugin_qos) override;
+
+    System::Boolean serialized_sample_to_key(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}^ sample,
+        CdrStream% stream,
+        System::Boolean deserialize_encapsulation,
+        System::Boolean deserialize_key,
+        System::Object^ endpoint_plugin_qos);
+
+
+#*------*##if($node.hasKey || $node.hasKeyBaseType)
+    virtual System::Boolean instance_to_key(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}^ key,
+        ${node.nativeFQNameInModule}^ instance) override;
+
+    virtual System::Boolean key_to_instance(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        ${node.nativeFQNameInModule}^ instance,
+        ${node.nativeFQNameInModule}^ key) override;
+
+    virtual System::Boolean serialized_sample_to_key_hash(
+        TypePluginDefaultEndpointData^ endpoint_data,
+        CdrStream% stream,
+        KeyHash_t% key_hash,
+        System::Boolean deserialize_encapsulation,
+        System::Object^ endpoint_plugin_qos) override;
+       
+
+#*------*##end 
+
+
+// ---  Plug-in lifecycle management methods: --------------------------------
+public:
+    static ${node.nativeFQNameInModule}Plugin^ get_instance();
+
+    static void dispose();
+
+private:
+    ${node.nativeFQNameInModule}Plugin()
+            : DefaultTypePlugin(
+                "${node.nativeFQNameInModule}",
+
+                #if(${node.hasKey} || ${node.hasKeyBaseType}) true, //keyed #else false, // not keyed#end
+    
+                false, // use RTPS-compliant alignment
+                #if($envMap.typeCode)${node.nativeFQNameInModule}::get_typecode() #else nullptr#end) {
+        // empty
+    }
+
+    static ${node.nativeFQNameInModule}Plugin^ _singleton;
+};
+#*----*##end
+#*--*##end

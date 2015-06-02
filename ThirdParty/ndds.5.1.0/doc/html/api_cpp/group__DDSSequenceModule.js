@@ -1,0 +1,38 @@
+var group__DDSSequenceModule =
+[
+    [ "Built-in Sequences", "group__DDSBuiltinSequenceModule.html", "group__DDSBuiltinSequenceModule" ],
+    [ "FooSeq", "structFooSeq.html", [
+      [ "~FooSeq", "structFooSeq.html#ae8ad8cfcb30ba3660fb421548938241a", null ],
+      [ "FooSeq", "structFooSeq.html#a0a969ff34dda8abb6df316c569b7fcad", null ],
+      [ "FooSeq", "structFooSeq.html#acf91df43a597f8f41ee973b8dcdea9c6", null ],
+      [ "operator=", "structFooSeq.html#a8244e65d7bce8f4555e62ba76b2db4ba", null ],
+      [ "copy_no_alloc", "structFooSeq.html#a2c4b27e70d871276f5c0588337596524", null ],
+      [ "from_array", "structFooSeq.html#a67f4f626f27b041eaf1fbbb7abd90fd7", null ],
+      [ "to_array", "structFooSeq.html#a34b2b38f46bb4b5aca744125627aeaac", null ],
+      [ "operator[]", "structFooSeq.html#aa7676bae9cf63f55e682b01e1fc9ef99", null ],
+      [ "operator[]", "structFooSeq.html#ae5ba395790e24b580d935da5a53e784e", null ],
+      [ "length", "structFooSeq.html#a2a38c15cdd9eceab96555fc2375952a5", null ],
+      [ "length", "structFooSeq.html#a218d5e2a15c320b52b2e6a9e532c9cbb", null ],
+      [ "ensure_length", "structFooSeq.html#aecaba1c585095dcec0b975c4b4ceacb5", null ],
+      [ "maximum", "structFooSeq.html#ad50736790ee5daee025e076caf2c3428", null ],
+      [ "maximum", "structFooSeq.html#a1bca9891ed49e9d82e249b4c0d54c34d", null ],
+      [ "loan_contiguous", "structFooSeq.html#ad6c6d9df78157a7077a6858db2d782a2", null ],
+      [ "loan_discontiguous", "structFooSeq.html#a54a116ece7d03d5b34ef5cdec1790839", null ],
+      [ "unloan", "structFooSeq.html#aec103f89c5c2f118ca570b5cddce8bb6", null ],
+      [ "get_contiguous_bufferI", "structFooSeq.html#ac13dede28328c1eaf9384b86a0874a32", null ],
+      [ "get_contiguous_buffer", "structFooSeq.html#ad9ac076c2beeb082392124a56cc0a6ff", null ],
+      [ "get_discontiguous_bufferI", "structFooSeq.html#abf7a9daee3af3e5350c3749e37adcd25", null ],
+      [ "get_discontiguous_buffer", "structFooSeq.html#a6088f780e12190965288a0ffe8e4f6ea", null ],
+      [ "get_read_tokenI", "structFooSeq.html#a46ec0775be7e2aa05026bc12e3e53869", null ],
+      [ "set_read_tokenI", "structFooSeq.html#ac30b0973983b081821737be43a0505c9", null ],
+      [ "has_ownership", "structFooSeq.html#ab037e9d5ce513e8cc966603ffc0cecde", null ],
+      [ "_owned", "structFooSeq.html#a45097e4628ca2cf13ed279e81e2abf67", null ],
+      [ "_contiguous_buffer", "structFooSeq.html#ac1a6d87520c5e798bc3f836873cd87e0", null ],
+      [ "_discontiguous_buffer", "structFooSeq.html#a1a78085911c8dd7dab89e2800c8fc5d6", null ],
+      [ "_maximum", "structFooSeq.html#afc4953f16ab14377764294ef0c9fc495", null ],
+      [ "_length", "structFooSeq.html#aef6de7f7807abf9dbc3c2434832a51fe", null ],
+      [ "_sequence_init", "structFooSeq.html#a1075e22a7f4d41051b37e69b7670c4fb", null ],
+      [ "_read_token1", "structFooSeq.html#ad6689ec4f71c241760e825b80759d722", null ],
+      [ "_read_token2", "structFooSeq.html#adb80e3cbb10cd9f592383f3239544623", null ]
+    ] ]
+];

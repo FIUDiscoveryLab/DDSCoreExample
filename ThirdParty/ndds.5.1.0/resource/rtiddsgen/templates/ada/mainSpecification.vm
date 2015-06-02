@@ -1,0 +1,107 @@
+##/* $Id: mainSpecification.vm,v 1.12 2013/09/26 10:24:44 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##modification history:
+##---------------------
+##2.0,26sept13,ajm Adding copy directives
+##10a, 12jul13,ajm Fixing an error with module packagename
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,28may13, ajm CODEGENII-104 reviewing ADA code
+##10a,4dec12, ajm Refactoring of the code and variable names.
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,07nov11, ajm Refactoring code
+##10a,21oct11, ajm Fixing bug with type in lowerCase in Wstring_Seq
+##10a,21oct11, ajm Fixing bug with type in lowerCase in unions
+##10a,12oct11, Adding union support
+##10a,26sep11,ajm adding enum support 
+##10a,22sep11,ajm  Adding support for valueTypes
+##10a,16sep11,ajm  fixing detected bugs in typedefs
+##10a,15sep11,ajm Refactor typedefs
+##10a,07sep11, ajm Adding support for typedef
+##10a,29ag11,ajm Fixing macros consistency by adding the missing parameters
+##10a,16ag11,jmt Adding funcionality for basic types, const and arrays
+##10a,15ag11,jmt created 
+##
+##========================================================================*/
+--  ============================================================================
+--
+--         WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+--
+--  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+--  The rtiddsgen tool is part of the RTI Connext distribution.
+--  For more information, type 'rtiddsgen -help' at a command shell
+--  or consult the RTI Connext manual.
+--
+--  ============================================================================
+
+#if($constructMapList.size()>0)
+#*--*#with DDS;
+#end
+#if($module.generateSequence)
+#*--*#with DDS.Sequences_Generic;
+#end
+#foreach($import in $module.importList)
+#*--*#with $import;
+#end
+
+package  ${module.packageName} is
+
+#foreach($node in $constructMapList)
+#*--*##if($node.constructKind=="directive") ##if it is a directive we print its value
+$node.value 
+#*--*##elseif($node.constructKind=="enum")#*-CODE FOR THE ENUM*#
+   type $node.name is (#foreach($member in $node.memberFieldMapList)${member.name}#commaIfNeededMembers($velocityCount $node) #end);
+   pragma Convention (C, $node.name);
+#*--*##if(!$node.autoOrdinal=="true")
+   for $node.name use (#foreach($member in $node.memberFieldMapList) ${member.name} => $member.ordinal #commaIfNeededMembers($velocityCount $node) #end);
+#*--*##end
+#*----*##initStruct($node)
+#*--*##elseif($node.constructKind=="const")#*-CODE FOR THE CONST*#
+#*----*##initConstant($node)
+#*--*##elseif($node.constructKind=="alias") #*-CODE FOR THE TYPEDEF*#
+#*----*##foreach($member in $node.memberFieldMapList)
+#*------*##if(${member.dimensionList})
+#*------*##intializeAdaArrayTypedefMember($member $node)
+#*------*##elseif($member.seqSize)
+#*----------*##if($member.nativeTypeFQName=="wstring")
+#*--------*#    type ${node.name} is new Standard.DDS.Wstring_Seq.Sequence;
+#*----------*##else
+#*--------*#    type ${node.name} is new ${member.nativeTypeFQName}_Seq.Sequence;
+#*----------*##end
+#*------*##else
+#*--------*#    type ${node.name} is new $member.nativeTypeFQName;
+#*------*##end  
+#*----*##end  
+#*----*##initStruct($node)
+#*--*##elseif($node.constructKind=="struct" || $node.constructKind=="valueType" || $node.constructKind=="union") #*-CODE FOR THE STRUCTS and ValueTypes*#
+#*--*#  ${node.name}_TypeName : Standard.DDS.String := Standard.DDS.To_DDS_String  ("${node.name}");
+#*--*##initializeAdaArrays(${node.memberFieldMapList} $node)
+#*--*#   type #if($node.constructKind=="union")U_#end${node.name} is record
+#*--*##if($node.baseType)
+#*--*#    parent : $node.baseType;
+#*--*##end
+#*--*##initializeAdaVariables($node ${node.memberFieldMapList})   
+#*--*#   end record;
+#*--*# #if($node.constructKind=="union")
+#*--*#    pragma Convention (C, U_${node.name});
+#*--*# 
+#*--*#    type ${node.name} is record
+#*--*#     d : ${node.unionDiscriminatorMap.nativeTypeFQName};
+#*--*#     u : U_${node.name};
+#*--*#    end record;
+#*--*# #end
+
+#*--*#   pragma Convention (C, ${node.name});
+#*--*##initStruct($node)
+#*--*##end
+#end
+
+end ${module.packageName};
+

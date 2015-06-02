@@ -1,0 +1,177 @@
+##/* $Id: typeBody.vm,v 1.11 2013/01/31 02:37:53 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##10a,28oct13,ajm CODEGENII-143 nddsgen1.0 fixes for CODEGEN-564 CODEGEN-494 CODEGEN-632
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,02Apr13,ajm Adding support for XTypes in .Net
+##10a,26mar13,ajm Adding support for unions in .Net
+##10a,25mar13,ajm Adding support for enums and inheritance 
+##10a,19mar13,ajm Adding support for typedefs and const 
+##10a,18mar13,ajm created 
+##
+##========================================================================*/
+
+##---------------------------------------------------------------------
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from ${envMap.idlFileName}.idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+ 
+${envMap.POUND_CHAR}pragma unmanaged
+${envMap.POUND_CHAR}include "ndds/ndds_cpp.h"
+${envMap.POUND_CHAR}pragma managed
+
+using namespace System;
+using namespace System::Collections;
+using namespace DDS;
+    
+
+${envMap.POUND_CHAR}include "${envMap.idlFileName}.h"
+
+#*--*##foreach($node in $constructMapList)
+#*----*##if($node.constructKind=="directive") ##if it is a directive we print its value
+#*-------*##if($node.directiveKind=="copy-c"||$node.directiveKind=="copy") ##we avoid to copy the declaration directives
+$node.value
+#*-------*##end
+#*----*##elseif($node.constructKind=="module") ##if the module node is here is because its for c++ and namespace option
+namespace $node.name {
+#*----*##elseif($node.constructKind=="moduleClose") ##if the module node is here is because its for c++ and namespace option
+} /* namespace $node.name  */
+#*----*##elseif(($node.isAggregationType)
+                 ||(($node.constructKind=="alias") 
+                    && (($node.firstMember.typeKind.equals("user") && !$node.firstMember.isEnum) 
+                         ||($node.firstMember.dimensionList) 
+                         || ($node.firstMember.seqSize)))) 
+/* ========================================================================= */
+${node.nativeFQNameInModule}::${node.nativeFQNameInModule}() {
+#*------*##if($node.constructKind.equals("union"))
+   _u = gcnew ${node.nativeFQNameInModule}_u();
+
+   _d = get_default_discriminator();
+#*------*##end
+#*------*##init($node)
+}
+#*******************************************************************************************#
+void ${node.nativeFQNameInModule}::clear(){
+#*------*##if($node.constructKind.equals("union"))
+    _d = get_default_discriminator();
+    switch(_d) {
+#*------*##end
+#*------*##clear($node)
+#*------*##if($node.constructKind.equals("union"))
+    }
+#*------*##end
+}
+
+#*******************************************************************************************#
+#*------*##if($node.constructKind.equals("union"))
+$node.unionDiscriminatorMap.nativeTypeFQName ${node.nativeFQNameInModule}::get_default_discriminator() {
+#*--------*##if($node.unionDiscriminatorMap.nativeTypeFQName.equals("System::Boolean"))
+#*----------*##if($node.unionDiscriminatorMap.defaultValue==0)
+    return false;
+#*----------*##else
+    return true;
+#*----------*##end
+#*--------*##else
+    return ($node.unionDiscriminatorMap.nativeTypeFQName)  $node.unionDiscriminatorMap.defaultValue;
+#*--------*##end  
+}
+#*------*##end
+
+
+#*******************************************************************************************#
+System::Boolean ${node.nativeFQNameInModule}::copy_from(${node.nativeFQNameInModule}^ src) {
+#*------*##if($node.baseTypeFQName)
+    if(!${node.baseTypeFQName}::copy_from((${node.baseTypeFQName}^) src)) {
+        return false;
+    }
+#*------*##end
+
+    ${node.nativeFQNameInModule}^ dst = this;
+
+#*------*##if($node.constructKind.equals("union"))
+#*--------*##copyMember($node.unionDiscriminatorMap)
+    switch(src->_d) {
+#*------*##end
+
+#*------*##copy($node)
+#*------*##if($node.constructKind.equals("union"))
+    }
+#*------*##end
+    return true;
+}
+#*******************************************************************************************#
+Boolean ${node.nativeFQNameInModule}::Equals(Object^ other) {
+    if (other == nullptr) {
+        return false;
+    }        
+    if (this == other) {
+        return true;
+    }
+#*------*##if($node.baseTypeFQName)
+    if (!${node.baseTypeFQName}::Equals(other)) {
+        return false;
+    }
+#*------*##end
+    ${node.nativeFQNameInModule}^ otherObj =
+        dynamic_cast<${node.nativeFQNameInModule}^>(other);
+    if (otherObj == nullptr) {
+        return false;
+    }
+
+#*------*##if($node.constructKind.equals("union"))
+    switch(this->_d) {
+#*------*##end
+
+#*------*##equals($node)
+#*------*##if($node.constructKind.equals("union"))
+   }
+#*------*##end            
+    return true;
+}
+#*******************************************************************************************#
+
+#*------*##if($node.constructKind.equals("alias"))
+String^ ${node.nativeFQNameInModule}::ToString() {
+    if ($node.firstMember.name == nullptr) {
+        return "";
+    }
+    return ${node.firstMember.name}->ToString();
+}
+#*------*##end
+
+#*******************************************************************************************#
+#*------*##if($envMap.typeCode)
+DDS::TypeCode^ ${node.nativeFQNameInModule}::get_typecode() {
+    if (_typecode == nullptr) {
+        _typecode = gcnew DDS::TypeCode(${node.nativeFQNameInModule}_get_typecode());
+    }
+    return _typecode;
+}
+#*------*##end
+#*----*##end
+
+#*----*##if($node.constructKind.equals("enum"))
+${node.nativeFQNameInModule} ${node.nativeFQNameInModule}_get_default_value() {
+    return ${node.nativeFQNameInModule}::$node.firstMember.name;
+}
+#*----*##end
+#*----*##if(($envMap.typeCode) 
+         && (($node.isAggregationType)
+             ||($node.constructKind=="enum")
+             ||($node.constructKind=="alias")))
+#*----*##typeCodeDeclaration($node $envMap.language)
+#*--*##end
+#end 

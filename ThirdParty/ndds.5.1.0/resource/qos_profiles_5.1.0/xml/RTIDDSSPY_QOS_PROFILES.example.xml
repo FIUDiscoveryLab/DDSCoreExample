@@ -1,0 +1,62 @@
+<!-- 
+RTI DDS Spy QoS Profiles
+-->
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+     xsi:noNamespaceSchemaLocation="../schema/rti_dds_qos_profiles.xsd" version="4.5d">
+    <!-- Qos Library -->
+    <qos_library name="DefaultSpyLibrary">
+        <qos_profile name="DefaultSpyProfile" is_default_qos="false">
+            <participant_qos>
+                <property>
+                    <value>
+                        <element>
+                            <name> dds.transport.UDPv4.builtin.ignore_loopback_interface </name>
+                            <value> 0 </value>
+                        </element>
+                    </value>
+                </property>
+                <participant_name>
+                    <name>RTI Data Distribution Service Spy</name>
+                </participant_name>
+                <wire_protocol>
+                    <participant_id>-1 </participant_id>
+                    <rtps_app_id> DDS_RTPS_AUTO_ID </rtps_app_id>
+                </wire_protocol>
+                <transport_builtin>
+                    <mask> DDS_TRANSPORTBUILTIN_MASK_DEFAULT </mask>
+                </transport_builtin>
+                <discovery_config>
+                    <participant_liveliness_assert_period>
+                        <sec>2</sec>
+                        <nanosec>0</nanosec>
+                    </participant_liveliness_assert_period>
+                    <participant_liveliness_lease_duration>
+                        <sec>6</sec>
+                        <nanosec>500000000</nanosec>
+                    </participant_liveliness_lease_duration>
+                </discovery_config>
+                <resource_limits>
+                <type_code_max_serialized_length> 
+                    4096
+                </type_code_max_serialized_length>
+                </resource_limits>
+            </participant_qos>
+            <datareader_qos>
+                <latency_budget>
+                    <duration>
+                        <sec> DURATION_INFINITE_SEC</sec>
+                        <nanosec>DURATION_INFINITE_NSEC</nanosec>
+                    </duration>
+                </latency_budget>
+                <reader_resource_limits>
+                    <dynamically_allocate_fragmented_samples>
+                        true
+                    </dynamically_allocate_fragmented_samples>
+                </reader_resource_limits>
+                <history>
+                    <depth>8192</depth>
+                </history>
+                </datareader_qos>
+        </qos_profile>
+    </qos_library>
+</dds>

@@ -1,0 +1,13 @@
+#!build
+default:
+	program
+%%IDLFileBaseName%%_%%ProjectName%%.c
+	C
+%%IDLFileBaseName%%.c
+	C
+%%IDLFileBaseName%%Plugin.c
+	C
+%%IDLFileBaseName%%Support.c
+	C
+%%IDLFileBaseName%%_%%ProjectName%%dd_INTEGRITY.ld
+	linker_file

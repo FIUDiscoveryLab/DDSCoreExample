@@ -1,0 +1,306 @@
+// NOTE: When using rtiddsgen you must also define a language binding so that
+// the appropriate modules will be defined. They are as follows:
+// C & C++ : LANGUAGE_C
+// DOTNET  : LANGUAGE_DOTNET
+// Java    : LANGUAGE_JAVA
+//
+// You can define this by using the '-D' option to rtiddsgen. Here's an example:
+// rtiddsgen -language C -D LANGUAGE_C distlog.idl
+
+#ifdef LANGUAGE_JAVA
+module com {
+module rti {
+module dl {
+
+#elif defined LANGUAGE_DOTNET
+module rti {
+module dl {
+
+#elif defined LANGUAGE_C
+module RTI {
+module DL {
+
+#else
+#error You must specify a language binding or else the resulting code will not work. Please see the IDL file for options.
+#endif
+
+    //--------------------------------------------------------------------------
+    // Topic names
+    //--------------------------------------------------------------------------
+    // The topic name used for log messages.
+    const string DEFAULT_LOG_TOPIC_NAME = "rti/distlog";
+    // The topic name used for the Log state.
+    const string DEFAULT_STATE_TOPIC_NAME = 
+        "rti/distlog/administration/state";
+    // The topic name used for Log command requests.
+    const string DEFAULT_COMMAND_REQUEST_TOPIC_NAME = 
+        "rti/distlog/administration/command_request";
+    // The topic name used for Log command responses.
+    const string DEFAULT_COMMAND_RESPONSE_TOPIC_NAME = 
+        "rti/distlog/administration/command_response";
+    
+    //--------------------------------------------------------------------------
+    // Type name
+    //--------------------------------------------------------------------------
+    const string LOG_MESSAGE_TYPE_NAME = "com::rti::dl::LogMessage";
+    const string STATE_TYPE_NAME = "com::rti::dl::admin::State";
+    const string COMMAND_REQUEST_TYPE_NAME = "com::rti::dl::admin::CommandRequest";
+    const string COMMAND_RESPONSE_TYPE_NAME = "com::rti::dl::admin::CommandResponse";
+    
+    //--------------------------------------------------------------------------
+    // Log levels
+    //--------------------------------------------------------------------------
+    // These are the log levels as constants. You can define your own levels as
+    // well between or above these (but not below 0).
+    const long SILENT_LEVEL  = 0;
+    const long FATAL_LEVEL   = 100;
+    const long SEVERE_LEVEL  = 200;
+    const long ERROR_LEVEL   = 300;
+    const long WARNING_LEVEL = 400;
+    const long NOTICE_LEVEL  = 500;
+    const long INFO_LEVEL    = 600;
+    const long DEBUG_LEVEL   = 700;
+    const long TRACE_LEVEL   = 800;
+    
+    // This is the category to use for the APIs which leave this parameter out.
+    const string DEFAULT_CATEGORY = "";
+    const long DEFAULT_LEVEL = INFO_LEVEL;
+    
+    // The maximum string length for the log message's category field.
+    const long MAX_CATEGORY_LENGTH = 512;
+    // The maximum string length for the log message's message field.
+    const long MAX_LOG_MESSAGE_LENGTH = 4096;
+    
+    // This structure is used to provide a unique identity for each Log in the
+    // system.
+    struct HostAndAppId {
+        long rtps_host_id; //@key
+        long rtps_app_id; //@key
+    }; //@top-level false
+       //@Extensibility EXTENSIBLE_EXTENSIBILITY
+    
+    //--------------------------------------------------------------------------
+    // Log message
+    //--------------------------------------------------------------------------
+    // This structure holds the log messages
+    struct LogMessage {
+        HostAndAppId hostAndAppId; //@key
+        long level; //@key
+        // The category field is intended to provide information which is 
+        // context-specific to the application. Generally speaking this will be
+        // a function or a class/method name.
+        string<MAX_CATEGORY_LENGTH> category;
+        // The log message.
+        string<MAX_LOG_MESSAGE_LENGTH> message;
+    }; //@top-level true
+       //@Extensibility MUTABLE_EXTENSIBILITY
+    
+
+//------------------------------------------------------------------------------
+// Administration module
+//------------------------------------------------------------------------------
+#ifdef LANGUAGE_JAVA
+module admin { 
+
+#elif defined LANGUAGE_DOTNET
+module admin {
+
+#elif defined LANGUAGE_C
+module ADMIN {
+#endif
+
+   
+    //--------------------------------------------------------------------------
+    // RTI Logger related structures
+    //--------------------------------------------------------------------------
+    // These are the verbosity levels for the RTI Logger.
+    enum RTILoggerVerbosity {
+        RTI_DL_NDDS_CONFIG_LOG_VERBOSITY_SILENT,
+        RTI_DL_NDDS_CONFIG_LOG_VERBOSITY_ERROR,
+        RTI_DL_NDDS_CONFIG_LOG_VERBOSITY_WARNING,
+        RTI_DL_NDDS_CONFIG_LOG_VERBOSITY_STATUS_LOCAL,
+        RTI_DL_NDDS_CONFIG_LOG_VERBOSITY_STATUS_REMOTE,
+        RTI_DL_NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL
+    };
+
+        // The default verbosity to use for the RTI Logger.
+    const RTILoggerVerbosity DEFAULT_RTI_LOGGER_VERBOSITY = 
+        RTI_DL_NDDS_CONFIG_LOG_VERBOSITY_WARNING;
+    
+    // These are the categories used by the RTI Logger.
+    enum RTILoggerCategory {
+        RTI_DL_NDDS_CONFIG_LOG_CATEGORY_PLATFORM,
+        RTI_DL_NDDS_CONFIG_LOG_CATEGORY_COMMUNICATION,
+        RTI_DL_NDDS_CONFIG_LOG_CATEGORY_DATABASE,
+        RTI_DL_NDDS_CONFIG_LOG_CATEGORY_ENTITIES,
+        RTI_DL_NDDS_CONFIG_LOG_CATEGORY_API
+    };
+    
+    // These are the print formats used by the RTI Logger.
+    enum RTILoggerPrintFormat {
+		RTI_DL_NDDS_CONFIG_LOG_PRINT_FORMAT_DEFAULT,
+		RTI_DL_NDDS_CONFIG_LOG_PRINT_FORMAT_TIMESTAMPED,
+		RTI_DL_NDDS_CONFIG_LOG_PRINT_FORMAT_VERBOSE,
+		RTI_DL_NDDS_CONFIG_LOG_PRINT_FORMAT_VERBOSE_TIMESTAMPED,
+		RTI_DL_NDDS_CONFIG_LOG_PRINT_FORMAT_DEBUG,
+		RTI_DL_NDDS_CONFIG_LOG_PRINT_FORMAT_MINIMAL,
+		RTI_DL_NDDS_CONFIG_LOG_PRINT_FORMAT_MAXIMAL
+    };
+    
+    // This structure combines the category and verbosity for the RTI Logger
+    // so that it can be used as both a status and a command.
+    struct RTILoggerCategoryAndVerbosity {
+        RTILoggerCategory category;
+        RTILoggerVerbosity verbosity;
+    }; //@top-level false
+       //@Extensibility EXTENSIBLE_EXTENSIBILITY
+    
+    //--------------------------------------------------------------------------
+    // State
+    //--------------------------------------------------------------------------
+    // This enumeration holds the various lifecycle states that the Log goes 
+    // through.
+    enum StateKind {
+        RTI_DL_STATE_INITIALIZING,
+        RTI_DL_STATE_OPERATIONAL,
+        RTI_DL_STATE_NONOPERATIONAL,
+        RTI_DL_STATE_SHUTTING_DOWN
+    };
+    
+    // The maximum length of the application kind string.
+    const long MAX_APPLICATION_KIND_LENGTH = 256;
+    
+    // The maximum length of the application's command line.
+    const long MAX_COMMAND_LINE_LENGTH = 8192;
+    
+    // This structure holds the state information for the Log.
+    struct State {
+        // The host and process id for the application to which the Log is 
+        // running.
+        HostAndAppId hostAndAppId; //@key
+        
+        // The domain id to which the administration components participate
+        long administrationDomainId;
+        
+        // The Log's current state.
+        StateKind state;
+        
+        // The application kind...this is a general purpose placeholder for a
+        // description of the application type.
+        string<MAX_APPLICATION_KIND_LENGTH> applicationKind;
+        
+        // The level at which the Log is current set...messages received from
+        // the API that are at a lower (logical) level (higher numerically)
+        // are not sent through to DDS.
+        long filterLevel;
+        
+        // The RTI Logger's current verbosity level for each of the 5 
+        // categories.
+        RTILoggerCategoryAndVerbosity rtiLoggerVerbosities[5];
+        
+        // The RTI Logger's current print format.
+        RTILoggerPrintFormat rtiLoggerPrintFormat;
+    }; //@top-level true
+       //@Extensibility MUTABLE_EXTENSIBILITY
+    
+    //--------------------------------------------------------------------------
+    // Log command
+    //--------------------------------------------------------------------------
+    // This enumeration contains the different kinds of commands that the Log
+    // can process.
+    enum CommandKind {
+        RTI_DL_SET_LOG_LEVEL,
+        RTI_DL_SET_RTI_LOGGER_LEVEL,
+        RTI_DL_SET_RTI_LOGGER_PRINT_FORMAT
+    };
+    
+    // This union contains the data for Log commands.
+    union Command switch(CommandKind) {
+        case RTI_DL_SET_LOG_LEVEL:
+            // The new filter level to set for the Log.
+            long filterLevel;
+        
+        case RTI_DL_SET_RTI_LOGGER_LEVEL:
+            // This structure holds up to 5 category verbosities which are to be
+            // set on the RTI Logger. At least one is expected in the command.
+            sequence<RTILoggerCategoryAndVerbosity, 5> categoryAndVerbosity;
+            
+        case RTI_DL_SET_RTI_LOGGER_PRINT_FORMAT:
+            // The new print format to set on the RTI Logger.
+            RTILoggerPrintFormat printFormat;
+    }; //@top-level false
+       //@Extensibility MUTABLE_EXTENSIBILITY
+    
+    // This structure contains the command data as well as addressing data so
+    // that the command can be filtered to only reach the intended Log.
+    struct CommandRequest {
+        // The host and process id of the Log that is the target for the 
+        // contained command information.
+        HostAndAppId targetHostAndAppId;
+        
+        // The host and process id of the originator of the request...it is not
+        // strictly necessary to fill this structure in but it provides a way
+        // for the originator to determine the outcome of the command through
+        // the command response topic.
+        HostAndAppId originatorHostAndAppId;
+        
+        // This structure is optional but is used to uniquely identify the
+        // command coming from the originating application. 
+        long invocation;
+        
+        // The commands to be sent to the Log.
+        Command command;
+    }; //@top-level true
+       //@Extensibility MUTABLE_EXTENSIBILITY
+    
+    //--------------------------------------------------------------------------
+    // Log command response
+    //--------------------------------------------------------------------------
+    // The maximum length of the command response message (human readable error
+    // message).
+    const long COMMAND_RESPONSE_MAX_LENGTH = 2048;
+    
+    // This enumeration contains the possible outcomes of processing a command
+    // sent to the Log.
+    enum CommandResult {
+        RTI_DL_COMMAND_RESULT_OK,
+        RTI_DL_COMMAND_RESULT_NOT_SUPPORTED,
+        RTI_DL_COMMAND_RESULT_ERROR
+    };
+    
+    // This structure holds the result of processing a Command sent to the Log
+    // along with the addressing information about the originator and a string
+    // message with further explanation (if needed).
+    struct CommandResponse {
+        HostAndAppId hostAndAppId; //@key
+        // The host and process id of the command originator.
+        HostAndAppId originatorHostAndAppId;
+        
+        // The invocation from the CommandRequest.
+        long invocation;
+        
+        // The result of executing the command.
+        CommandResult commandResult;
+        
+        // This is an optional message resulting from the execution of the
+        // command provides further details (if needed).
+        string<COMMAND_RESPONSE_MAX_LENGTH> message;
+    }; //@top-level true
+       //@Extensibility MUTABLE_EXTENSIBILITY
+
+#ifdef LANGUAGE_JAVA
+}; // end of module admin
+}; // end of module dl
+}; // end of module rti
+}; // end of module com
+
+#elif defined LANGUAGE_DOTNET
+}; // end of module admin
+}; // end of module dl
+}; // end of module rti
+
+#elif defined LANGUAGE_C
+}; // end of module ADMIN
+}; // end of module DL
+}; // end of module RTI
+#endif

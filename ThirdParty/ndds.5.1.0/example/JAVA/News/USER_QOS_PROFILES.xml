@@ -1,0 +1,173 @@
+<!-- 
+Description
+An RTI Connext QoS Profile for the News example application.
+-->
+
+<!-- ===================================================================== -->
+<!-- Strictly Reliable Profile                                             -->
+<!-- ===================================================================== -->
+
+<!--
+Your XML editor may be able to provide validation and auto-completion services
+as you type. To enable these services, replace the opening tag of this
+document with the following, and update the absolute path as appropriate for
+your installation:
+  
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="/my_NDDSHOME_directory/resource/qos_profiles_myVersion/schema/rti_dds_qos_profiles.xsd">
+-->
+<dds>
+    <qos_library name="NewsLibrary">
+        <qos_profile name="NewsProfile" is_default_qos="true">
+            <topic_qos name="NewsTopicQos">
+                <reliability>
+                    <!--
+                    Enable reliability.
+                    The writer maximum blocking time is 5 seconds.
+                    -->
+                    <kind>RELIABLE_RELIABILITY_QOS</kind>
+                    <max_blocking_time>
+                        <sec>5</sec>
+                        <nanosec>0</nanosec>
+                    </max_blocking_time>
+                </reliability>
+
+                <history>
+                    <!--
+                    The last 10 samples are still relevant.
+                    Data older than that will not be provided to your
+                    application and will not be repaired by the reliability
+                    protocol if dropped.
+
+                    This policy applies independently to each instance of the
+                    topic.
+                    -->
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>10</depth>
+                </history>
+
+                <durability>
+                    <!--
+                    Retain all data that has not yet been expired by the
+                    above contracts on behalf of late-joining subscribers.
+                    -->
+                    <kind>TRANSIENT_LOCAL_DURABILITY_QOS</kind>
+                </durability>
+
+                <!--
+                The publishing application promises to update each instance
+                of the topic at least once a second. If it fails to abide by
+                this contract, it will receive a notification.
+
+                The subscribing application declares that it expects to
+                receive an update to each instance at least once a second.
+                If it fails to receive data on time, it will receive a
+                notification.
+
+                Especially on a non-real-time operating system, where jitter
+                can introduce small non-deterministic delivery delays, it is
+                usually best to publish data updates slightly faster than
+                the promised rate to avoid frequent-but-spurious deadline
+                notifications.
+                -->
+                <deadline>
+                    <period>
+                        <sec>2</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+            </topic_qos>
+
+            <!--
+            It's possible to customize each QoS policy per-reader and
+            per-writer. Some policies are reader-specific or writer-specific.
+            In this case, we specify everything we can at the topic level,
+            then we just define the reader and writer configuration in terms
+            of the topic, adding to it or overriding as necessary.
+            -->
+
+            <datareader_qos base_name="NewsTopicQos">
+                <!--
+                Only present to the subscribing application one sample of
+                each instance each second.
+
+                If you set a time-based filter, it's best to take that into
+                account in the deadline you specify as well in order to
+                ensure that overlaps between your publication rate, minimum
+                separation, and deadline period don't lead to reader-side
+                deadline notifications that you don't expect. See the
+                documentation for DeadlineQosPolicy and
+                TimeBasedFilterQosPolicy in the online API documentation for
+                more information.
+                -->
+              <!--
+                <time_based_filter>
+                    <minimum_separation>
+                        <sec>1</sec>
+                        <nanosec>1</nanosec>
+                    </minimum_separation>
+                </time_based_filter>
+                <deadline>
+                    <period>
+                        <sec>3</sec>
+                        <nanosec>0</nanosec>
+                    </period>
+                </deadline>
+              -->
+            </datareader_qos>
+
+            <datawriter_qos base_name="NewsTopicQos">
+                <lifespan>
+                    <!--
+                    Samples that arrives within the last 6 seconds are still
+                    relevant. Data older than that will not be provided to
+                    your application and will not be repaired by the
+                    reliability protocol if dropped.
+
+                    In a topic that is being updated strictly periodically,
+                    it may be redundant to specify the lifespan when you have
+                    already specified the history depth, since together with
+                    the period, the history depth implies an effective
+                    "lifespan." In this case, we do specify it because
+                    different instances are being updated at different rates
+                    and to give you a knob to experiment with.
+                    -->
+                    <duration>
+                        <sec>6</sec>
+                        <nanosec>0</nanosec>
+                    </duration>
+                </lifespan>
+            </datawriter_qos>
+
+            <!--
+            By default, when you read data from the middleware, the samples
+            you receive will be grouped by instance, with related samples
+            adjacent to each other. To view the samples in the order in which
+            they were sent, with instances intermixed, set the following:
+            -->
+            <publisher_qos>
+                <presentation>
+                    <access_scope>TOPIC_PRESENTATION_QOS</access_scope>
+                    <ordered_access>true</ordered_access>
+                </presentation>
+            </publisher_qos>
+            <subscriber_qos>
+                <presentation>
+                    <access_scope>TOPIC_PRESENTATION_QOS</access_scope>
+                    <ordered_access>true</ordered_access>
+                </presentation>
+            </subscriber_qos>
+
+            <participant_qos>
+                <!--
+                The participant name, if it is set, will be displayed in the
+                RTI Analyzer tool, making it easier for you to tell one
+                application from another when you're debugging.
+                -->
+                <participant_name>
+                    <name>RTI News Example</name>
+                </participant_name>
+            </participant_qos>
+        </qos_profile>
+    </qos_library>
+</dds>

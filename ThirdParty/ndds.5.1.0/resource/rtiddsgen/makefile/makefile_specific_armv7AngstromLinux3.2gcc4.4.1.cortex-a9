@@ -1,0 +1,10 @@
+c_cc_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 = arm-none-linux-gnueabi-gcc
+c_cc_flags_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 =
+c_ld_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 = arm-none-linux-gnueabi-gcc
+c_ld_flags_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 =
+cxx_cc_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 = arm-none-linux-gnueabi-g++
+cxx_cc_flags_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 = 
+cxx_ld_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 = arm-none-linux-gnueabi-g++
+cxx_ld_flags_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 = -static-libgcc
+syslibs_armv7AngstromLinux3.2gcc4.4.1.cortex-a9 = -ldl -lnsl -lm -lpthread -lrt
+DEFINES_ARCH_SPECIFIC = -fpic -DRTI_UNIX -DRTI_LINUX -march=armv7-a -mcpu=cortex-a9 -mthumb -mlong-calls

@@ -1,0 +1,287 @@
+<?xml version="1.0"?>
+
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="rti_dds_qos_profiles.xsd" version="4.5d">
+
+    <!--
+        This XML QoS profile is intended to be used with the RTI Shapes application.
+        It is configured to support an application that has been dynamically linked.
+        The default profile is set in this file which could conflict with other
+        configurations, so please keep this in mind if reusing thing profile for
+        customer systems.
+    -->
+
+    <qos_library name="MonitorDemoLibrary">
+        <qos_profile name="MonitorDefault" is_default_qos="true">
+            <participant_qos>
+                <participant_name>
+                    <name>RTI Monitoring Demo</name>
+                </participant_name>
+
+                <!-- increase total property string max length -->
+                <resource_limits>
+                    <participant_property_string_max_length>
+                        2048
+                    </participant_property_string_max_length>
+                </resource_limits>
+
+                <property>
+                    <value>
+
+                        <!-- ===================================================== -->
+                        <!-- enable monitoring for dynamically-linked applications -->
+                        <!-- ===================================================== -->
+                        <!-- 
+                            NOTE: If you have a C or C++ application which is statically
+                            linked, please refer to the Getting Started Guide for
+                            instructions on how to enable monitoring. In order to use
+                            this profile for RTI Shapes, ensure that you are using the
+                            dynamic version.
+                        -->
+                        <element>
+                            <name>rti.monitor.library</name>
+                            <value>rtimonitoring</value>
+                            <propagate>false</propagate>
+                        </element>
+                        <element>
+                            <name>rti.monitor.create_function</name>
+                            <value>RTIDefaultMonitor_create</value>
+                            <propagate>false</propagate>
+                        </element>
+
+                        <!-- ========================= -->
+                        <!-- monitoring configurations -->
+                        <!-- ========================= -->
+
+                        <!--
+                            How often to sample and publish monitoring
+                            topics in seconds.
+                            Default: 5 (seconds)
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.publish_period</name>
+                            <value>5</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Monitoring topics that to be sent out.
+                            Default: * (all of them, i.e. no filter)
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.topics</name>
+                            <value>*</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!-- 
+                            User topics to be monitoring.
+                            Default: * (no filter)
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.usertopics</name>
+                            <value>*</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Uncomment this if you want statistics to be
+                            published by a new separate particpant, with
+                            the specified domain ID. 
+                            Default: not specified (use user participant for
+                            publishing monitoring data)
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.new_participant_domain_id</name>
+                            <value>10</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Uncomment the next two properties if you want 
+                            to use specific QoS profile for entities created
+                            by monitoring.
+                            Default: not specified (use internal QoS values)
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.qos_library</name>
+                            <value>RTIMonitoringQosLibrary</value>
+                            <propagate>false</propagate> </element>
+                        <element>
+                            <name>rti.monitor.config.qos_profile</name>
+                            <value>RTIMonitoringPublishingQosProfile</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Uncomment this if you want to control the
+                            property of the thread that sample and
+                            publish monitoring data.
+                        -->
+                        <!-- Default: -2 for windows, -999999 for linux -->
+                        <!--element>
+                            <name>rti.monitor.config.publish_thread_priority</name>
+                            <value>-2</value>
+                            <propagate>false</propagate>
+                        </element-->
+                        
+                        <!-- Default: 0 for windows, -1 for linux -->
+                        <!--element>
+                            <name>rti.monitor.config.publish_thread_stacksize</name>
+                            <value>0</value>
+                            <propagate>false</propagate>
+                        </element-->
+                        
+                        <!-- Default: FLOATING_POINT | STDIO -->
+                        <!--element>
+                            <name>rti.monitor.config.publish_thread_options</name>
+                            <value>FLOATING_POINT | STDIO</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Monitor memory and CPU usage?
+                            Default: true
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.get_process_statistics</name>
+                            <value>true</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Do we want to skip monitoring internal
+                            entitities and not include them in entity
+                            counts?
+                            Default: true
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.skip_monitor_entities</name>
+                            <value>true</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Do you want monitoring library to reset
+                            status change count after access.
+                            Default: false
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.reset_status_change_counts</name>
+                            <value>false</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            The monitoring library verbosity for internal
+                            debugging purpose. 
+                            Default: 1
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.verbosity</name>
+                            <value>1</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                        <!--
+                            Maximum size of the preallocated buffer. If
+                            sample serialized size is larger than this
+                            value (unless the value is -1), dynamic
+                            memory allocation will be used. Default -1
+                            (preallocated buffer is set according to max
+                            size serialized of the data type, no dynamic
+                            memory allocation)
+                        -->
+                        <!--element>
+                            <name>rti.monitor.config.writer_pool_buffer_max_size</name>
+                            <value>-1</value>
+                            <propagate>false</propagate>
+                        </element-->
+
+                    </value>
+                </property>
+
+            </participant_qos>
+        </qos_profile>
+
+        <!--
+            Description XML QoS Profile for Monitoring Demo Profile with
+            QoS that can cause samples rejected
+        -->
+        <qos_profile name="SamplesRejectedScenario"
+            base_name="MonitorDefault">
+            <!-- Use subinterval 1000 on the shapes demo subscriber -->
+            <datawriter_qos>
+                <writer_data_lifecycle>
+                    <autodispose_unregistered_instances>
+                        false
+                    </autodispose_unregistered_instances>
+                </writer_data_lifecycle>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>2</depth>
+                </history>
+            </datawriter_qos>
+
+            <datareader_qos>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                    <depth>2</depth>
+                </history>
+                <resource_limits>
+                    <max_samples_per_instance>2
+                    </max_samples_per_instance>
+                    <max_samples>2</max_samples>
+                    <!-- Don't change -->
+                    <max_instances>2</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <initial_samples>1</initial_samples>
+                </resource_limits>
+                <reader_resource_limits>
+                    <max_samples_per_remote_writer>2
+                    </max_samples_per_remote_writer>
+                </reader_resource_limits>
+            </datareader_qos>
+        </qos_profile>
+
+        <!--
+            Description XML QoS Profile for Monitoring Demo Profile with
+            QoS that can correct samples rejected
+        -->
+        <qos_profile name="FixedSamplesRejectedScenario"
+            base_name="MonitorDefault">
+            <!-- Use subinterval 1000 on the shapes demo subscriber -->
+            <datawriter_qos>
+                <writer_data_lifecycle>
+                    <autodispose_unregistered_instances>false
+                    </autodispose_unregistered_instances>
+                </writer_data_lifecycle>
+                <history>
+                    <kind>KEEP_LAST_HISTORY_QOS</kind>
+                    <depth>2</depth>
+                </history>
+            </datawriter_qos>
+
+            <datareader_qos>
+                <history>
+                    <kind>KEEP_ALL_HISTORY_QOS</kind>
+                    <depth>2</depth>
+                </history>
+                <resource_limits>
+                    <max_samples_per_instance>100
+                    </max_samples_per_instance>
+                    <max_samples>100</max_samples>
+                    <!-- Don't change -->
+                    <max_instances>2</max_instances>
+                    <initial_instances>1</initial_instances>
+                    <initial_samples>1</initial_samples>
+                </resource_limits>
+                <reader_resource_limits>
+                    <max_samples_per_remote_writer>100
+                    </max_samples_per_remote_writer>
+                </reader_resource_limits>
+            </datareader_qos>
+        </qos_profile>
+
+    </qos_library>
+</dds>

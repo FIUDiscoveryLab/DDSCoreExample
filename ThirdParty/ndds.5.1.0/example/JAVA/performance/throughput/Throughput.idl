@@ -1,0 +1,25 @@
+const unsigned long THROUGHPUT_TEST_PACKET_DATA_SIZE_MAX = 32768;
+
+//@top-level false
+enum ThroughputCommandKind{
+    THROUGHPUT_COMMAND_IDLE,
+    THROUGHPUT_COMMAND_START,
+    THROUGHPUT_COMMAND_FINISH,
+    THROUGHPUT_COMMAND_COMPLETE
+};
+
+struct ThroughputCommand {
+    // will be 0x43214321, so we can distinguish from Throughput test packet
+    octet signature[4];
+
+    ThroughputCommandKind command;
+    unsigned long data_length;
+    unsigned long current_publisher_effort; // for printing on the subscriber
+    unsigned long final_publisher_effort;
+};
+
+struct Throughput {
+    long key; //@key
+    unsigned long sequence_number;
+    sequence<octet, THROUGHPUT_TEST_PACKET_DATA_SIZE_MAX> data;
+};

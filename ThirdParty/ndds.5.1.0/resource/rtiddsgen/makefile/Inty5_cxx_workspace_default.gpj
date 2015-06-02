@@ -1,0 +1,27 @@
+#!gbuild
+primaryTarget=ppc_integrity.tgt
+[Project]
+	-bsp %%INTY_BSPTYPE%%
+	-G
+	-I.
+	:sourceDir=.
+	:outputDir=objs
+	-object_dir=objs
+	--discretionary_errors
+	-nounknownpragmawarn
+	--std
+	-nowantprototype
+	-tnone
+	-directive_dir=src
+	-DRTI_INTY
+	-D 
+	-Isrc
+	:sourceDir=src
+	-I%%NDDSHOME%%/include
+	:sourceDir=%%NDDSHOME%%/include
+	-I%%NDDSHOME%%/include/ndds
+	:sourceDir=%%NDDSHOME%%/include/ndds
+	-L%%NDDSHOME%%/lib/%%archName%%
+%%IDLFileBaseName%%_%%Project1Name%%dd.gpj		[INTEGRITY Application]
+%%IDLFileBaseName%%_%%Project2Name%%dd.gpj		[INTEGRITY Application]
+posix_shm_manager.gpj		[INTEGRITY Application]

@@ -1,0 +1,31 @@
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "%%IDLFileBaseName%%_type", "%%IDLFileBaseName%%_type-64-dotnet4.0.vcxproj", "{6BFA16EA-BE9E-C6B3-A46A-D65AD0E01659}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "%%IDLFileBaseName%%_%%Project1Name%%-64-csharp", "%%IDLFileBaseName%%_%%Project1Name%%-64-csharp.csproj", "{BF900500-D48B-438B-827F-01512AC24AB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "%%IDLFileBaseName%%_%%Project2Name%%-64-csharp", "%%IDLFileBaseName%%_%%Project2Name%%-64-csharp.csproj", "{8E420232-A373-41D3-AA50-83B62C0E2B2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6BFA16EA-BE9E-C6B3-A46A-D65AD0E01659}.Debug|x64.ActiveCfg = Debug|x64
+		{6BFA16EA-BE9E-C6B3-A46A-D65AD0E01659}.Debug|x64.Build.0 = Debug|x64
+		{6BFA16EA-BE9E-C6B3-A46A-D65AD0E01659}.Release|x64.ActiveCfg = Release|x64
+		{6BFA16EA-BE9E-C6B3-A46A-D65AD0E01659}.Release|x64.Build.0 = Release|x64
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug|x64.ActiveCfg = Debug|x64
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Debug|x64.Build.0 = Debug|x64
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release|x64.ActiveCfg = Release|x64
+		{BF900500-D48B-438B-827F-01512AC24AB1}.Release|x64.Build.0 = Release|x64
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug|x64.ActiveCfg = Debug|x64
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Debug|x64.Build.0 = Debug|x64
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release|x64.ActiveCfg = Release|x64
+		{8E420232-A373-41D3-AA50-83B62C0E2B2C}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

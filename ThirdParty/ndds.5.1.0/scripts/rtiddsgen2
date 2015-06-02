@@ -1,0 +1,106 @@
+#!/bin/sh
+
+# Script to run nddsgen tool
+filename=$0
+scriptDir="`dirname \"$filename\"`"
+scriptDir="`(cd \"$scriptDir\" && pwd)`"
+nddsgenDir="${scriptDir}/.."
+
+# Initialize ${arch} to a dummy value so that JREHOME will be properly
+# initialized in the event that the OS is not recognized.
+arch="some_dummy_value_to_be_overridden_later"
+os=`uname -s`
+
+case $os in
+SunOS*)
+    cpu=`uname -p`
+    if test "i386" = "$cpu"; then
+        arch="i86Solaris9"
+    else
+        osversion=`uname -r`
+	if test "5.9" = "$osversion"; then
+           arch="sparcSolaris9"
+	else
+	   arch="sparcSolaris"
+	fi
+    fi
+    ;;
+Linux*)
+    cpu=`uname -p`
+    if test "unknown" = "$cpu";
+    then
+        cpu=`uname -m`
+    fi
+    if test "ppc64" = "$cpu"; then
+        arch="ppc64Linux"
+    elif test "power7" = "$cpu"; then
+        arch="ppc64Linux"
+    elif test "ppc" = "$cpu"; then
+        arch="ppcLinux"
+    elif test "armv6l" = "$cpu"; then
+        arch="armvfphLinux"
+    else
+        if test "x86_64" = "$cpu"; then
+			if [ -d "${nddsgenDir}/jre/x64Linux" ]; then
+				arch="x64Linux"
+			else
+			    # Try using jre shipped 32-bit linux host
+				arch="i86Linux"
+			fi
+        else
+            arch="i86Linux"
+        fi
+        if [ -e "/etc/redhat-release" ]; then
+            osversion=`cat /etc/redhat-release`
+            case $osversion in 
+            *release\ 4*)
+	        arch="RHEL4_32"
+                if test "x86_64" = "$cpu"; then
+			if [ -d "${nddsgenDir}/jre/RHEL4_64" ]; then
+				arch="RHEL4_64"
+			fi
+	        fi
+	        ;;
+            *)
+	        ;;
+            esac
+        fi
+    fi
+    ;;
+Darwin*)
+    osversion=`uname -r`
+    if test "10.0.2" = "$osversion"; then
+	JREHOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
+    else
+	arch="darwin"
+    fi
+    ;;
+AIX*)
+    osversion=`uname -v`
+    if test "5" = "$osversion"; then
+        arch="aix5"
+    else
+	arch="aix"
+    fi
+    ;;
+*)
+    # If we don't recognize the OS, fall back to JREHOME. It may still work.
+    echo "Warning: OS $os may not be supported. Be sure JREHOME is set."
+    ;;
+esac
+
+if [ x$NDDSJREHOME = x ]; then
+    if [ -d "${nddsgenDir}/jre/${arch}" ]; then
+        JREHOME="${nddsgenDir}/jre/${arch}"
+    else
+        if [ x$JREHOME = x ]; then
+	    echo "$filename: JREHOME not set."
+	    exit 1
+        fi
+    fi
+else
+    JREHOME="${NDDSJREHOME}"
+fi
+
+
+exec "${JREHOME}/bin/java" -DNDDS_RESOURCE_DIR="${nddsgenDir}/resource/rtiddsgen" -DNDDSHOME="$NDDSHOME" -jar "${nddsgenDir}/class/rtiddsgen2.jar" "$@"

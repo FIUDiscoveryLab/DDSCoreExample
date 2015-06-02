@@ -1,0 +1,26 @@
+#!build
+default:
+	nobuild
+	:ppc_cputype=%%INTY_CPUTYPE%%
+	:c_mode=ansi
+	:ec_mode=ansi
+	:prototype_mode=silent
+	:directivedir=src
+	:object_dir=objs
+	:target=%%INTY_TARGET%%
+	:sourcedirs=src
+	:sourcedirs=%%NDDSHOME%%/include
+	:sourcedirs=%%NDDSHOME%%/include/ndds
+	:libdirs=%%NDDSHOME%%/lib/%%archName%%
+	:libraries=net
+	:libraries=posix
+	:libraries=socket
+	:libraries=nddscz
+	:libraries=nddscorez
+	:defines=RTI_INTY
+	:defines=%%RTI_DEFINE1%%
+	:defines=%%RTI_DEFINE2%%
+%%IDLFileBaseName%%_%%Project1Name%%dd.bld
+	integrity_app
+%%IDLFileBaseName%%_%%Project2Name%%dd.bld
+	integrity_app

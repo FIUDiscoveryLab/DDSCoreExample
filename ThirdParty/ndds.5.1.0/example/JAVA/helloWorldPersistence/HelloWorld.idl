@@ -1,0 +1,3 @@
+struct HelloWorld {
+    long data;
+};

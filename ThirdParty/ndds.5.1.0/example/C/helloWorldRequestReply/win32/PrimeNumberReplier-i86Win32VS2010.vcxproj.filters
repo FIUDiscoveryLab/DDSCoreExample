@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2b19bff4-006c-45b6-9e20-23f7856b6d06}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{b5dae960-cc25-488f-a742-dc1a43fb4539}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Type Plugin Files">
+      <UniqueIdentifier>{067cc80c-dedc-4d03-838c-ee8b139cf8f9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\PrimeNumberReplier.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\idl\Primes.c">
+      <Filter>Type Plugin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\idl\PrimesPlugin.c">
+      <Filter>Type Plugin Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\idl\PrimesSupport.c">
+      <Filter>Type Plugin Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\idl\Primes.h">
+      <Filter>Type Plugin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\idl\PrimesPlugin.h">
+      <Filter>Type Plugin Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\idl\PrimesSupport.h">
+      <Filter>Type Plugin Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\src\Primes.idl" />
+  </ItemGroup>
+</Project>

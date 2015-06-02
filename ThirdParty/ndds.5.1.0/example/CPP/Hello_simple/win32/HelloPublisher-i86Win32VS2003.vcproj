@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+
+<VisualStudioProject
+
+	ProjectType="Visual C++"
+
+	Version="7.10"
+
+	Name="HelloPublisher-i86Win32VS2003"
+
+	SccProjectName=""
+
+	SccLocalPath="">
+
+	<Platforms>
+
+		<Platform
+
+			Name="Win32"/>
+
+	</Platforms>
+
+	<Configurations>
+
+		<Configuration
+
+			Name="Debug|Win32"
+
+			OutputDirectory="..\objs\i86Win32VS2003"
+
+			IntermediateDirectory="..\objs\i86Win32VS2003"
+
+			ConfigurationType="1"
+
+			UseOfMFC="0"
+
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+
+			CharacterSet="2">
+
+			<Tool
+
+				Name="VCCLCompilerTool"
+
+				Optimization="0"
+
+				AdditionalIncludeDirectories="$(NDDSHOME)\include,$(NDDSHOME)\include\ndds,..\src\idl,..\src"
+
+				PreprocessorDefinitions="_DEBUG,WIN32,_CONSOLE,RTI_WIN32"
+
+				BasicRuntimeChecks="3"
+
+				RuntimeLibrary="1"
+
+				UsePrecompiledHeader="0"
+
+				PrecompiledHeaderFile=""
+
+				AssemblerListingLocation="..\objs\i86Win32VS2003\"
+
+				ObjectFile="..\objs\i86Win32VS2003\"
+
+				ProgramDataBaseFileName="..\objs\i86Win32VS2003\"
+
+				WarningLevel="3"
+
+				SuppressStartupBanner="TRUE"
+
+				DebugInformationFormat="4"
+
+				CompileAs="0"/>
+
+			<Tool
+
+				Name="VCCustomBuildTool"/>
+
+			<Tool
+
+				Name="VCLinkerTool"
+
+				AdditionalOptions="/MACHINE:I386"
+
+				AdditionalDependencies="nddscppzd.lib nddsczd.lib nddscorezd.lib odbc32.lib odbccp32.lib WS2_32.lib "
+
+				OutputFile="..\objs\i86Win32VS2003\HelloPublisher.exe"
+
+				LinkIncremental="0"
+
+				SuppressStartupBanner="TRUE"
+
+				AdditionalLibraryDirectories="$(NDDSHOME)\lib\i86Win32VS2003"
+
+				GenerateDebugInformation="TRUE"
+
+				ProgramDatabaseFile="..\objs\i86Win32VS2003\HelloPublisher.pdb"
+
+				SubSystem="1"/>
+
+			<Tool
+
+				Name="VCMIDLTool"
+
+				TypeLibraryName=".\Debug/HelloPublisher-i86Win32VS2003.tlb"/>
+
+			<Tool
+
+				Name="VCPostBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreLinkEventTool"/>
+
+			<Tool
+
+				Name="VCResourceCompilerTool"
+
+				PreprocessorDefinitions="_DEBUG"
+
+				Culture="1033"/>
+
+			<Tool
+
+				Name="VCWebServiceProxyGeneratorTool"/>
+
+			<Tool
+
+				Name="VCXMLDataGeneratorTool"/>
+
+			<Tool
+
+				Name="VCWebDeploymentTool"/>
+
+			<Tool
+
+				Name="VCManagedWrapperGeneratorTool"/>
+
+			<Tool
+
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+
+		</Configuration>
+
+		<Configuration
+
+			Name="Release|Win32"
+
+			OutputDirectory="..\objs\i86Win32VS2003"
+
+			IntermediateDirectory="..\objs\i86Win32VS2003"
+
+			ConfigurationType="1"
+
+			UseOfMFC="0"
+
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+
+			CharacterSet="2">
+
+			<Tool
+
+				Name="VCCLCompilerTool"
+
+				InlineFunctionExpansion="1"
+
+				AdditionalIncludeDirectories="$(NDDSHOME)\include,$(NDDSHOME)\include\ndds,..\src\idl,..\src"
+
+				PreprocessorDefinitions="NDEBUG,WIN32,_CONSOLE,RTI_WIN32"
+
+				StringPooling="TRUE"
+
+				RuntimeLibrary="0"
+
+				EnableFunctionLevelLinking="TRUE"
+
+				UsePrecompiledHeader="0"
+
+				PrecompiledHeaderFile=""
+
+				AssemblerListingLocation="..\objs\i86Win32VS2003\"
+
+				ObjectFile="..\objs\i86Win32VS2003\"
+
+				ProgramDataBaseFileName="..\objs\i86Win32VS2003\"
+
+				WarningLevel="3"
+
+				SuppressStartupBanner="TRUE"
+
+				CompileAs="0"/>
+
+			<Tool
+
+				Name="VCCustomBuildTool"/>
+
+			<Tool
+
+				Name="VCLinkerTool"
+
+				AdditionalOptions="/MACHINE:I386"
+
+				AdditionalDependencies="nddscppz.lib nddscz.lib nddscorez.lib odbc32.lib odbccp32.lib WS2_32.lib "
+
+				OutputFile="..\objs\i86Win32VS2003\HelloPublisher.exe"
+
+				LinkIncremental="0"
+
+				SuppressStartupBanner="TRUE"
+
+				AdditionalLibraryDirectories="$(NDDSHOME)\lib\i86Win32VS2003"
+
+				ProgramDatabaseFile="..\objs\i86Win32VS2003-Release\HelloPublisher.pdb"
+
+				SubSystem="1"/>
+
+			<Tool
+
+				Name="VCMIDLTool"
+
+				TypeLibraryName=".\Release/HelloPublisher-i86Win32VS2003.tlb"/>
+
+			<Tool
+
+				Name="VCPostBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreLinkEventTool"/>
+
+			<Tool
+
+				Name="VCResourceCompilerTool"
+
+				PreprocessorDefinitions="NDEBUG"
+
+				Culture="1033"/>
+
+			<Tool
+
+				Name="VCWebServiceProxyGeneratorTool"/>
+
+			<Tool
+
+				Name="VCXMLDataGeneratorTool"/>
+
+			<Tool
+
+				Name="VCWebDeploymentTool"/>
+
+			<Tool
+
+				Name="VCManagedWrapperGeneratorTool"/>
+
+			<Tool
+
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+
+		</Configuration>
+
+		<Configuration
+
+			Name="Debug DLL|Win32"
+
+			OutputDirectory="..\objs\i86Win32VS2003"
+
+			IntermediateDirectory="..\objs\i86Win32VS2003"
+
+			ConfigurationType="1"
+
+			UseOfMFC="0"
+
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+
+			CharacterSet="2">
+
+			<Tool
+
+				Name="VCCLCompilerTool"
+
+				Optimization="0"
+
+				AdditionalIncludeDirectories="$(NDDSHOME)\include,$(NDDSHOME)\include\ndds,..\src\idl,..\src"
+
+				PreprocessorDefinitions="NDDS_DLL_VARIABLE,_DEBUG,WIN32,_CONSOLE,RTI_WIN32"
+
+				BasicRuntimeChecks="3"
+
+				RuntimeLibrary="1"
+
+				UsePrecompiledHeader="0"
+
+				PrecompiledHeaderFile=""
+
+				AssemblerListingLocation="..\objs\i86Win32VS2003\"
+
+				ObjectFile="..\objs\i86Win32VS2003\"
+
+				ProgramDataBaseFileName="..\objs\i86Win32VS2003\"
+
+				WarningLevel="3"
+
+				SuppressStartupBanner="TRUE"
+
+				DebugInformationFormat="4"
+
+				CompileAs="0"/>
+
+			<Tool
+
+				Name="VCCustomBuildTool"/>
+
+			<Tool
+
+				Name="VCLinkerTool"
+
+				AdditionalOptions="/MACHINE:I386"
+
+				AdditionalDependencies="nddscppd.lib nddscd.lib nddscored.lib odbc32.lib odbccp32.lib WS2_32.lib "
+
+				OutputFile="..\objs\i86Win32VS2003\HelloPublisher.exe"
+
+				LinkIncremental="0"
+
+				SuppressStartupBanner="TRUE"
+
+				AdditionalLibraryDirectories="$(NDDSHOME)\lib\i86Win32VS2003"
+
+				GenerateDebugInformation="TRUE"
+
+				ProgramDatabaseFile=""
+
+				SubSystem="1"/>
+
+			<Tool
+
+				Name="VCMIDLTool"
+
+				TypeLibraryName=".\Debug/HelloPublisher-i86Win32VS2003.tlb"/>
+
+			<Tool
+
+				Name="VCPostBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreLinkEventTool"/>
+
+			<Tool
+
+				Name="VCResourceCompilerTool"
+
+				PreprocessorDefinitions="_DEBUG"
+
+				Culture="1033"/>
+
+			<Tool
+
+				Name="VCWebServiceProxyGeneratorTool"/>
+
+			<Tool
+
+				Name="VCXMLDataGeneratorTool"/>
+
+			<Tool
+
+				Name="VCWebDeploymentTool"/>
+
+			<Tool
+
+				Name="VCManagedWrapperGeneratorTool"/>
+
+			<Tool
+
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+
+		</Configuration>
+
+		<Configuration
+
+			Name="Release DLL|Win32"
+
+			OutputDirectory="..\objs\i86Win32VS2003"
+
+			IntermediateDirectory="..\objs\i86Win32VS2003"
+
+			ConfigurationType="1"
+
+			UseOfMFC="0"
+
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+
+			CharacterSet="2">
+
+			<Tool
+
+				Name="VCCLCompilerTool"
+
+				InlineFunctionExpansion="1"
+
+				AdditionalIncludeDirectories="$(NDDSHOME)\include,$(NDDSHOME)\include\ndds,..\src\idl,..\src"
+
+				PreprocessorDefinitions="NDDS_DLL_VARIABLE,NDEBUG,WIN32,_CONSOLE,RTI_WIN32"
+
+				StringPooling="TRUE"
+
+				RuntimeLibrary="0"
+
+				EnableFunctionLevelLinking="TRUE"
+
+				UsePrecompiledHeader="0"
+
+				PrecompiledHeaderFile=""
+
+				AssemblerListingLocation="..\objs\i86Win32VS2003\"
+
+				ObjectFile="..\objs\i86Win32VS2003\"
+
+				ProgramDataBaseFileName="..\objs\i86Win32VS2003\"
+
+				WarningLevel="3"
+
+				SuppressStartupBanner="TRUE"
+
+				CompileAs="0"/>
+
+			<Tool
+
+				Name="VCCustomBuildTool"/>
+
+			<Tool
+
+				Name="VCLinkerTool"
+
+				AdditionalOptions="/MACHINE:I386"
+
+				AdditionalDependencies="nddscpp.lib nddsc.lib nddscore.lib odbc32.lib odbccp32.lib WS2_32.lib "
+
+				OutputFile="..\objs\i86Win32VS2003\HelloPublisher.exe"
+
+				LinkIncremental="0"
+
+				SuppressStartupBanner="TRUE"
+
+				AdditionalLibraryDirectories="$(NDDSHOME)\lib\i86Win32VS2003"
+
+				ProgramDatabaseFile=""
+
+				SubSystem="1"/>
+
+			<Tool
+
+				Name="VCMIDLTool"
+
+				TypeLibraryName=".\Release/HelloPublisher-i86Win32VS2003.tlb"/>
+
+			<Tool
+
+				Name="VCPostBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreBuildEventTool"/>
+
+			<Tool
+
+				Name="VCPreLinkEventTool"/>
+
+			<Tool
+
+				Name="VCResourceCompilerTool"
+
+				PreprocessorDefinitions="NDEBUG"
+
+				Culture="1033"/>
+
+			<Tool
+
+				Name="VCWebServiceProxyGeneratorTool"/>
+
+			<Tool
+
+				Name="VCXMLDataGeneratorTool"/>
+
+			<Tool
+
+				Name="VCWebDeploymentTool"/>
+
+			<Tool
+
+				Name="VCManagedWrapperGeneratorTool"/>
+
+			<Tool
+
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+
+		</Configuration>
+
+	</Configurations>
+
+	<References>
+
+	</References>
+
+	<Files>
+
+		<File
+
+			RelativePath="..\src\HelloPublisher.cpp"
+
+			>
+
+		</File>
+
+	</Files>
+
+	<Globals>
+
+	</Globals>
+
+</VisualStudioProject>
+

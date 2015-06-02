@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+
+<VisualStudioProject
+
+	ProjectType="Visual C++"
+
+	Version="8.00"
+
+	Name="%%IDLFileBaseName%%_type"
+
+	RootNamespace="%%IDLFileBaseName%%_type"
+
+	Keyword="ManagedCProj"
+
+	AssemblyReferenceSearchPaths="&quot;$(NDDSHOME)\lib\i86Win32dotnet2.0&quot;"
+
+	>
+
+	<Platforms>
+
+		<Platform
+
+			Name="Win32"
+
+		/>
+
+	</Platforms>
+
+	<ToolFiles>
+
+	</ToolFiles>
+
+	<Configurations>
+
+		<Configuration
+
+			Name="Debug|Win32"
+
+			OutputDirectory="$(SolutionDir)bin\$(ConfigurationName)"
+
+			IntermediateDirectory="obj\$(ConfigurationName)"
+
+			ConfigurationType="2"
+
+			CharacterSet="1"
+
+			ManagedExtensions="1"
+
+			>
+
+			<Tool
+
+				Name="VCPreBuildEventTool"
+
+			/>
+
+			<Tool
+
+				Name="VCCustomBuildTool"
+
+			/>
+
+			<Tool
+
+				Name="VCXMLDataGeneratorTool"
+
+			/>
+
+			<Tool
+
+				Name="VCWebServiceProxyGeneratorTool"
+
+			/>
+
+			<Tool
+
+				Name="VCMIDLTool"
+
+			/>
+
+			<Tool
+
+				Name="VCCLCompilerTool"
+
+				Optimization="0"
+
+				AdditionalIncludeDirectories="$(NDDSHOME)\include;$(NDDSHOME)\include\ndds"
+
+				PreprocessorDefinitions="NDDS_USER_DLL_EXPORT_%%IDLFileBaseName%%;NDDS_DLL_VARIABLE;RTI_WIN32;WIN32_LEAN_AND_MEAN;WIN32;_DEBUG"
+
+				RuntimeLibrary="3"
+
+				UsePrecompiledHeader="0"
+
+				WarningLevel="3"
+
+				DebugInformationFormat="3"
+
+			/>
+
+			<Tool
+
+				Name="VCManagedResourceCompilerTool"
+
+			/>
+
+			<Tool
+
+				Name="VCResourceCompilerTool"
+
+			/>
+
+			<Tool
+
+				Name="VCPreLinkEventTool"
+
+			/>
+
+			<Tool
+
+				Name="VCLinkerTool"
+
+				AdditionalDependencies="$(NoInherit) %%RTI_DEBUG_DLL%% nddscppd.lib nddscd.lib nddscored.lib"
+
+				LinkIncremental="2"
+
+				AdditionalLibraryDirectories="$(NDDSHOME)\lib\i86Win32dotnet2.0"
+
+				GenerateDebugInformation="true"
+
+				AssemblyDebug="1"
+
+				TargetMachine="1"
+
+			/>
+
+			<Tool
+
+				Name="VCALinkTool"
+
+			/>
+
+			<Tool
+
+				Name="VCManifestTool"
+
+			/>
+
+			<Tool
+
+				Name="VCXDCMakeTool"
+
+			/>
+
+			<Tool
+
+				Name="VCBscMakeTool"
+
+			/>
+
+			<Tool
+
+				Name="VCFxCopTool"
+
+			/>
+
+			<Tool
+
+				Name="VCAppVerifierTool"
+
+			/>
+
+			<Tool
+
+				Name="VCWebDeploymentTool"
+
+			/>
+
+			<Tool
+
+				Name="VCPostBuildEventTool"
+
+				Description="Copying required DLLs to target directory..."
+
+                CommandLine="copy &quot;$(NDDSHOME)\lib\i86Win32dotnet2.0\*.dll&quot;  &quot;$(TargetDir)&quot;"
+
+			/>
+
+		</Configuration>
+
+		<Configuration
+
+			Name="Release|Win32"
+
+			OutputDirectory="$(SolutionDir)bin\$(ConfigurationName)"
+
+			IntermediateDirectory="obj\$(ConfigurationName)"
+
+			ConfigurationType="2"
+
+			CharacterSet="1"
+
+			ManagedExtensions="1"
+
+			WholeProgramOptimization="1"
+
+			>
+
+			<Tool
+
+				Name="VCPreBuildEventTool"
+
+			/>
+
+			<Tool
+
+				Name="VCCustomBuildTool"
+
+			/>
+
+			<Tool
+
+				Name="VCXMLDataGeneratorTool"
+
+			/>
+
+			<Tool
+
+				Name="VCWebServiceProxyGeneratorTool"
+
+			/>
+
+			<Tool
+
+				Name="VCMIDLTool"
+
+			/>
+
+			<Tool
+
+				Name="VCCLCompilerTool"
+
+				AdditionalIncludeDirectories="$(NDDSHOME)\include;$(NDDSHOME)\include\ndds"
+
+				PreprocessorDefinitions="NDDS_USER_DLL_EXPORT_%%IDLFileBaseName%%;NDDS_DLL_VARIABLE;RTI_WIN32;WIN32_LEAN_AND_MEAN;WIN32;NDEBUG"
+
+				RuntimeLibrary="2"
+
+				UsePrecompiledHeader="0"
+
+				WarningLevel="3"
+
+				DebugInformationFormat="3"
+
+			/>
+
+			<Tool
+
+				Name="VCManagedResourceCompilerTool"
+
+			/>
+
+			<Tool
+
+				Name="VCResourceCompilerTool"
+
+			/>
+
+			<Tool
+
+				Name="VCPreLinkEventTool"
+
+			/>
+
+			<Tool
+
+				Name="VCLinkerTool"
+
+				AdditionalDependencies="$(NoInherit) %%RTI_RELEASE_DLL%% nddscpp.lib nddsc.lib nddscore.lib"
+
+				LinkIncremental="1"
+
+				AdditionalLibraryDirectories="$(NDDSHOME)\lib\i86Win32dotnet2.0"
+
+				GenerateDebugInformation="true"
+
+				TargetMachine="1"
+
+			/>
+
+			<Tool
+
+				Name="VCALinkTool"
+
+			/>
+
+			<Tool
+
+				Name="VCManifestTool"
+
+			/>
+
+			<Tool
+
+				Name="VCXDCMakeTool"
+
+			/>
+
+			<Tool
+
+				Name="VCBscMakeTool"
+
+			/>
+
+			<Tool
+
+				Name="VCFxCopTool"
+
+			/>
+
+			<Tool
+
+				Name="VCAppVerifierTool"
+
+			/>
+
+			<Tool
+
+				Name="VCWebDeploymentTool"
+
+			/>
+
+			<Tool
+
+				Name="VCPostBuildEventTool"
+
+				Description="Copying required DLLs to target directory..."
+
+                CommandLine="copy &quot;$(NDDSHOME)\lib\i86Win32dotnet2.0\*.dll&quot;  &quot;$(TargetDir)&quot;"
+
+			/>
+
+		</Configuration>
+
+	</Configurations>
+
+	<References>
+
+		<AssemblyReference
+
+			RelativePath="System.dll"
+
+			AssemblyName="System, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
+
+		/>
+
+		<AssemblyReference
+
+			RelativePath="System.Data.dll"
+
+			AssemblyName="System.Data, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86"
+
+		/>
+
+		<AssemblyReference
+
+			RelativePath="System.XML.dll"
+
+			AssemblyName="System.Xml, Version=2.0.0.0, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL"
+
+		/>
+
+		<AssemblyReference
+
+			RelativePath="nddsdotnet.dll"
+
+			AssemblyName="nddsdotnet, Version=1.0.2987.33357, processorArchitecture=x86"
+
+			CopyLocalDependencies="false"
+
+			CopyLocalSatelliteAssemblies="false"
+
+		/>
+
+	</References>
+
+	<Files>
+
+		<Filter
+
+			Name="Source Files"
+
+			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
+
+			>
+
+			<File
+
+				RelativePath=".\%%IDLFileBaseName%%%%fileExtension%%"
+
+				>
+
+			</File>
+
+			<File
+
+				RelativePath=".\%%IDLFileBaseName%%Plugin%%fileExtension%%"
+
+				>
+
+			</File>
+
+			<File
+
+				RelativePath=".\%%IDLFileBaseName%%Support%%fileExtension%%"
+
+				>
+
+			</File>
+
+		</Filter>
+
+		<Filter
+
+			Name="Header Files"
+
+			Filter="h;hpp;hxx;hm;inl;inc;xsd"
+
+			>
+
+			<File
+
+				RelativePath=".\%%IDLFileBaseName%%.h"
+
+				>
+
+			</File>
+
+			<File
+
+				RelativePath=".\%%IDLFileBaseName%%Plugin.h"
+
+				>
+
+			</File>
+
+			<File
+
+				RelativePath=".\%%IDLFileBaseName%%Support.h"
+
+				>
+
+			</File>
+
+		</Filter>
+
+		<Filter
+
+			Name="Resource Files"
+
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
+
+			>
+
+		</Filter>
+
+	</Files>
+
+	<Globals>
+
+	</Globals>
+
+</VisualStudioProject>
+

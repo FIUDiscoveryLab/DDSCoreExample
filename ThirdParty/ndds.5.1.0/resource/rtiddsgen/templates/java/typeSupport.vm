@@ -1,0 +1,1047 @@
+##/* $Id: typeSupport.vm,v 1.24 2013/10/30 16:53:17 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##2.0,29oct13,ajm CODEGENII-143 fixing nddsgen1 issues CODEGEN-624
+##2.0,24sept13,ajm Code review
+##2.0,12sep13,ajm CODEGENII-143 and CODEGEN-622 Enum as last field of a type
+##2.0,24sept13,ajm CODEGENII-92 Support for optional members
+##10a,13jun13,ajm CODEGENII-109 joining the type variables in the constructMap 
+##10a,10jun13,ajm CODEGENII-109 adding envMap and constructMapList variables
+##10a,8mar13, ajm CODEGENII-30 and CODEGENII-87 Code reviews and Xtypes in Java
+##10a,21dec12, ajm Removing LAST_MEMBER_ID until we suport mutable types
+##10a,14dic12, ajm RRTIDDSGEN-53 support for XTypes: final and extensible
+##10a,8nov12, ajm  RRTIDDSGEN-34 support for the copy directives and resolve-name
+##10a,31oct12, ajm RTIDDSGEN-34 support for the first set of copy directives (java ones)
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,15oct12, ajm Support for the -noCopyable option
+##10a,10oct12, ajm Upgrade to Bigpine.Formatting and commenting
+##10a,05jan12, jmt Upgrade to LOLA
+##10a,14nov11, ajm Refactoring code. Adding FQName variable
+##10a,11nov11, ajm Changing the name of the templates to camelCase
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,21oct11,ajm Adding a return at the end of the file
+##10a,12oc11,jmt finished union support
+##10a,10oc11,jmt adding union support
+##10a,22sep11,jmt adding valuetypes support
+##10a,19sep11,jmt Adding non-primitive support
+##10a,15sep11,jmt Fixing more typedef issues
+##10a,14sep11,jmt Refactor typedef
+##10a,7sep11,jmt Adding typedef for arrays, sequences and arrays of sequences
+##10a,2sep11,jmt Adding typedef support for primitive types
+##10a,29ag11,jmt Fixing macros consistency by adding the missing parameters 
+##10a,22ag11,jmt Adding support for sequences.
+##10a,19ag11,jmt Adding support for @top-level 
+##10a,17ag11,jmt Adding //@key
+##10a,12ag11,jmt Adding the brackets in the #separatorIfitisNeeded()
+##10a,05ag11,jmt Modification of the history header (a comment missing)
+##           ajm Fixing the bug for a struct without a module
+##10a,04ag11,jmt Adding all the basic type and testing them
+##10a,04ag11,jmt adding modification history header
+##10a,02ag11,jmt Moved to be under the path "resource/templates/java/"
+##10a,02ag11,jmt New dessing using auxiliary files for the macros
+##10a,01ag11,jmt created 
+##========================================================================*/*#
+##-----------------------------------------------------------------
+##               
+##             Template for the Java TypeSupport file
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+## Variables names
+##
+## $constructMap.packageName : Name of the package where the file will be included
+## $constructMap.name  : Name of the structure related with this file
+## $typeCodeName: Name of the main class. Also name of the file
+/*
+  WARNING: THIS FILE IS AUTO-GENERATED. DO NOT MODIFY.
+
+  This file was generated from .idl using "rtiddsgen".
+  The rtiddsgen tool is part of the RTI Connext distribution.
+  For more information, type 'rtiddsgen -help' at a command shell
+  or consult the RTI Connext manual.
+*/
+
+
+#if ($constructMap.packageName)  
+package $constructMap.packageName;
+#end
+      
+
+
+import com.rti.dds.cdr.CdrEncapsulation;
+import com.rti.dds.cdr.CdrInputStream;
+import com.rti.dds.cdr.CdrOutputStream;
+import com.rti.dds.cdr.CdrPrimitiveType;
+import com.rti.dds.cdr.CdrBuffer;
+import com.rti.dds.cdr.CdrHelper;
+import com.rti.dds.cdr.CdrMemberInfo;
+import com.rti.dds.domain.DomainParticipant;
+import com.rti.dds.publication.DataWriter;
+import com.rti.dds.publication.DataWriterListener;
+import com.rti.dds.subscription.DataReader;
+import com.rti.dds.subscription.DataReaderListener;
+import com.rti.dds.topic.KeyHash_t;
+import com.rti.dds.topic.TypeSupportImpl;
+import com.rti.dds.topic.TypeSupportType;
+import com.rti.dds.util.Sequence;
+import com.rti.dds.topic.DefaultEndpointData;
+import com.rti.dds.infrastructure.RETCODE_ERROR;
+
+import com.rti.dds.infrastructure.*;
+import com.rti.dds.topic.TypeSupportParticipantInfo;
+import com.rti.dds.topic.TypeSupportEndpointInfo;
+import com.rti.dds.typecode.TypeCode;
+import com.rti.dds.cdr.IllegalCdrStateException;
+
+#*--*##if(!$envMap.noCopyable)    
+import com.rti.dds.infrastructure.Copyable;
+#*--*##end
+
+#*--*##foreach($element in $constructMap.directives)
+$element.getValue()
+#*--*##end
+
+/**
+ * A collection of useful methods for dealing with objects of type
+ * $constructMap.name
+ */
+ 
+public class $constructMap.typeSupportName extends TypeSupportImpl {
+    // -----------------------------------------------------------------------
+    // Private Fields
+    // -----------------------------------------------------------------------
+
+    private static final String TYPE_NAME = "${constructMap.FQName}";
+
+    private static final char[] PLUGIN_VERSION = {2, 0, 0, 0}; ##Note: Check how to get this number
+    
+    private static final ${constructMap.typeSupportName} _singleton
+        = new ${constructMap.typeSupportName}();
+    
+    // -----------------------------------------------------------------------
+    // Public Methods
+    // -----------------------------------------------------------------------
+
+    // --- External methods: -------------------------------------------------
+    /* The methods in this section are for use by users of RTI Connext
+     */
+
+    public static String get_type_name() {
+        return _singleton.get_type_nameI();
+    }
+    
+#*--*##if($constructMap.constructKind!="enum" )
+    public static void register_type(DomainParticipant participant,
+                                     String type_name) {
+        _singleton.register_typeI(participant, type_name);
+    }
+
+    public static void unregister_type(DomainParticipant participant,
+                                       String type_name) {
+        _singleton.unregister_typeI(participant, type_name);
+    }
+#*--*##end
+    
+     /* The methods in this section are for use by RTI Connext
+     * itself and by the code generated by rtiddsgen for other types.
+     * They should be used directly or modified only by advanced users and are
+     * subject to change in future versions of RTI Connext.
+     */
+    public static $constructMap.typeSupportName get_instance() {
+        return _singleton;
+    }
+
+    public static $constructMap.typeSupportName getInstance() {
+        return get_instance();
+    }
+
+    public Object create_data() {
+#*--*##if($constructMap.constructKind!="enum" )
+        return ${constructMap.name}.create();
+#*--*##else
+        return null;
+#*--*##end   
+    }
+
+    public void destroy_data(Object data) {
+        return;
+    }
+#*--*##if($constructMap.constructKind!="enum" )
+    public Object create_key() {
+        return new ${constructMap.name}();
+    }
+
+    public void destroy_key(Object key) {
+        return;
+    }
+#*--*##end
+    public Class get_type() {
+        return ${constructMap.name}.class;
+    }
+
+    /**
+     * This is a concrete implementation of this method inherited from the base class.
+     * This method will perform a deep copy of <code>source</code> into
+     * <code>destination</code>.
+     * 
+     * @param src The Object which contains the data to be copied.
+     * @return Returns <code>destination</code>.
+     * @exception NullPointerException If <code>destination</code> or 
+     * <code>source</code> is null.
+     * @exception ClassCastException If either <code>destination</code> or
+     * <code>this</code> is not a <code>$constructMap.name</code>
+     * type.
+     */
+    public Object copy_data(Object destination, Object source) {
+
+#*--*##if($constructMap.constructKind!="enum" )    
+        $constructMap.name typedDst = ($constructMap.name) destination;
+        $constructMap.name typedSrc = ($constructMap.name) source;
+        
+       
+#*----*##if($envMap.noCopyable)
+
+#*------*##if($constructMap.baseTypeFQName)
+        ${constructMap.baseTypeFQName}TypeSupport.get_instance().copy_data(destination, source);
+#*------*##end 
+        #copyData($constructMap.memberFieldMapList)
+        return typedDst;
+#*----*##else
+        return typedDst.copy_from(typedSrc);
+#*----*##end        
+#*--*##else
+
+     return source;
+#*--*##end     
+    
+    }
+
+#**********************************************************************************************************************************#
+    
+    public long get_serialized_sample_max_size(Object endpoint_data,boolean include_encapsulation,short encapsulation_id,long currentAlignment) {
+        
+#originalAligment()
+
+#*--*##if($constructMap.unionDiscriminatorMap)
+       long maxSerialized = 0; 
+#*--*##end   
+     
+#*--*##if($constructMap.baseTypeFQName)
+        currentAlignment += ${constructMap.baseTypeFQName}TypeSupport.get_instance().get_serialized_sample_max_size(endpoint_data,false,encapsulation_id,currentAlignment);
+#*--*##end
+
+#*--*##if($constructMap.constructKind=="enum")
+currentAlignment += CdrPrimitiveType.INT.getMaxSizeSerialized($constructMap.currentAlignment);
+#*--*##else
+#alignmentMaxSize("sample" $constructMap $constructMap.currentAlignment)
+#*--*##end
+#*--*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ // Sentinel
+    currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 12);
+#*--*##end
+#*--*##if(!$envMap.rtidds42e)        
+        if (include_encapsulation) {
+            currentAlignment += encapsulation_size;
+        }
+#*--*##end    
+        return #if($constructMap.unionDiscriminatorMap)maxSerialized +#end currentAlignment - origAlignment;
+    }
+
+#**********************************************************************************************************************************#
+    
+    public long get_serialized_sample_min_size(Object endpoint_data,boolean include_encapsulation,short encapsulation_id,long currentAlignment) {
+
+#*--*##if($constructMap.constructKind=="enum")
+return get_serialized_sample_max_size(endpoint_data,include_encapsulation,encapsulation_id,$constructMap.currentAlignment);
+#*--*##else
+#originalAligment()
+        
+#*----*##if($constructMap.unionDiscriminatorMap)
+        long minSerialized = Integer.MAX_VALUE;
+#*----*##end
+
+#*----*##if($constructMap.baseTypeFQName)
+            currentAlignment += ${constructMap.baseTypeFQName}TypeSupport.get_instance().get_serialized_sample_min_size(endpoint_data,false,encapsulation_id,currentAlignment);
+#*----*##end
+#alignmentMinSize($constructMap $constructMap.currentAlignment)
+
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+      // Sentinel
+      currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#*----*##end                  
+#*----*##if(!$envMap.rtidds42e)        
+        if (include_encapsulation) {
+            currentAlignment += encapsulation_size;
+        }
+#*----*##end    
+        return #if($constructMap.unionDiscriminatorMap)minSerialized +#end currentAlignment - origAlignment;
+#*--*##end
+    
+    }
+#**********************************************************************************************************************************#
+
+    public long get_serialized_sample_size(
+    Object endpoint_data, boolean include_encapsulation, 
+        short encapsulation_id, long currentAlignment,
+    Object sample) 
+    {
+#*--*##if($constructMap.constructKind=="enum")    
+    return get_serialized_sample_max_size(endpoint_data,include_encapsulation,encapsulation_id,$constructMap.currentAlignment);
+#*--*##else
+     $constructMap.name typedSrc = ($constructMap.name) sample;
+#originalAligment()
+    
+#*----*##if($constructMap.baseTypeFQName)
+        currentAlignment += ${constructMap.baseTypeFQName}TypeSupport.get_instance().get_serialized_sample_size(
+            endpoint_data,false,encapsulation_id,currentAlignment,sample);
+#*----*##end
+
+#alignmentSample($constructMap  $constructMap.currentAlignment)
+#*--*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+      // Sentinel
+      currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) + 4);
+#*--*##end           
+
+#*----*##if(!$envMap.rtidds42e)        
+        if (include_encapsulation) {
+            currentAlignment += encapsulation_size;
+        }
+#*----*##end
+        return currentAlignment - origAlignment;
+#*--*##end        
+    }
+
+#**********************************************************************************************************************************#
+    
+    public long get_serialized_key_max_size(
+        Object endpoint_data,
+        boolean include_encapsulation, 
+        short encapsulation_id,
+        long currentAlignment) 
+    {
+#*--*##if($constructMap.constructKind=="enum")
+ return get_serialized_sample_max_size(endpoint_data,include_encapsulation,encapsulation_id,$constructMap.currentAlignment);
+#*--*##else
+
+#originalAligment()
+
+
+#*----*##if($constructMap.hasKeyBaseType)
+        currentAlignment += ${constructMap.baseTypeFQName}TypeSupport.get_instance().get_serialized_key_max_size(
+            endpoint_data,
+            false,encapsulation_id,currentAlignment);
+#*----*##end
+#*----*##if(${constructMap.hasKey})
+#serializeKeyMaxSize($constructMap)
+#*----*##elseif($constructMap.constructKind=="alias")
+currentAlignment += #alignmentMaxSizeMember("key" $constructMap.firstMember  $constructMap.currentAlignment));
+#*----*##elseif(!$constructMap.hasKeyBaseType)
+currentAlignment += get_serialized_sample_max_size(
+                            endpoint_data,false,encapsulation_id,currentAlignment);
+#*----*##end
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+    // Sentinel
+    currentAlignment += (CdrPrimitiveType.getPadSize(currentAlignment, 4) +
+                                       2*CdrPrimitiveType.SHORT.size +
+                                       2*CdrPrimitiveType.INT.size);
+#*----*##end
+
+#*----*##if(!$envMap.rtidds42e)        
+        if (include_encapsulation) {
+            currentAlignment += encapsulation_size;
+        }
+#*----*##end    
+
+        return currentAlignment - origAlignment;
+#*--*##end
+    }
+
+#**********************************************************************************************************************************#
+    public void serialize(Object endpoint_data,Object src, CdrOutputStream dst,boolean serialize_encapsulation,
+                          short encapsulation_id, boolean serialize_sample, Object endpoint_plugin_qos) {
+        int position = 0;
+#*--*##if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") || $constructMap.hasOptionalMember)
+        long memberId = 0;
+        int memberLengthPosition = 0;
+#*----*##serializeHeaderMutable($constructMap)
+#*--*##end
+#*--*##if($envMap.rtidds42e)
+        boolean topLevel;          
+#*--*##end 
+
+#*--*##if($constructMap.constructKind=="enum")
+$constructMap.name typedSrc = ($constructMap.name) src;
+#*--*##end
+        if(serialize_encapsulation) {
+#if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+#encapsulationMutable()
+#end         
+            dst.serializeAndSetCdrEncapsulation(encapsulation_id);
+
+#*--*##if(!$envMap.rtidds42e)
+            position = dst.resetAlignment();
+#*--*##end
+
+        }
+
+
+        if(serialize_sample) {
+        
+#rtidds42Alignmet ("serialize")
+      
+
+#*--*##if(!$constructMap.constructKind.equals("enum"))
+$constructMap.name typedSrc = ($constructMap.name) src;
+
+#*----*##if($constructMap.baseTypeFQName)
+#*------*##if (${constructMap.extensibility} =="MUTABLE_EXTENSIBILITY")
+dst.skipListEndId = true;
+#*------*##end
+        ${constructMap.baseTypeFQName}TypeSupport.get_instance().serialize(#*
+        *#endpoint_data,src,dst,false,encapsulation_id,serialize_sample,endpoint_plugin_qos);
+#*------*##if (${constructMap.extensibility} =="MUTABLE_EXTENSIBILITY")
+dst.skipListEndId = false;
+#*------*##end        
+#*----*##end
+#serialize($constructMap)
+#*--*##else
+dst.writeInt(typedSrc.ordinal());
+#*--*##end
+#*--*##if($envMap.rtidds42e)   
+            if (!serialize_encapsulation && topLevel) {
+                dst.restoreAlignment(position);
+            }
+#*--*##end
+#*--*##if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))        
+#serializeEndMutable()
+#*--*##end           
+        }
+
+#*--*##if(!$envMap.rtidds42e) 
+        if (serialize_encapsulation) {
+          dst.restoreAlignment(position);
+        }
+
+#*--*##end 
+    }
+ 
+    
+    public void serialize_key(
+        Object endpoint_data,
+        Object src,
+        CdrOutputStream dst,
+        boolean serialize_encapsulation,
+        short encapsulation_id,
+        boolean serialize_key,
+        Object endpoint_plugin_qos) 
+    {
+#*--*##if($constructMap.constructKind=="enum")
+ serialize(endpoint_data, src, dst, serialize_encapsulation, encapsulation_id, serialize_key, endpoint_plugin_qos);    
+#*--*##else    
+        int position = 0;
+
+#*----*##if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))        
+#serializeHeaderMutable($constructMap)
+#*----*##end
+
+#*----*##if($envMap.rtidds42e)
+        boolean topLevel;          
+#*----*##end 
+
+
+        if (serialize_encapsulation) {
+#*----*##if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))       
+#encapsulationMutable()
+#*----*##end          
+            dst.serializeAndSetCdrEncapsulation(encapsulation_id);
+
+#*----*##if(!$envMap.rtidds42e)
+            position = dst.resetAlignment();
+#*----*##end
+        }
+
+        if (serialize_key) {
+#rtidds42Alignmet ("serialize")       
+        
+$constructMap.name typedSrc = ($constructMap.name) src;    
+#*----*##if($constructMap.baseTypeFQName && $constructMap.hasKeyBaseType)
+${constructMap.baseTypeFQName}TypeSupport.get_instance().serialize_key(
+                endpoint_data, src, dst, false, encapsulation_id, true, endpoint_plugin_qos);
+#*----*##end
+#*----*##if(${constructMap.hasKey})
+#*------*##if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))       
+{
+                int memberId = 0;
+                long memberLength = 0;
+                int memberLengthPosition = 0;
+                int position_tmp = 0;
+#*------*##end
+                
+#serializeKeyTypeSupport($constructMap)
+#*------*##if ($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))      
+#serializeEndMutable()
+}
+#*------*##end              
+#*----*##elseif($constructMap.constructKind=="alias")
+#serializeMember($constructMap.firstMember "_key")
+#*----*##elseif(!$constructMap.hasKeyBaseType)
+serialize(endpoint_data, src, dst, false, CdrEncapsulation.CDR_ENCAPSULATION_ID_CDR_BE, true, endpoint_plugin_qos);
+#*----*##end
+
+
+#*----*##if($envMap.rtidds42e)
+            if (!serialize_encapsulation && topLevel) {
+                dst.restoreAlignment(position);
+            }
+#*----*##end              
+        }
+
+#*----*##if(!$envMap.rtidds42e)
+        if (serialize_encapsulation) {
+            dst.restoreAlignment(position);
+        }
+#*----*##end
+#*--*##end
+    }
+
+    
+    public Object deserialize_sample(
+        Object endpoint_data,
+        Object dst, 
+        CdrInputStream src, boolean deserialize_encapsulation,
+        boolean deserialize_sample,
+        Object endpoint_plugin_qos) 
+    {
+        int position = 0;
+#*--*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") || $constructMap.hasOptionalMember)        
+        CdrMemberInfo memberInfo;
+        long length = 0;
+        boolean end = false;
+        int tmpPosition, tmpSize;
+        long tmpLength;
+#*--*##end        
+#*--*##if($envMap.rtidds42e)
+        boolean topLevel;          
+#*--*##end 
+     
+        
+        if(deserialize_encapsulation) {
+            src.deserializeAndSetCdrEncapsulation();
+
+#*--*##if(!$envMap.rtidds42e)
+            position = src.resetAlignment();
+#*--*##end
+        }
+
+        if(deserialize_sample) {
+
+#rtidds42Alignmet ("deserialize")
+
+#*--*##if($constructMap.constructKind!="enum")        
+$constructMap.name typedDst = ($constructMap.name) dst;
+#*----*##if( ( $constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ || ($constructMap.extensibility.equals("EXTENSIBLE_EXTENSIBILITY")) && !$constructMap.constructKind.equals("union"))
+typedDst.clear();      
+#*----*##end
+#*----*##if($constructMap.baseTypeFQName)
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+{
+                int begin = src.getBuffer().currentPosition();
+#*------*##end                
+        ${constructMap.baseTypeFQName}TypeSupport.get_instance().deserialize_sample(#*
+        *#endpoint_data,dst,src,false,deserialize_sample,endpoint_plugin_qos);
+
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+      src.getBuffer().setCurrentPosition(begin);
+       }
+#end
+#end       
+#*----*##if(($constructMap.constructKind.equals("valueType") || $constructMap.constructKind.equals("struct"))
+       && $constructMap.extensibility.equals("EXTENSIBLE_EXTENSIBILITY"))              
+        try{
+#*----*##end
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+  while (end != true && src.available() > 0) {
+
+#preDeserializeBufferLength()
+
+            switch (memberInfo.memberId) {
+
+            case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_IGNORE:
+                        break; 
+                      
+            case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_LIST_END: 
+                    end = true;
+                    break;
+#end
+#deserialize($constructMap)
+#*----*##if(($constructMap.constructKind.equals("valueType") || $constructMap.constructKind.equals("struct"))
+       && $constructMap.extensibility.equals("EXTENSIBLE_EXTENSIBILITY"))      
+        } catch (IllegalCdrStateException stateEx) {
+                  if (src.available() >= CdrEncapsulation.CDR_ENCAPSULATION_PARAMETER_ID_ALIGNMENT) {
+                     throw new RETCODE_ERROR("Error deserializing sample! Remainder: " + src.available() + "\n" +
+                                                               "Exception caused by: " + stateEx.getMessage());
+                 }
+         } catch (Exception ex) {
+             throw new RETCODE_ERROR(ex.getMessage());        
+         }
+
+#end
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+default:
+#*------*##if(!$constructMap.constructKind.equals("union"))
+                   if (memberInfo.flagMustUnderstand) {
+#*------*##end                   
+                            throw new RETCODE_ERROR(
+                                          "unknown member ID "+ 
+                                          memberInfo.memberId);
+#*------*##if(!$constructMap.constructKind.equals("union"))                                          
+                     } break;
+#*------*##end  
+}             
+#postDeserializeBufferLength()
+        }
+#*----*##end
+#*--*##else
+            int ordinal = src.readInt();
+            dst = ${constructMap.name}.valueOf(ordinal);
+            if (dst == null) {
+                throw new IllegalArgumentException(
+                    "invalid enumerator " + ordinal);
+            
+           }
+#*--*##end
+#*--*##if($envMap.rtidds42e)
+            if (!deserialize_encapsulation && topLevel) {
+                src.restoreAlignment(position);
+            }
+#*--*##end
+        }
+#*--*##if(!$envMap.rtidds42e) 
+        if (deserialize_encapsulation) {
+            src.restoreAlignment(position);
+        }
+#*--*##end
+
+        return dst;
+    }
+
+
+    
+    public Object deserialize_key_sample(
+        Object endpoint_data,
+        Object dst,
+        CdrInputStream src,
+        boolean deserialize_encapsulation,
+        boolean deserialize_key,
+        Object endpoint_plugin_qos) 
+    {
+#*--*##if($constructMap.constructKind=="enum")    
+     return deserialize_sample(endpoint_data, dst, src, deserialize_encapsulation, deserialize_key, endpoint_plugin_qos);
+#*--*##else    
+        int position = 0;
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") || $constructMap.hasOptionalMember)        
+        CdrMemberInfo memberInfo;
+        long length = 0;
+        boolean end = false;
+        int tmpPosition, tmpSize;
+        long tmpLength;
+#*----*##end        
+
+#*----*##if($envMap.rtidds42e)
+        boolean topLevel;          
+#*----*##end 
+
+        if(deserialize_encapsulation) {
+            src.deserializeAndSetCdrEncapsulation();
+
+
+#*----*##if(!$envMap.rtidds42e)
+            position = src.resetAlignment();
+#*----*##end
+        }
+
+        if(deserialize_key) {
+        
+#rtidds42Alignmet ("deserialize")
+        
+$constructMap.name typedDst = ($constructMap.name) dst;
+
+#*----*##if($constructMap.baseTypeFQName && $constructMap.hasKeyBaseType)
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+{
+       int begin = src.getBuffer().currentPosition();
+#*------*##end   
+${constructMap.baseTypeFQName}TypeSupport.get_instance().deserialize_key_sample(
+                endpoint_data, dst, src, false, true, endpoint_plugin_qos);
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+       src.getBuffer().setCurrentPosition(begin);
+}
+#*------*##end
+
+#*----*##end
+   
+
+#*----*##if(${constructMap.hasKey})
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ 
+while (end != true && src.available() > 0) {
+#preDeserializeBufferLength()
+            switch (memberInfo.memberId) {
+                case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_IGNORE:
+                        break; 
+                case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_LIST_END: 
+                    end = true;
+                    break;
+#*------*##end
+#deserializeKey($constructMap)
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+default:
+#*--------*##if(!$constructMap.constructKind.equals("union"))
+
+                   if (memberInfo.flagMustUnderstand) {
+#*--------*##end                   
+                            throw new RETCODE_ERROR(
+                                          "unknown member ID "+ 
+                                          memberInfo.memberId);
+#*--------*##if(!$constructMap.constructKind.equals("union"))                                          
+                     } break;
+#*--------*##end  
+}
+#*------*##postDeserializeBufferLength()
+        
+ }
+#*------*##end
+#*----*##elseif($constructMap.constructKind=="alias")
+#*----*##deserializeMember($constructMap.firstMember "deserialize_key_sample")
+#*----*##elseif(!$constructMap.hasKeyBaseType)
+  deserialize_sample(endpoint_data, dst, src, false, true, endpoint_plugin_qos);
+#*----*##end
+    
+#*----*##if($envMap.rtidds42e)
+            if (!deserialize_encapsulation && topLevel) {
+                src.restoreAlignment(position);
+            }
+#*----*##end
+        }
+#*----*##if(!$envMap.rtidds42e) 
+        if (deserialize_encapsulation) {
+            src.restoreAlignment(position);
+        }
+#*----*##end
+
+        return dst;
+#*--*##end        
+    }
+
+    
+    public void skip(Object endpoint_data, 
+                     CdrInputStream src,
+                     boolean skip_encapsulation, 
+                     boolean skip_sample, 
+                     Object endpoint_plugin_qos)
+    {
+        int position = 0;
+#*--*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") || $constructMap.hasOptionalMember)        
+        CdrMemberInfo memberInfo;
+        long length = 0;
+        boolean end = false;
+        int tmpPosition, tmpSize;
+        long tmpLength;
+#*--*##end        
+#*--*##if($envMap.rtidds42e)
+        boolean topLevel;          
+#*--*##end 
+
+        if (skip_encapsulation) {
+            src.skipEncapsulation();
+
+
+#*--*##if(!$envMap.rtidds42e)
+            position = src.resetAlignment();
+#*--*##end
+        }
+
+        if (skip_sample) {
+#rtidds42Alignmet ("skip")          
+#*--*##if($constructMap.constructKind.equals("union"))
+#*----*##if($constructMap.unionDiscriminatorMap.typeKind=="enum")
+$constructMap.unionDiscriminatorMap.nativeTypeFQName disc = null;
+#*----*##else
+$constructMap.unionDiscriminatorMap.nativeTypeFQName disc; 
+#*----*##end          
+#*--*##end 
+ 
+            
+#*--*##if($constructMap.baseTypeFQName)
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+                int begin = src.getBuffer().currentPosition();
+#*----*##end   
+${constructMap.baseTypeFQName}TypeSupport.get_instance().skip(endpoint_data, src, false, true, endpoint_plugin_qos);
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+src.getBuffer().setCurrentPosition(begin);
+#*----*##end   
+#*--*##end
+#*--*##if($constructMap.constructKind=="enum")
+src.skipInt();
+#*--*##else
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ 
+while (end != true && src.available() > 0) {
+#*----*##preDeserializeBufferLength()
+            switch (memberInfo.memberId) {
+            case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_IGNORE:
+                        break; 
+                case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_LIST_END: 
+                    end = true;
+                    break;
+#*----*##end
+#*--*##skip($constructMap)
+#*--*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+default:
+#*----*##if(!$constructMap.constructKind.equals("union"))
+
+                   if (memberInfo.flagMustUnderstand) {
+#*----*##end                   
+                            throw new RETCODE_ERROR(
+                                          "unknown member ID "+ 
+                                          memberInfo.memberId);
+#*----*##if(!$constructMap.constructKind.equals("union"))                                          
+                     } break;
+#*----*##end      
+}        
+#*----*##postDeserializeBufferLength()            
+}
+#*----*##end
+
+#*--*##end
+#*--*##if($envMap.rtidds42e) 
+          if (!skip_encapsulation && topLevel) {
+                src.restoreAlignment(position);
+            }
+#*--*##end                     
+        }
+
+#*--*##if(!$envMap.rtidds42e) 
+        if (skip_encapsulation) {
+            src.restoreAlignment(position);
+        }
+#*--*##end 
+    }
+
+    public Object serialized_sample_to_key(
+        Object endpoint_data,
+        Object sample,
+        CdrInputStream src, 
+        boolean deserialize_encapsulation,  
+        boolean deserialize_key, 
+        Object endpoint_plugin_qos) 
+    {
+    
+#*--*##if($constructMap.constructKind=="enum")
+ return deserialize_sample(
+            endpoint_data,sample,src,deserialize_encapsulation,deserialize_key,
+            endpoint_plugin_qos);
+    }
+#*--*##else        
+        int position = 0;
+#*----*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY") || $constructMap.hasOptionalMember)        
+        CdrMemberInfo memberInfo;
+        long length = 0;
+        boolean end = false;
+        int tmpPosition, tmpSize;
+        long tmpLength;
+#*----*##end          
+
+#*----*##if($envMap.rtidds42e)
+        boolean topLevel;          
+#*----*##end 
+        if(deserialize_encapsulation) {
+            src.deserializeAndSetCdrEncapsulation();
+
+#*----*##if(!$envMap.rtidds42e)
+            position = src.resetAlignment();
+#*----*##end
+        }
+
+
+        if (deserialize_key) {
+        
+#*----*##rtidds42Alignmet ("deserialize")     
+            
+$constructMap.name typedDst = ($constructMap.name) sample;
+
+#*----*##if(${constructMap.hasKey}||$constructMap.hasKeyBaseType)
+#*------*##if($constructMap.baseTypeFQName && $constructMap.hasKeyBaseType)
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+{
+              int begin = src.getBuffer().currentPosition();
+#*--------*##end
+              ${constructMap.baseTypeFQName}TypeSupport.get_instance().serialized_sample_to_key(endpoint_data,sample,
+                    src,false, true,
+                    endpoint_plugin_qos);
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+             src.getBuffer().setCurrentPosition(begin);
+}
+#*--------*##end
+#*------*##elseif($constructMap.baseTypeFQName)
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+{
+                int begin = src.getBuffer().currentPosition();
+#*--------*##end
+                ${constructMap.baseTypeFQName}TypeSupport.get_instance().skip(endpoint_data, src,
+                       false, true,
+                       endpoint_plugin_qos);
+#*--------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ src.getBuffer().setCurrentPosition(begin);
+}
+#*--------*##end
+#*------*##end
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+ 
+while (end != true && src.available() > 0) {
+#*------*##preDeserializeBufferLength()
+            switch (memberInfo.memberId) {
+            case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_IGNORE:
+                        break; 
+                case CdrEncapsulation.CDR_ENCAPSULATION_MEMBER_ID_LIST_END: 
+                    end = true;
+                    break;
+#*------*##end
+#*------*##deserializeKeyAndSkip($constructMap)
+#*------*##if($constructMap.extensibility.equals("MUTABLE_EXTENSIBILITY"))
+default:
+#*------*##if(!$constructMap.constructKind.equals("union"))
+
+                   if (memberInfo.flagMustUnderstand) {
+#*------*##end                   
+                            throw new RETCODE_ERROR(
+                                          "unknown member ID "+ 
+                                          memberInfo.memberId);
+#*------*##if(!$constructMap.constructKind.equals("union"))                                          
+                     } break;
+#*------*##end                      
+               
+            }
+            
+#*------*##postDeserializeBufferLength()
+}
+#*------*##end
+#*----*##elseif($constructMap.constructKind=="alias")
+#*----*##deserializeMember($constructMap.firstMember "serialized_sample_to_key")
+#*----*##elseif(!$constructMap.hasKeyBaseType)
+ deserialize_sample(
+                endpoint_data, sample, src, false,
+                true, endpoint_plugin_qos);
+#*----*##end
+
+#*----*##if($envMap.rtidds42e) 
+            if (!deserialize_encapsulation && topLevel) {
+                src.restoreAlignment(position);
+            }
+#*----*##end            
+        }
+
+#*----*##if(!$envMap.rtidds42e)
+        if (deserialize_encapsulation) {
+            src.restoreAlignment(position);
+        }
+#*----*##end
+
+        return sample;
+    }
+
+#*----*##if(${constructMap.hasKey}||$constructMap.hasKeyBaseType)
+#*----*##addTypeSupportKeyCode($constructMap)
+#*----*##end
+
+#*--*##end
+
+    // -----------------------------------------------------------------------
+    // Callbacks
+    // -----------------------------------------------------------------------
+#*--*##if($constructMap.constructKind!="enum")
+    public Object on_participant_attached(Object registration_data,
+                                          TypeSupportParticipantInfo participant_info,
+                                          boolean top_level_registration,
+                                          Object container_plugin_context,
+                                          TypeCode type_code) {
+        return super.on_participant_attached(
+            registration_data, participant_info, top_level_registration,
+            container_plugin_context, type_code);
+    }
+
+    public void on_participant_detached(Object participant_data) {
+        super.on_participant_detached(participant_data);
+    }
+
+    public Object on_endpoint_attached(Object participantData,
+                                       TypeSupportEndpointInfo endpoint_info,
+                                       boolean top_level_registration,
+                                       Object container_plugin_context) {
+        return super.on_endpoint_attached(
+              participantData,  endpoint_info,  
+              top_level_registration, container_plugin_context);        
+    }
+
+    public void on_endpoint_detached(Object endpoint_data) {
+        super.on_endpoint_detached(endpoint_data);
+    }
+#*--*##end
+    // -----------------------------------------------------------------------
+    // Protected Methods
+    // -----------------------------------------------------------------------
+
+    protected DataWriter create_datawriter(long native_writer,
+                                           DataWriterListener listener,
+                                           int mask) {
+#*--*##if($constructMap.constructKind=="enum" || $constructMap.constructKind=="alias" ||!$constructMap.topLevel)
+        return null;
+#*--*##elseif($constructMap.topLevel)
+        return new $constructMap.dataWriterName (native_writer, listener, mask, this);#end                
+            
+    }
+
+    protected DataReader create_datareader(long native_reader,
+                                           DataReaderListener listener,
+                                           int mask) {
+        
+#*----*##if($constructMap.constructKind=="enum" || $constructMap.constructKind=="alias" ||!$constructMap.topLevel)
+        return null;
+#*----*##elseif($constructMap.topLevel)
+        return new ${constructMap.dataReaderName}(native_reader, listener, mask, this);   
+#*----*##end               
+            
+    }
+
+    // -----------------------------------------------------------------------
+    // Constructor
+    // -----------------------------------------------------------------------
+
+    protected ${constructMap.typeSupportName}() {
+        
+        /* If the user data type supports keys, then the second argument
+        to the constructor below should be true.  Otherwise it should
+        be false. */        
+
+        super(TYPE_NAME,#if(${constructMap.hasKey}||$constructMap.hasKeyBaseType)true#else false#end,#if($envMap.typeCode)${constructMap.name}TypeCode.VALUE#else null #end,${constructMap.name}.class,TypeSupportType.TST_#if($constructMap.unionDiscriminatorMap)UNION#elseif($constructMap.constructKind=="enum")#* *#ENUM#else#* *#STRUCT#* *##end, PLUGIN_VERSION);
+    
+    }
+
+#*--*##if ($constructMap.constructKind!="enum")
+    protected $constructMap.typeSupportName (boolean enableKeySupport) {
+    
+        super(TYPE_NAME, enableKeySupport,#if($envMap.typeCode)${constructMap.name}TypeCode.VALUE#else null #end,${constructMap.name}.class,TypeSupportType.TST_#if($constructMap.unionDiscriminatorMap)UNION#else#* *#STRUCT#* *##end, PLUGIN_VERSION);
+    }
+#*--*##end    
+}
+

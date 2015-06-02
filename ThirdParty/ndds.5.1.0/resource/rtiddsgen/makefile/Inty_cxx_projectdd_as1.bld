@@ -1,0 +1,13 @@
+#!build
+default:
+	program
+%%IDLFileBaseName%%_%%ProjectName%%.cxx
+	C++
+%%IDLFileBaseName%%Support.cxx
+	C++
+%%IDLFileBaseName%%Plugin.cxx
+	C++
+%%IDLFileBaseName%%.cxx
+	C++
+%%IDLFileBaseName%%_%%ProjectName%%dd_INTEGRITY.ld
+	linker_file

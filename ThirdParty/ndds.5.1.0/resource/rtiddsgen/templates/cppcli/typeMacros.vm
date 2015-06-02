@@ -1,0 +1,383 @@
+##/* $Id: typeMacros.vm,v 1.12 2013/03/01 16:44:20 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+##
+##modification history:
+##---------------------
+##2.0,30oct13,ajm CODEGENII-147 removing warnings
+##10a,29oct13,ajm CODEGENII-143 and nddsgen1.0 fixes for CODEGEN-561 
+##10a,28oct13,ajm CODEGENII-143 nddsgen1.0 fixes for CODEGEN-564 CODEGEN-494 CODEGEN-632
+##10a,02Apr13,ajm Adding support for XTypes in .Net
+##10a,26mar13,ajm Adding support for unions in .Net
+##10a,25mar13,ajm Adding support for enums and inheritance 
+##10a,19mar13,ajm Adding support for typedefs and const  
+##10a,18mar13,ajm created 
+##-----------------------------------------------------------------
+##               
+##             Macros for TypeBody and TypeHeader
+## 
+##------------------------------------------------------------------
+##------------------------------------------------------------------
+
+##******************************************************************************
+##  Macro to delclare all the members 
+##******************************************************************************
+#macro(declareMembers  $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective($member)
+#*----*##else
+#*----*##declareMember($node $member)
+#*----*##end
+#*--*##end
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to declare a single member
+##-----------------------------------------------------------------------------
+
+#macro(declareMember $node $member)
+##we need to introduce an intro after the#arrayDimensionWithComma($member) macro 
+##because it does not have it when used in other places
+#*--*##if($member.dimensionList && $member.seqSize)
+array<$member.nativeTypeSeqFQName^, $member.dimensionList.size()>^ $member.name; // length = #arrayDimensionWithComma($member)
+ 
+#*--*##elseif($member.dimensionList)
+#*----*##if(($member.typeKind=="user" && !$member.isEnum) || $member.strSize)
+array<$member.nativeTypeFQName^, $member.dimensionList.size()>^ $member.name; // length = #arrayDimensionWithComma($member)
+ 
+#*----*##else
+array<$member.nativeTypeFQName, $member.dimensionList.size()>^ $member.name; // length = #arrayDimensionWithComma($member) 
+
+#*----*##end
+#*--*##elseif($member.seqSize)
+$member.nativeTypeSeqFQName^ $member.name; 
+#*--*##elseif(($member.typeKind.equals("user")&& !$member.isEnum) || ($member.isEnum && $member.isEnumCollection)|| $member.strSize)
+$member.nativeTypeFQName^ $member.name;#if($member.strSize)// maximum length = ($member.strSize)#end
+
+#*--*##else
+$member.nativeTypeFQName $member.name;
+
+#*--*##end
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to declare a constant
+##-----------------------------------------------------------------------------
+
+#macro (declareConstant $node)
+public ref class $node.name sealed {
+public:
+#*--*##if(($node.typeKind=="user"&& !$node.isEnum) || $node.strSize)
+    static const ${node.nativeTypeFQName}^ VALUE =
+       $node.value;
+#*--*##else
+    static const ${node.nativeTypeFQName} VALUE =
+       $node.value;
+#*--*##end       
+
+private:
+    ${node.name}() {}
+};
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to declare an enum 
+##-----------------------------------------------------------------------------
+
+#macro (declareEnum $node)
+public enum class $node.name : System::Int32 {
+#*--*##foreach ($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*------*##addMemberDirectiveNotBegin ($member)
+#*----*##else
+$member.name #if($member.autoOrdinal=="false") = $member.ordinal#end#*
+--------*##if($velocityCount < $node.memberFieldMapList.size()),#*
+------*##end
+
+#*----*##end
+#*--*##end
+};
+#end
+
+
+##******************************************************************************
+##  Macro to initialize
+##******************************************************************************
+#macro(init $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*-----*##if($member.directive)
+#*-------*##addMemberDirectiveNotBegin ($member)
+#*-----*##elseif(!$member.constructKind.equals("const"))
+#*-------*##if($member.dimensionList && $member.seqSize)
+#*-------*##initArrayOfSeq($member)
+#*-------*##elseif($member.dimensionList)
+#*-------*##initArray ($member)
+#*-------*##elseif($member.seqSize)
+${member.printName} = gcnew ${member.nativeTypeSeqFQName}((${member.seqSize}));
+#*-------*##else
+#if(!$member.initialValue)
+#error($member)
+#end
+${member.printName} = $member.initialValue;
+#*-----*##end
+#*-----*##end
+#*---*##end
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to initialize array of sequences
+##-----------------------------------------------------------------------------
+#macro (initArrayOfSeq $member)
+${member.printName} = gcnew array<$member.nativeTypeSeqFQName^, $member.dimensionList.size()>#arrayDimensionWithComma($member);
+#*--*##if($member.dimensionList.size()!=1 &&  $member.strSize)
+for each (${member.nativeTypeSeqFQName}^ elem in ${member.name}) {
+        elem = gcnew ${member.nativeTypeSeqFQName}((${member.seqSize}));
+        elem-> length=0;
+}        
+#*--*##else
+for (Int32 i = 0; i < ${member.printName}->Length; ++i) {
+       ${member.printName}[i] = gcnew ${member.nativeTypeSeqFQName}((${member.seqSize}));
+       ${member.printName}[i]->length=0; 
+}
+#*--*##end
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to initialize arrays of non-basic types or strings 
+##-----------------------------------------------------------------------------
+#macro (initArray $member)
+#*--*##if(($member.typeKind.equals("user") && !$member.isEnum) || $member.strSize)
+##Note that the difference is  ^
+${member.printName} = gcnew array<$member.nativeTypeFQName^, $member.dimensionList.size()>#arrayDimensionWithComma($member);
+#*--*##else
+${member.printName} = gcnew array<$member.nativeTypeFQName, $member.dimensionList.size()>#arrayDimensionWithComma($member);
+#*--*##end
+#*--*##if(!$member.isEnum)
+#*----*##openForLoopIfArray($member)
+${member.printName}#arraydimensionListsWithIndex($member) = $member.initialValue;
+#*----*##closeForLoopIfArray($member)
+#*--*##end
+#end
+
+
+
+##******************************************************************************
+##  Macro to clear
+##******************************************************************************
+#macro(clear $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective($member)
+#*----*##else
+#*------*##if($node.constructKind.equals("union"))
+#*--------*##initCases($member)
+#*------*##end
+#*----*##clearMember($member)
+#*----*##end
+#*------*##if($node.constructKind.equals("union"))
+} #if($member.labelList.get(0)!="(default)")break #end;
+#*------*##end
+#*--*##end
+#end
+
+
+#macro(clearMember $node)
+#*----*##openForLoopIfArray($member)
+#*-------*##if($member.seqSize)
+${member.printName}#arraydimensionListsWithIndex($member)->length=0;
+#*-------*##elseif($member.typeKind.equals("user") && (!$member.isEnum || $member.isEnumCollection))
+if (${member.printName}#arraydimensionListsWithIndex($member)!= nullptr) {
+    ${member.printName}#arraydimensionListsWithIndex($member)->clear();
+}
+#*-------*##else
+${member.printName}#arraydimensionListsWithIndex($member) = $member.initialValue;
+#*-------*##end
+#*----*##closeForLoopIfArray($member)
+#end
+
+
+##-----------------------------------------------------------------------------
+## Macro to copy the elements of a type 
+##-----------------------------------------------------------------------------
+
+#macro(copy $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective($member)
+#*----*##else
+#*------*##if($node.constructKind.equals("union"))
+#*--------*##initCases($member)
+#*------*##end
+#*----*##copyMember($member)
+#*----*##end
+#*------*##if($node.constructKind.equals("union"))
+} #if($member.labelList.get(0)!="(default)")break #end;
+#*------*##end
+#*--*##end
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to copy Member of a type 
+##-----------------------------------------------------------------------------
+
+#macro(copyMember $member)
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*##copyArrayOfSeq($member)
+#*--*##elseif($member.dimensionList)
+#*----*##copyArray($member)
+#*--*##elseif($member.seqSize)
+if (!${member.dstSample}->copy_from($member.srcSample)) {
+        return false;
+}
+#*--*##elseif($member.typeKind.equals("user") && !$member.isEnum)
+${member.dstSample}->copy_from($member.srcSample); 
+#*--*##else
+${member.dstSample} = $member.srcSample;
+#*--*##end
+#end
+
+
+##-----------------------------------------------------------------------------
+## Macro to copy and Array of Seq 
+##-----------------------------------------------------------------------------
+
+#macro(copyArrayOfSeq $member)
+for (Int32 i = 0; i < ${member.srcSample}->Length; ++i) {
+    if (!${member.dstSample}[i]->copy_from(${member.srcSample}[i])) {
+        return false;
+    }
+}
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to copy an array 
+##-----------------------------------------------------------------------------
+
+#macro(copyArray $member)
+#*--*##if($member.typeKind=="user" && !$member.isEnum)
+#*----*##if($member.dimensionList.size()== 1)
+ {
+        Int32 length = ${member.dstSample}->Length;
+        for (Int32 i = 0; i < length; ++i) {
+            if (!${member.dstSample}[i]->copy_from(${member.srcSample}[i])) {
+                return false;
+            }
+        }
+    }
+#*----*##else    
+{
+    IEnumerator^ src_elems = ${member.srcSample}->GetEnumerator();
+    IEnumerator^ dst_elems =${member.dstSample}->GetEnumerator();
+    while (src_elems->MoveNext() && dst_elems->MoveNext()) {
+        $member.nativeTypeFQName^ src = safe_cast<$member.nativeTypeFQName^>(src_elems->Current);
+        $member.nativeTypeFQName^ dst = safe_cast<$member.nativeTypeFQName^>(dst_elems->Current);
+        if (!dst->copy_from(src)) {
+            return false;
+        }
+    }
+}
+#*----*##end
+#*--*##else    
+System::Array::Copy(
+        $member.srcSample, ${member.dstSample}, ${member.srcSample}->Length);
+
+#*--*##end
+#end
+##-----------------------------------------------------------------------------
+## Macro to do the equals for the members of a type 
+##-----------------------------------------------------------------------------
+
+#macro(equals $node)
+#*--*##foreach($member in $node.memberFieldMapList)
+#*----*##if($member.directive)
+#*----*##copyDirective($member)
+#*----*##else
+#*------*##if($node.constructKind.equals("union"))
+#*--------*##initCases($member)
+#*------*##end
+#*----*##equalsMember($member)
+#*----*##end
+#*------*##if($node.constructKind.equals("union"))
+} #if($member.labelList.get(0)!="(default)")break #end;
+#*------*##end
+#*--*##end
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to do the equals for a member 
+##-----------------------------------------------------------------------------
+#macro(equalsMember $member)
+#*--*##if($member.dimensionList && $member.seqSize)
+#*----*##equalsArrayOfSeq($member)
+#*--*##elseif($member.dimensionList)
+#*----*##equalsArray($member)
+#*--*##elseif($member.seqSize || $member.strSize || ($member.typeKind.equals("user")&&!$member.isEnum))
+if (!${member.printName}->Equals(otherObj->${member.printName})) {
+        return false;
+    }
+#*--*##else
+if ($member.printName != otherObj->$member.printName) {
+        return false;
+}
+#*--*##end
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to do the equals for an array of seq 
+##-----------------------------------------------------------------------------
+
+#macro (equalsArrayOfSeq $member)
+if (${member.printName}->Length != otherObj->${member.printName}->Length) {
+        return false;
+    }
+    for (Int32 i = 0; i < #arrayDimensionWithMultiplication($member); ++i) {
+        if (${member.printName}[i]->length != otherObj->${member.printName}[i]->length) {
+            return false;
+        }
+        for (Int32 j = 0; j < ${member.printName}[i]->length; ++j) {
+#*--*##if(($member.typeKind=="user" && !$member.isEnum)|| $member.strSize)
+            if (!${member.printName}[i]->get_at(j)->Equals(otherObj->${member.printName}[i]->get_at(j))) {
+#*--*##else
+            if (${member.printName}[i]->get_at(j)!= otherObj->${member.printName}[i]->get_at(j)) {
+#*--*##end    
+                return false;
+            }
+        }
+    }
+#end
+
+##-----------------------------------------------------------------------------
+## Macro to do the equals for an array
+##-----------------------------------------------------------------------------
+
+#macro (equalsArray $member)
+if (${member.printName}->Length != otherObj->${member.printName}->Length) {
+        return false;
+}
+#*--*##if($member.dimensionList.size()== 1)
+for (Int32 i = 0; i <  #arrayDimensionWithComma($member); ++i) {
+#*----*##if(($member.typeKind=="user"&& !$member.isEnum) || $member.strSize )
+    if (!${member.printName}[i]->Equals(otherObj->${member.printName}[i])) {
+#*----*##else
+    if (${member.printName}[i] != otherObj->${member.printName}[i]) {
+#*----*##end   
+        return false;
+   }
+}
+#*--*##else
+    {
+        IEnumerator^ src_elems = ${member.printName}->GetEnumerator();
+        IEnumerator^ dst_elems = otherObj->${member.printName}->GetEnumerator();
+        while (src_elems->MoveNext() && dst_elems->MoveNext()) {
+            if (!dst_elems->Current->Equals(src_elems->Current)) {
+                return false;
+            }
+        }
+    }
+#*----*##end
+#*--*##end

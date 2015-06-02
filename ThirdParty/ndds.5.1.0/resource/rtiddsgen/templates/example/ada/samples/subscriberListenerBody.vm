@@ -1,0 +1,66 @@
+##/* $Id: subscriberListenerBody.vm,v 1.5 2013/06/27 15:59:41 aida Exp $
+##
+##   (c) Copyright, Real-Time Innovations, Inc. 2001.  All rights reserved.
+##   No duplications, whole or partial, manual or electronic, may be made
+##   without prior written permission.  Any such copies, or
+##   revisions thereof, must display this notice unaltered.
+##   This code contains trade secrets of Real-Time Innovations, Inc.
+
+##modification history:
+##---------------------
+##10a,28may13,ajm Adding constructMap node for the example type
+##10a,25oct12, ajm Refactorizing code and variable names.
+##                 RRTIDDSGEN-32 support for -use42eAlignment and -generateCTypecode
+##10a,04nov11, ajm Refactoring code. Variable name changed
+##10a,17oct11,ajm variable name changes acording to the emitters
+##10a,14oct11,jmt created 
+##========================================================================*/*#
+
+with ${constructMap.packageName}; use ${constructMap.packageName};
+with ${constructMap.nativeFQName}_DataReader;
+with ${constructMap.nativeFQName}_TypeSupport;
+
+package body ${constructMap.nativeFQName}_SubscriberListener is
+   use Standard.DDS;
+   -----------------------
+   -- On_Data_Available --
+   -----------------------
+
+   procedure On_Data_Available
+     (Self       : not null access My_Listener;
+      The_Reader : in out Standard.DDS.DataReader.Ref'Class) is
+      pragma Unreferenced (Self);
+
+      Reader   : ${constructMap.nativeFQName}_DataReader.Ref_Access;
+      Data_Seq : aliased ${constructMap.name}_Seq.Sequence;
+      Info_Seq : aliased Standard.DDS.SampleInfo_Seq.Sequence;
+
+   begin
+
+      Reader :=  ${constructMap.name}_DataReader.Ref (The_Reader)'Access;
+
+      begin
+         Reader.Take (Data_Seq'Access,
+                      Info_Seq'Access,
+                      Standard.DDS.LENGTH_UNLIMITED,
+                      Standard.DDS.ANY_SAMPLE_STATE,
+                      Standard.DDS.ANY_VIEW_STATE,
+                      Standard.DDS.ANY_INSTANCE_STATE);
+      exception
+         when Standard.DDS.NO_DATA =>
+            return;
+      end;
+
+      for I in 1 .. ${constructMap.name}_Seq.Get_Length (Data_Seq'Access) loop
+         if SampleInfo_Seq.Get_Reference (Info_Seq'Access, Standard.DDS.Natural (I)).Valid_Data then
+            --  Ada.Text_IO.Put_Line (Standard.DDS.To_Standard_String (${constructMap.name}_Seq.Get_Reference (Data_Seq'Access, I).msg));
+            pragma Compile_Time_Warning (True, "Complete handling of message.");
+            ${constructMap.nativeFQName}_TypeSupport.Print_Data (${constructMap.name}_Seq.Get_Reference (Data_Seq'Access, I));
+         end if;
+      end loop;
+      Reader.Return_Loan (Data_Seq'Access, Info_Seq'Access);
+
+   end On_Data_Available;
+
+end ${constructMap.nativeFQName}_SubscriberListener;
+

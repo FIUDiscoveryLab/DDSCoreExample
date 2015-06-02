@@ -1,0 +1,74 @@
+###############################################################################
+##         (c) Copyright, Real-Time Innovations, All rights reserved.        ##
+##                                                                           ##
+##         Permission to modify and use for internal purposes granted.       ##
+## This software is provided "as is", without warranty, express or implied.  ##
+##                                                                           ##
+###############################################################################
+
+# Note:
+# - To use this Makefile, you must have the 'NDDSHOME' environment variable
+#   set to the location of RTI Connext.
+# 
+# - You need to invoke the gmake command from the root directory of this example.
+# 
+#   gmake -f makefile_Throughput_sparcSol2.10gcc3.4.2
+
+
+
+c_cc_sparcSol2.10gcc3.4.2 = gcc
+c_cc_flags_sparcSol2.10gcc3.4.2 = -m32
+c_ld_sparcSol2.10gcc3.4.2 = gcc
+c_ld_flags_sparcSol2.10gcc3.4.2 = -m32
+cxx_cc_sparcSol2.10gcc3.4.2 = g++
+cxx_cc_flags_sparcSol2.10gcc3.4.2 = -m32
+cxx_ld_sparcSol2.10gcc3.4.2 = g++
+cxx_ld_flags_sparcSol2.10gcc3.4.2 = -m32 -static-libgcc
+syslibs_sparcSol2.10gcc3.4.2 = -ldl -lnsl -lsocket -lgen -lposix4 -lpthread -lm -lc
+DEFINES_ARCH_SPECIFIC = -DRTI_UNIX \
+			-DRTI_SHARED_MEMORY -DRTI_IPV6
+
+
+DEFINES = $(DEFINES_ARCH_SPECIFIC) $(cxx_DEFINES_ARCH_SPECIFIC) 
+
+INCLUDES = -I. -I$(NDDSHOME)/include -I$(NDDSHOME)/include/ndds
+
+LIBS = -L$(NDDSHOME)/lib/sparcSol2.10gcc3.4.2 \
+       -lnddscppz -lnddscz -lnddscorez $(syslibs_sparcSol2.10gcc3.4.2)
+
+CDRSOURCES    = Throughput.idl
+COMMONSOURCES = Throughput.cxx ThroughputPlugin.cxx ThroughputSupport.cxx \
+                ThroughputArgs.cxx TimeManager.cxx ThroughputTransport.cxx \
+                ThroughputQos.cxx ThroughputCommon.cxx PerfMon.cxx
+EXEC          = Throughput_subscriber Throughput_publisher
+DIRECTORIES   = objs.dir objs/sparcSol2.10gcc3.4.2.dir
+COMMONOBJS    = $(COMMONSOURCES:%.cxx=objs/sparcSol2.10gcc3.4.2/%.o)
+
+# We actually stick the objects in a sub directory to keep your directory clean.
+sparcSol2.10gcc3.4.2 : $(DIRECTORIES) $(COMMONOBJS) \
+	       $(EXEC:%=objs/sparcSol2.10gcc3.4.2/%.o) \
+	       $(EXEC:%=objs/sparcSol2.10gcc3.4.2/%.out)
+
+objs/sparcSol2.10gcc3.4.2/%.out : objs/sparcSol2.10gcc3.4.2/%.o 
+	$(cxx_ld_sparcSol2.10gcc3.4.2) $(cxx_ld_flags_sparcSol2.10gcc3.4.2)  -o $(@:%.out=%) $(@:%.out=%.o) $(COMMONOBJS) $(LIBS)
+
+objs/sparcSol2.10gcc3.4.2/%.o : %.cxx Throughput.h 
+	$(cxx_cc_sparcSol2.10gcc3.4.2) $(cxx_cc_flags_sparcSol2.10gcc3.4.2)  -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+#
+# Uncomment these lines if you want the support files regenerated when idl
+# file is modified
+#
+#Throughput.cxx Throughput.h \
+#ThroughputPlugin.cxx ThroughputPlugin.h \
+#ThroughputSupport.cxx ThroughputSupport.h : \
+#		Throughput.idl
+#	$(NDDSHOME)/scripts/rtiddsgen -notypecode Throughput.idl -replace
+
+# Here is how we create those subdirectories automatically.
+%.dir : 
+	@echo "Checking directory $*"
+	@if [ ! -d $* ]; then \
+		echo "Making directory $*"; \
+		mkdir -p $* ; \
+	fi;

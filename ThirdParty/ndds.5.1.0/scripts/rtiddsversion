@@ -1,0 +1,197 @@
+#!/bin/sh
+
+
+CheckNDDSHOME() {
+
+[ -z "$NDDSHOME" ] && echo "$0: error = NDDSHOME environment variable must be set" && exit;
+
+}
+
+CheckConnextDir() {
+
+DIRTOCHECK="$@"
+REVINFO=`ls -l1 $DIRTOCHECK/rev_* | wc -l`
+
+if [ $REVINFO -eq 0 ]; then
+REVFILESPRESENT=0
+else
+REVFILESPRESENT=1
+fi
+
+echo $REVFILESPRESENT
+
+}
+
+GetConnextEnvironmentVariables() {
+
+if [ -z "$NDDSHOME" ]; then
+ISNDDSHOMESET=0
+printf "%-25s = [not set]\n" NDDSHOME
+else
+printf "%-25s = %s\n" NDDSHOME "$NDDSHOME"
+ISNDDSHOMESET=1
+fi
+
+if [ -z "$NDDS_DISCOVERY_PEERS" ]; then
+printf "%-25s = %s\n" NDDS_DISCOVERY_PEERS "[not set]"
+else
+printf "%-25s = %s\n" NDDS_DISCOVERY_PEERS "$NDDS_DISCOVERY_PEERS"
+fi
+
+if [ -z "$NDDS_QOS_PROFILES" ]; then
+printf "%-25s = %s\n" NDDS_QOS_PROFILES "[not set]"
+else
+printf "%-25s = %s\n" NDDS_QOS_PROFILES "$NDDS_QOS_PROFILES"
+fi
+
+if [ -z "$NDDS_DISCOVERY_PEERS" ]; then
+printf "%-25s = %s\n" USER_QOS_PROFILES "[not set]"
+else
+printf "%-25s = %s\n" USER_QOS_PROFILES "$USER_QOS_PROFILES"
+fi
+
+if [ -z "$RTIJMSHOME" ]; then
+printf "%-25s = %s\n" RTIJMSHOME "[not set]"
+else
+printf "%-25s = %s\n" RTIJMSHOME "$RTIJMSHOME"
+fi
+
+if [ -z "$RTI_LICENSE_FILE" ]; then
+printf "%-25s = %s\n" RTI_LICENSE_FILE "[not set]"
+else
+printf "%-25s = %s\n" RTI_LICENSE_FILE "$RTI_LICENSE_FILE"
+fi
+
+if [ -z "$LD_LIBRARY_PATH" ]; then
+printf "%-25s = %s\n" LD_LIBRARY_PATH "[not set]"
+else
+printf "%-25s = %s\n" LD_LIBRARY_PATH "$LD_LIBRARY_PATH"
+fi
+
+
+OSNAME=`uname`
+if [ "$OSNAME" = "Darwin" ]; then
+
+if [ -z "$DYLD_LIBRARY_PATH" ]; then
+printf "%-25s = %s\n" DYLD_LIBRARY_PATH "[not set]"
+else
+printf "%-25s = %s\n" DYLD_LIBRARY_PATH "$DYLD_LIBRARY_PATH"
+fi
+
+fi
+
+}
+
+GetAvailableArchs() {
+
+RTIPATH="$1"
+
+AVAILABLE_ARCHS=`ls -1 "$RTIPATH"/lib/ | sort `
+echo "$AVAILABLE_ARCHS"
+echo 
+
+}
+
+GetConnextProductsVersion() {
+RTIDDSPATH="$1"
+
+for rev in "$RTIDDSPATH"/rev_*; do
+echo `cat "$rev"` 
+done
+
+}
+
+GetConnextTargetLibrariesVersion() {
+RTIDDSPATH="$1"
+
+for arch in "$RTIDDSPATH"/lib/*; do
+ARCH=`basename "$arch"`
+REVFILES=`ls -A "$arch"`
+
+if [ -n "$REVFILES" ]; then
+  echo $ARCH":"
+  sed 's/^/	/g' "$arch"/rev*
+  echo 
+fi
+done
+
+}
+
+ResolvePath() {
+DIR="$1"
+OLDDIR=`pwd`
+cd $DIR > /dev/null
+pwd
+cd $OLDDIR > /dev/null
+}
+
+rtiddsversion() 
+{
+RTIDDSPATH="$1"
+
+echo
+echo "[Available Architectures]"
+GetAvailableArchs "$RTIDDSPATH"
+
+echo 
+echo "[RTI Connext products]"
+GetConnextProductsVersion "$RTIDDSPATH"
+
+echo 
+echo "[RTI Connext libraries]"
+GetConnextTargetLibrariesVersion "$RTIDDSPATH"
+}
+
+
+echo "RTI Connext Configuration"
+echo
+
+echo "[RTI Connext Environment Variables]"
+GetConnextEnvironmentVariables
+
+if [ $ISNDDSHOMESET -eq 1 ]; then
+
+ISCONNEXTDIR=`CheckConnextDir "$NDDSHOME"`
+
+if [ $ISCONNEXTDIR -eq 1 ]; then
+
+echo
+echo
+echo "From NDDSHOME ($NDDSHOME)"
+echo "--------------------------------------------------------------------------------"
+
+rtiddsversion "$NDDSHOME"
+
+echo
+
+else
+
+echo Error: Directory $NDDSHOME is not pointing to a valid RTI Connext installation. 
+echo Please check your configuration
+
+fi
+
+
+fi
+
+SCRIPTPATH=`dirname $0`
+RTIDDSPATH=`ResolvePath $SCRIPTPATH/..`
+
+[ "$NDDSHOME" = "$RTIDDSPATH" ] && exit
+
+#Check if its a suitable RTI DDS directory
+
+ISCONNEXTDIR=`CheckConnextDir $RTIDDSPATH`
+
+if [ $ISCONNEXTDIR -eq 1 ]; then
+
+echo "From script relative path ($RTIDDSPATH)"
+echo "--------------------------------------------------------------------------------"
+
+rtiddsversion $RTIDDSPATH
+
+fi
+
+if [ $ISCONNEXTDIR -eq 0 ] && [ $ISNDDSHOMESET -eq 0 ]; then
+echo "No installation of RTI Connext was found. Please set NDDSHOME"
+fi

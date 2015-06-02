@@ -1,0 +1,1601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE generationInfo SYSTEM "generationInfo.dtd" [
+<!ENTITY namespaceSeperator ".">    <!-- namespace separator -->
+]>
+
+<!-- 
+
+(c) Copyright, Real-Time Innovations, Inc. 2003-2010.  All rights reserved.
+
+Modification history
+- - - - - - - - - - - - -
+5.0.1,10jun13,fcs CODEGEN-596: TypePlugin code generation for optional members in Java
+5.0.1,18may13,fcs CODEGEN-590: Deserialization of sequences whose length exceeds 
+                  the maximum allowed does not produce an error
+5.0.1,06may13,fcs CODEGEN-584: Received samples for an Extensible type may 
+                  contain invalid values for fields not present on the wire
+5.0.1,06may13,fcs CODEGEN-585: Fixed false positives in equal method
+5.0.1,04may13,fcs CODEGEN-560: XTypes mutability support in Java
+5.0.1,03may13,fcs CODEGEN-551: Incorrect current_alignment for 
+                  get_serialized_sample_size method for mutable_types
+4.5e, 08aug11,acr Enforce sequence max length (bug #14051)
+1.0ac,06dec10,fcs Fixed bug 13780
+1.0ac,08nov09,fcs Fixed sequenceActualSizeMethod for WCHAR
+1.0ac,20aug09,fcs Removed CDR_NATIVE usage
+1.0ac,10aug09,fcs get_serialized_sample_size support
+10ab,03jun09,rbw Reflected new sequence types
+10u,24apr08,fcs Added hashCode
+10s,11mar08,rbw Eliminated unnecessary string allocations
+10s,04mar08,fcs Added new imports to sourcePreamble
+10s,29feb08,fcs Support for get_min_size_serialized
+10s,18feb08,fcs MD5 KeyHash generation support
+10s,18feb08,fcs Skip support
+10p,12jan08,eys Fixed sequence deserialize
+10p,11jul07,eh  Refactor data encapsulation to support previous nddsgen-generated plugins;
+                use existing (de)serialize() prototype when add data encapsulation header
+10m,06apr07,fcs Fixed multidimensional array copy
+10m,25mar07,kaj Add serializeOption for TypeSupportQosPolicy
+10m,24oct06,jml Added TypeSupportType import.
+10m,20ago06,jml Changed char mapping to char. Bug #11124 
+				Changed class field for typeInfoMap in char and wchar.Bug #11262
+10l,18aug06,krb Reduced the arraySequence cases for copy 
+                and simplified bit field copy routine.
+10l,16aug06,krb Reworked some of the copy functionality.
+10l,14aug06,krb Added copy functionality (filed as bug 11000)
+                Also fixed bug 11154 (arraySequences not generating
+                equals() method correctly).
+10l,11aug06,fcs Added nativeType method
+10l,10aug06,fcs Added class attribute to typeInfoMap
+10l,20apr06,fcs Fixed bug 10957
+10h,13dec05,fcs The Object returned by the function create is casted
+                to the corresponding specific type        
+10h,13dec05,fcs Value type support        
+10f,17aug05,fcs Removed X in the calls to TypeSupport
+10f,20jul05,fcs Removed unnecessary source preambles.
+10f,19jul05,fcs Changed primitive builtin type code names.
+10f,27jun05,fcs Added type code variable for primitive types
+10c,29mar05,fcs Refactored to support:
+                - Bitfields
+                - Sequences and Arrays of strings
+                - Long Double with a CDR representation of 128 bits
+                - ...
+10e,28mar05,rw  Fixed mis-named method template
+10b,16nov04,rw  Bug #9680: separate methods for string/wstring
+                max serialized size
+10d,07sep04,rw  Replaced import of BuiltinTopicKey_t with InstanceId_t
+10d,26aug04,rw  Added import for BuiltinTopicKey_t
+10d,16aug04,rw  Changed some method names
+10d,22jul04,rw  Updated method names to match DDS conventions; refactored
+                out DTD to separate file
+10c,26may04,rrl Replaced tabs with 4 spaces to make output look prettier
+10c,24may04,rrl Fixed bug in printing sequences
+10c,24may04,rrl Improved toString() printing
+10c,17may04,rw  More (unsigned) long fixes
+10c,17may04,rrl Fixed (unsigned) int/long mappings to ensure Java-C/C++ compatibility.
+40b,04may04,rrl Modified initialization to use create() method instead of "new"
+                (to support enums, which do not have a public ctor).
+40b,03may04,rrl Added support for equals() and testsuite directed changes.
+40b,26apr04,rrl Modifications to support new deserialize_objectX() API and enum support
+                as well as API changes in TypeSupportImpl from *I() to *X()
+40b,21apr04,rrl Support sequences
+40b,15mar04,rrl Created
+-->
+
+<generationInfo style="RTI" language="Java">
+    <typeInfoMap>
+               
+        <type idlType="short" nativeType="short" 
+                   initialValue="0"
+                   class="Short"
+                   typeCode="TypeCode.TC_SHORT"                   
+                   nativeTypeSeq="ShortSeq"
+                   typeEnum="CdrPrimitiveType.SHORT"
+                   elementSerializeMethod="writeShort"
+                   arraySerializeMethod="writeShortArray"
+                   sequenceSerializeMethod="writeShortSeq"
+                   elementDeserializeMethod="readShort"
+                   arrayDeserializeMethod="readShortArray"
+                   sequenceDeserializeMethod="readShortSequence"
+                   elementSkipMethod="skipShort"
+                   arraySkipMethod="skipShortArray"
+                   sequenceSkipMethod="skipShortSequence"
+                   elementSize="CdrPrimitiveType.SHORT.size"
+                   elementAlignment="CdrPrimitiveType.SHORT.alignment"
+                   elementSizeMethod="CdrPrimitiveType.SHORT.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.SHORT.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.SHORT.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.SHORT.getSequenceSerializedSize"/>  
+
+        <type idlType="long" nativeType="int" 
+                   initialValue="0"
+                   class="Integer"
+                   typeCode="TypeCode.TC_LONG"
+                   nativeTypeSeq="IntSeq"
+                   typeEnum="CdrPrimitiveType.INT"
+                   elementSerializeMethod="writeInt"
+                   arraySerializeMethod="writeIntArray"
+                   sequenceSerializeMethod="writeIntSeq"
+                   elementDeserializeMethod="readInt"
+                   arrayDeserializeMethod="readIntArray"
+                   sequenceDeserializeMethod="readIntSequence"
+                   elementSkipMethod="skipInt"
+                   arraySkipMethod="skipIntArray"
+                   sequenceSkipMethod="skipIntSequence"
+                   elementSize="CdrPrimitiveType.INT.size"
+                   elementAlignment="CdrPrimitiveType.INT.alignment"
+                   elementSizeMethod="CdrPrimitiveType.INT.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.INT.getArrayMaxSizeSerialized"      
+                   sequenceSizeMethod="CdrPrimitiveType.INT.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.INT.getSequenceSerializedSize"/>   
+
+        <type idlType="longlong" nativeType="long" 
+                   initialValue="0"
+                   class="Long"
+                   typeCode="TypeCode.TC_LONGLONG"
+                   nativeTypeSeq="LongSeq"
+                   typeEnum="CdrPrimitiveType.LONG"
+                   elementSerializeMethod="writeLong"
+                   arraySerializeMethod="writeLongArray"
+                   sequenceSerializeMethod="writeLongSeq"
+                   elementDeserializeMethod="readLong"
+                   arrayDeserializeMethod="readLongArray"
+                   sequenceDeserializeMethod="readLongSequence"
+                   elementSkipMethod="skipLong"
+                   arraySkipMethod="skipLongArray"
+                   sequenceSkipMethod="skipLongSequence"
+                   elementSize="CdrPrimitiveType.LONG.size"
+                   elementAlignment="CdrPrimitiveType.LONG.alignment"
+                   elementSizeMethod="CdrPrimitiveType.LONG.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.LONG.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.LONG.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.LONG.getSequenceSerializedSize"/>   
+
+        <type idlType="unsignedshort" nativeType="short" 
+                   initialValue="0"
+                   class="Short"
+                   typeCode="TypeCode.TC_USHORT"                                                 
+                   nativeTypeSeq="ShortSeq"
+                   typeEnum="CdrPrimitiveType.SHORT"
+                   elementSerializeMethod="writeShort"
+                   arraySerializeMethod="writeShortArray"
+                   sequenceSerializeMethod="writeShortSeq"
+                   elementDeserializeMethod="readShort"
+                   arrayDeserializeMethod="readShortArray"
+                   sequenceDeserializeMethod="readShortSequence"
+                   elementSkipMethod="skipShort"
+                   arraySkipMethod="skipShortArray"
+                   sequenceSkipMethod="skipShortSequence"
+                   elementSize="CdrPrimitiveType.SHORT.size"
+                   elementAlignment="CdrPrimitiveType.SHORT.alignment"
+                   elementSizeMethod="CdrPrimitiveType.SHORT.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.SHORT.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.SHORT.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.SHORT.getSequenceSerializedSize"/>
+
+
+        <!-- Note that unsignedling is mapped to native 'int'. This way we keep
+             on the wire format compatible with C/C++ to ensure compatibility.
+             The governing principle is 
+             
+             We should warn on use of unsigned members while transforming IDL to
+             Java. Being filed as a bug...
+        -->
+                                      
+        <type idlType="unsignedlong" nativeType="int" 
+                   initialValue="0"
+                   class="Integer"
+                   typeCode="TypeCode.TC_ULONG"                                                   
+                   nativeTypeSeq="IntSeq"
+                   typeEnum="CdrPrimitiveType.INT"
+                   elementSerializeMethod="writeInt"
+                   arraySerializeMethod="writeIntArray"
+                   sequenceSerializeMethod="writeIntSeq"
+                   elementDeserializeMethod="readInt"
+                   arrayDeserializeMethod="readIntArray"
+                   sequenceDeserializeMethod="readIntSequence"
+                   elementSkipMethod="skipInt"
+                   arraySkipMethod="skipIntArray"
+                   sequenceSkipMethod="skipIntSequence"
+                   elementSize="CdrPrimitiveType.INT.size"
+                   elementAlignment="CdrPrimitiveType.INT.alignment"
+                   elementSizeMethod="CdrPrimitiveType.INT.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.INT.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.INT.getSequenceMaxSizeSerialized"  
+                   sequenceActualSizeMethod="CdrPrimitiveType.INT.getSequenceSerializedSize"/>
+                         
+                                      
+        <type idlType="unsignedlonglong" nativeType="long" 
+                   initialValue="0"
+                   class="Long"
+                   typeCode="TypeCode.TC_ULONGLONG" 
+                   nativeTypeSeq="LongSeq"
+                   typeEnum="CdrPrimitiveType.LONG"
+                   elementSerializeMethod="writeLong"
+                   arraySerializeMethod="writeLongArray"
+                   sequenceSerializeMethod="writeLongSeq"
+                   elementDeserializeMethod="readLong"
+                   arrayDeserializeMethod="readLongArray"
+                   sequenceDeserializeMethod="readLongSequence"
+                   elementSkipMethod="skipLong"
+                   arraySkipMethod="skipLongArray"
+                   sequenceSkipMethod="skipLongSequence"
+                   elementSize="CdrPrimitiveType.LONG.size"
+                   elementAlignment="CdrPrimitiveType.LONG.alignment"
+                   elementSizeMethod="CdrPrimitiveType.LONG.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.LONG.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.LONG.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.LONG.getSequenceSerializedSize"/>
+
+
+        <type idlType="float" nativeType="float" 
+                   initialValue="0"
+                   class="Float"
+                   typeCode="TypeCode.TC_FLOAT"   
+                   nativeTypeSeq="FloatSeq"
+                   typeEnum="CdrPrimitiveType.FLOAT"
+                   elementSerializeMethod="writeFloat"
+                   arraySerializeMethod="writeFloatArray"
+                   sequenceSerializeMethod="writeFloatSeq"
+                   elementDeserializeMethod="readFloat"
+                   arrayDeserializeMethod="readFloatArray"
+                   sequenceDeserializeMethod="readFloatSequence"
+                   elementSkipMethod="skipFloat"
+                   arraySkipMethod="skipFloatArray"
+                   sequenceSkipMethod="skipFloatSequence"
+                   elementSize="CdrPrimitiveType.FLOAT.size"
+                   elementAlignment="CdrPrimitiveType.FLOAT.alignment"
+                   elementSizeMethod="CdrPrimitiveType.FLOAT.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.FLOAT.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.FLOAT.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.FLOAT.getSequenceSerializedSize"/>
+
+               
+        <type idlType="double" nativeType="double" 
+                   initialValue="0"
+                   class="Double"
+                   typeCode="TypeCode.TC_DOUBLE"
+                   nativeTypeSeq="DoubleSeq"
+                   typeEnum="CdrPrimitiveType.DOUBLE"
+                   elementSerializeMethod="writeDouble"
+                   arraySerializeMethod="writeDoubleArray"
+                   sequenceSerializeMethod="writeDoubleSeq"
+                   elementDeserializeMethod="readDouble"
+                   arrayDeserializeMethod="readDoubleArray"
+                   sequenceDeserializeMethod="readDoubleSequence"
+                   elementSkipMethod="skipDouble"
+                   arraySkipMethod="skipDoubleArray"
+                   sequenceSkipMethod="skipDoubleSequence"
+                   elementSize="CdrPrimitiveType.DOUBLE.size"
+                   elementAlignment="CdrPrimitiveType.DOUBLE.alignment"
+                   elementSizeMethod="CdrPrimitiveType.DOUBLE.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.DOUBLE.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.DOUBLE.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.DOUBLE.getSequenceSerializedSize"/>
+
+               
+        <type idlType="longdouble" nativeType="double" 
+                   initialValue="0"
+                   class="Double"
+                   typeCode="TypeCode.TC_LONGDOUBLE"
+                   nativeTypeSeq="LongDoubleSeq"
+                   typeEnum="CdrPrimitiveType.LONG_DOUBLE"
+                   elementSerializeMethod="writeLongDouble"
+                   arraySerializeMethod="writeLongDoubleArray"
+                   sequenceSerializeMethod="writeLongDoubleSeq"
+                   elementDeserializeMethod="readLongDouble"
+                   arrayDeserializeMethod="readLongDoubleArray"
+                   sequenceDeserializeMethod="readLongDoubleSequence"
+                   elementSkipMethod="skipLongDouble"
+                   arraySkipMethod="skipLongDoubleArray"
+                   sequenceSkipMethod="skipLongDoubleSequence"
+                   elementSize="CdrPrimitiveType.LONG_DOUBLE.size"
+                   elementAlignment="CdrPrimitiveType.LONG_DOUBLE.alignment"
+                   elementSizeMethod="CdrPrimitiveType.LONG_DOUBLE.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.LONG_DOUBLE.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.LONG_DOUBLE.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.LONG_DOUBLE.getSequenceSerializedSize"/>
+
+
+        <type idlType="char" nativeType="char" 
+                   initialValue="0"
+                   class="Character"
+                   typeCode="TypeCode.TC_CHAR"
+                   nativeTypeSeq="CharSeq"
+                   typeEnum="CdrPrimitiveType.BYTE"
+                   elementSerializeMethod="writeChar"
+                   arraySerializeMethod="writeCharArray"
+                   sequenceSerializeMethod="writeCharSeq"
+                   elementDeserializeMethod="readChar"
+                   arrayDeserializeMethod="readCharArray"
+                   sequenceDeserializeMethod="readCharSequence"
+                   elementSkipMethod="skipChar"
+                   arraySkipMethod="skipCharArray"
+                   sequenceSkipMethod="skipCharSequence"
+                   elementSize="CdrPrimitiveType.BYTE.size"
+                   elementAlignment="CdrPrimitiveType.BYTE.alignment"
+                   elementSizeMethod="CdrPrimitiveType.BYTE.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.BYTE.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.BYTE.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.BYTE.getSequenceSerializedSize"/>
+
+                                      
+        <type idlType="wchar" nativeType="char" 
+                   initialValue="0"
+                   class="Character"
+                   typeCode="TypeCode.TC_WCHAR"
+                   nativeTypeSeq="WcharSeq"
+                   typeEnum="CdrPrimitiveType.CHAR"
+                   elementSerializeMethod="writeWchar"
+                   arraySerializeMethod="writeWcharArray"
+                   sequenceSerializeMethod="writeWcharSeq"
+                   elementDeserializeMethod="readWchar"
+                   arrayDeserializeMethod="readWcharArray"
+                   sequenceDeserializeMethod="readWcharSequence"
+                   elementSkipMethod="skipWchar"
+                   arraySkipMethod="skipWcharArray"
+                   sequenceSkipMethod="skipWcharSequence"
+                   elementSize="CdrPrimitiveType.CHAR.size"
+                   elementAlignment="CdrPrimitiveType.CHAR.alignment"
+                   elementSizeMethod="CdrPrimitiveType.CHAR.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.CHAR.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.CHAR.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.CHAR.getSequenceSerializedSize"/>
+
+
+        <type idlType="octet" nativeType="byte" 
+                   initialValue="0"
+                   class="Byte"
+                   typeCode="TypeCode.TC_OCTET"
+                   nativeTypeSeq="ByteSeq"
+                   typeEnum="CdrPrimitiveType.BYTE"
+                   elementSerializeMethod="writeByte"
+                   arraySerializeMethod="writeByteArray"
+                   sequenceSerializeMethod="writeByteSeq"
+                   elementDeserializeMethod="readByte"
+                   arrayDeserializeMethod="readByteArray"
+                   sequenceDeserializeMethod="readByteSequence"
+                   elementSkipMethod="skipByte"
+                   arraySkipMethod="skipByteArray"
+                   sequenceSkipMethod="skipByteSequence"
+                   elementSize="CdrPrimitiveType.BYTE.size"
+                   elementAlignment="CdrPrimitiveType.BYTE.alignment"
+                   elementSizeMethod="CdrPrimitiveType.BYTE.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.BYTE.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.BYTE.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.BYTE.getSequenceSerializedSize"/>
+
+        <type idlType="boolean" nativeType="boolean" 
+                   initialValue="false"
+                   class="Boolean"
+                   typeCode="TypeCode.TC_BOOLEAN"
+                   nativeTypeSeq="BooleanSeq"
+                   typeEnum="CdrPrimitiveType.BOOLEAN"
+                   elementSerializeMethod="writeBoolean"
+                   arraySerializeMethod="writeBooleanArray"
+                   sequenceSerializeMethod="writeBooleanSeq"
+                   elementDeserializeMethod="readBoolean"
+                   arrayDeserializeMethod="readBooleanArray"
+                   sequenceDeserializeMethod="readBooleanSequence"
+                   elementSkipMethod="skipBoolean"
+                   arraySkipMethod="skipBooleanArray"
+                   sequenceSkipMethod="skipBooleanSequence"
+                   elementSize="CdrPrimitiveType.BOOLEAN.size"
+                   elementAlignment="CdrPrimitiveType.BOOLEAN.alignment"
+                   elementSizeMethod="CdrPrimitiveType.BOOLEAN.getMaxSizeSerialized"
+                   arraySizeMethod="CdrPrimitiveType.BOOLEAN.getArrayMaxSizeSerialized"                
+                   sequenceSizeMethod="CdrPrimitiveType.BOOLEAN.getSequenceMaxSizeSerialized"
+                   sequenceActualSizeMethod="CdrPrimitiveType.BOOLEAN.getSequenceSerializedSize"/>
+    </typeInfoMap>
+    
+
+    <!-- Mapping of method kinds (serialize, deserialize, etc) to their template string.
+         Each method kind is further categorized using <method> child element that has
+         a mandetory attribute "kind" and an optional attribute "typeKind". When a
+         code generation stylesheet seeks the right template given a method and a member,
+         it should be ready to match even when the typeKind attribute is missing. This
+         avoids duplicating the template when the difference between typeKind (builtin
+         vs. user) does not matter.
+    -->
+    
+    <!-- TODO: Document the substitution strings and their meaning in form of a table -->
+    <methodInfoMap>
+    
+    <!-- ============================== Struct member declaration ========================= -->    
+    <!-- While not really a method, from code-generation point-of-view, the difference 
+         between declaration code and method code for a struct member is irrelevant. -->
+
+        <method kind="structMember">
+            <template kind="scalar" typeKind="builtin">
+    public %%nativeType%% %%rawName%% = %%initialValue%%;</template>
+            <template kind="scalar" typeKind="builtin" optional="true">
+    public %%class%% %%rawName%% = null;</template>
+            <template kind="scalar" typeKind="user">
+    public %%nativeType%% %%rawName%% = (%%nativeType%%) %%nativeType%%.create();</template>
+            <template kind="scalar" typeKind="user" optional="true">
+    public %%nativeType%% %%rawName%% = null;</template>
+            <template kind="string">
+    public String %%rawName%% = ""; /* maximum length = %%stringMaxLength%% */</template>
+            <template kind="string" optional="true">
+    public String %%rawName%% = null; /* maximum length = %%stringMaxLength%% */</template>
+            <template kind="wstring">
+    public String %%rawName%% = ""; /* maximum length = %%stringMaxLength%% */</template>
+            <template kind="wstring" optional="true">
+    public String %%rawName%% = null; /* maximum length = %%stringMaxLength%% */</template>
+            <template kind="array" typeKind="user" type="wstring">
+    public String%%cardinalityDeclaration%% %%rawName%% = new String%%cardinality%%;</template>                
+            <template kind="array" typeKind="user" type="wstring" optional="true">
+    public String%%cardinalityDeclaration%% %%rawName%% = null;</template>
+            <template kind="array" typeKind="user" type="string">
+    public String%%cardinalityDeclaration%% %%rawName%% = new String%%cardinality%%;</template>                
+            <template kind="array" typeKind="user" type="string" optional="true">
+    public String%%cardinalityDeclaration%% %%rawName%% = null;</template>                
+            <template kind="array">
+    public %%nativeType%%%%cardinalityDeclaration%% %%rawName%% = new %%nativeType%%%%cardinality%%;</template>
+            <template kind="array" optional="true">
+    public %%nativeType%%%%cardinalityDeclaration%% %%rawName%% = null;</template>
+            <template kind="sequence" typeKind="user" type="wstring">
+    public WstringSeq %%rawName%% = new WstringSeq(%%sequenceMaxLength%%);</template>                
+            <template kind="sequence" typeKind="user" type="wstring" optional="true">
+    public WstringSeq %%rawName%% = null;</template>                
+            <template kind="sequence" typeKind="user" type="string">
+    public StringSeq %%rawName%% = new StringSeq(%%sequenceMaxLength%%);</template>                
+            <template kind="sequence" typeKind="user" type="string" optional="true">
+    public StringSeq %%rawName%% = null;</template>                
+            <template kind="sequence">
+    public %%nativeTypeSeq%% %%rawName%% = new %%nativeTypeSeq%%(%%sequenceMaxLength%%);</template>
+            <template kind="sequence" optional="true">
+    public %%nativeTypeSeq%% %%rawName%% = null;</template>
+            <template kind="arraySequence" typeKind="user" type="string">
+    public StringSeq%%cardinalityDeclaration%% %%rawName%% = new StringSeq%%cardinality%%;</template>  
+            <template kind="arraySequence" typeKind="user" type="string" optional="true">
+    public StringSeq%%cardinalityDeclaration%% %%rawName%% = null;</template>  
+            <template kind="arraySequence" typeKind="user" type="wstring">
+    public WstringSeq%%cardinalityDeclaration%% %%rawName%% = new WstringSeq%%cardinality%%;</template>  
+            <template kind="arraySequence" typeKind="user" type="wstring" optional="true">
+    public WstringSeq%%cardinalityDeclaration%% %%rawName%% = null;</template>  
+            <template kind="arraySequence">
+    public %%nativeTypeSeq%%%%cardinalityDeclaration%% %%rawName%% = new %%nativeTypeSeq%%%%cardinality%%;</template>                    
+            <template kind="arraySequence" optional="true">
+    public %%nativeTypeSeq%%%%cardinalityDeclaration%% %%rawName%% = null;</template>                    
+            <template kind="bitfield">
+    public %%nativeType%% %%rawName%%;</template>    
+            <template kind="bitfield" optional="true">
+    public %%class%% %%rawName%% = null;</template>    
+        </method>
+
+    <!-- ============================== Java type ========================= -->
+
+        <method kind="nativeType">
+            <template kind="scalar" typeKind="builtin">%%nativeType%%</template>
+            <template kind="scalar" typeKind="builtin" optional="true">%%class%%</template>
+            <template kind="scalar" typeKind="user">%%nativeType%%</template>
+            <template kind="string">String</template>
+            <template kind="wstring">String</template>
+            <template kind="array" typeKind="user" type="wstring">String%%cardinalityDeclaration%%</template>
+            <template kind="array" typeKind="user" type="string">String%%cardinalityDeclaration%%</template>                
+            <template kind="array">%%nativeType%%%%cardinalityDeclaration%%</template>
+            <template kind="sequence" typeKind="user" type="wstring">WstringSeq</template>
+            <template kind="sequence" typeKind="user" type="string">StringSeq</template>                
+            <template kind="sequence">%%nativeTypeSeq%%</template>
+            <template kind="arraySequence" typeKind="user" type="string">StringSeq%%cardinalityDeclaration%%</template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">WstringSeq%%cardinalityDeclaration%%</template>                
+            <template kind="arraySequence">%%nativeTypeSeq%%%%cardinalityDeclaration%%</template>                    
+            <template kind="bitfield">%%nativeType%%</template>    
+        </method>
+
+    <!-- ============================== Serialize ========================= -->        
+        <method kind="serialize">
+            <template kind="scalar" typeKind="builtin">
+        dst.%%elementSerializeMethod%%(typedSrc.%%name%%);        
+            </template>
+            <template kind="scalar" typeKind="user">
+        %%nativeType%%TypeSupport.get_instance().%%elementSerializeMethod%%(endpoint_data,  typedSrc.%%name%%, dst, false, encapsulation_id,true,endpoint_plugin_qos);            
+            </template>
+            <template kind="string">
+        dst.writeString(typedSrc.%%name%%,%%stringMaxLength%%);
+            </template>
+            <template kind="wstring">
+        dst.writeWstring(typedSrc.%%name%%,%%stringMaxLength%%);                                     
+            </template>
+            <template kind="array" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            dst.writeString(typedSrc.%%name%%%%cardinalityCurrentElement%%,%%stringMaxLength%%);
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            dst.writeWstring(typedSrc.%%name%%%%cardinalityCurrentElement%%,%%stringMaxLength%%);
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>            
+            <template kind="array" typeKind="builtin">
+        %%cardinalityArrayForLoopPre%%
+            dst.%%elementSerializeMethod%%(typedSrc.%%name%%%%cardinalityCurrentElement%%);                
+        %%cardinalityArrayForLoopPost%%                                          
+            </template> 
+            <template kind="array" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            %%nativeType%%TypeSupport.get_instance().%%elementSerializeMethod%%(endpoint_data, typedSrc.%%name%%%%cardinalityCurrentElement%%, dst, false, encapsulation_id,true, endpoint_plugin_qos);
+        %%cardinalityArrayForLoopPost%%                                          
+            </template> 
+            <template kind="sequence" typeKind="user" type="string">
+        dst.writeStringSeq(typedSrc.%%name%%,%%stringMaxLength%%,%%sequenceMaxLength%%);
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+        dst.writeWstringSeq(typedSrc.%%name%%,%%stringMaxLength%%,%%sequenceMaxLength%%);
+            </template>            
+            <template kind="sequence" typeKind="builtin">
+        dst.%%sequenceSerializeMethod%%(typedSrc.%%name%%,%%sequenceMaxLength%%);
+            </template>    
+            <template kind="sequence" typeKind="user">
+        %%nativeType%%TypeSupport.get_instance().serialize_sequence(endpoint_data, dst, typedSrc.%%name%%,%%sequenceMaxLength%%,endpoint_plugin_qos);
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            dst.writeStringSeq(typedSrc.%%name%%%%cardinalityCurrentElement%%,%%stringMaxLength%%,%%sequenceMaxLength%%);
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            dst.writeWstringSeq(typedSrc.%%name%%%%cardinalityCurrentElement%%,%%stringMaxLength%%,%%sequenceMaxLength%%);
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="builtin">
+        %%cardinalityArrayForLoopPre%%
+            dst.%%sequenceSerializeMethod%%(typedSrc.%%name%%%%cardinalityCurrentElement%%,%%sequenceMaxLength%%);                    
+        %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                
+            <template kind="arraySequence" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            %%nativeType%%TypeSupport.get_instance().serialize_sequence(endpoint_data, dst, 
+                typedSrc.%%name%%%%cardinalityCurrentElement%%, %%sequenceMaxLength%%, endpoint_plugin_qos);
+        %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                            
+            <template kind="bitfield" bitKind="normal">
+        dst.writeBits(typedSrc.%%name%%,%%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+        dst.writeBits(typedSrc.%%name%%,%%bits%%);
+        dst.flushBitsBuffer();                
+            </template>            
+        </method>
+
+    <!-- ============================== Deserialize ========================= -->    
+
+        <method kind="deserialize">
+            <template kind="scalar" typeKind="builtin">
+            %%userDataAccess%%%%name%% = src.%%elementDeserializeMethod%%();
+            </template>
+            <template kind="scalar" typeKind="user">
+            %%userDataAccess%%%%name%% = (%%nativeType%%)%%nativeType%%TypeSupport.get_instance().%%elementDeserializeMethod%%(endpoint_data, %%userDataAccess%%%%name%%, src, false, true, endpoint_plugin_qos);            
+            </template>
+            <template kind="scalar" typeKind="user" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = (%%nativeType%%) %%nativeType%%.create();
+            }
+            %%userDataAccess%%%%name%% = (%%nativeType%%)%%nativeType%%TypeSupport.get_instance().%%elementDeserializeMethod%%(endpoint_data, %%userDataAccess%%%%name%%, src, false, true, endpoint_plugin_qos);            
+            </template>
+            <template kind="string">
+            %%userDataAccess%%%%name%% = src.readString(%%stringMaxLength%%);
+            </template>
+            <template kind="wstring">
+            %%userDataAccess%%%%name%% = src.readWstring(%%stringMaxLength%%);
+            </template>
+            <template kind="array" typeKind="user" type="string">
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = src.readString(%%stringMaxLength%%);
+            %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="user" type="string" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new String%%cardinality%%;
+            }
+            
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = src.readString(%%stringMaxLength%%);
+            %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = src.readWstring(%%stringMaxLength%%);
+            %%cardinalityArrayForLoopPost%%                                                          
+            </template>                  
+            <template kind="array" typeKind="user" type="wstring" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new String%%cardinality%%;
+            }
+            
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = src.readWstring(%%stringMaxLength%%);
+            %%cardinalityArrayForLoopPost%%                                                          
+            </template>                  
+            <template kind="array" typeKind="builtin">
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = src.%%elementDeserializeMethod%%();        
+            %%cardinalityArrayForLoopPost%%                                          
+            </template>
+            <template kind="array" typeKind="builtin" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new %%nativeType%%%%cardinality%%;
+            }
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = src.%%elementDeserializeMethod%%();        
+            %%cardinalityArrayForLoopPost%%                                          
+            </template>
+            <template kind="array" typeKind="user">
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = (%%nativeType%%)%%nativeType%%TypeSupport.get_instance().%%elementDeserializeMethod%%(endpoint_data, %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%, src, false, true, endpoint_plugin_qos);
+            %%cardinalityArrayForLoopPost%%                                          
+            </template>
+            <template kind="array" typeKind="user" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new %%nativeType%%%%cardinality%%;
+                    
+                %%cardinalityArrayForLoopPre%%
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = 
+                        (%%nativeType%%) %%nativeType%%.create();        
+                %%cardinalityArrayForLoopPost%%                                          
+            }
+            %%cardinalityArrayForLoopPre%%
+                %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = (%%nativeType%%)%%nativeType%%TypeSupport.get_instance().%%elementDeserializeMethod%%(endpoint_data, %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%, src, false, true, endpoint_plugin_qos);
+            %%cardinalityArrayForLoopPost%%                                          
+            </template>            
+            <template kind="sequence" typeKind="user" type="string">
+            src.readStringSequence(
+                %%userDataAccess%%%%name%%,
+                %%sequenceMaxLength%%);
+            </template>
+            <template kind="sequence" typeKind="user" type="string" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new StringSeq(%%sequenceMaxLength%%);
+            }
+            src.readStringSequence(
+                %%userDataAccess%%%%name%%,
+                %%sequenceMaxLength%%);
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+            src.readWstringSequence(
+                %%userDataAccess%%%%name%%,
+                %%sequenceMaxLength%%);                
+            </template>            
+            <template kind="sequence" typeKind="user" type="wstring" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new WstringSeq(%%sequenceMaxLength%%);
+            }
+            src.readWstringSequence(
+                %%userDataAccess%%%%name%%,
+                %%sequenceMaxLength%%);                
+            </template>            
+            <template kind="sequence" typeKind="builtin">
+            src.%%sequenceDeserializeMethod%%(
+                %%userDataAccess%%%%name%%,
+                %%sequenceMaxLength%%);
+            </template>    
+            <template kind="sequence" typeKind="builtin" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new %%nativeTypeSeq%%(%%sequenceMaxLength%%);
+            }
+            src.%%sequenceDeserializeMethod%%(
+                %%userDataAccess%%%%name%%,
+                %%sequenceMaxLength%%);
+            </template>
+            <template kind="sequence" typeKind="user">
+            %%nativeType%%TypeSupport.get_instance().deserialize_sequence(
+                endpoint_data, %%userDataAccess%%%%name%%, src, 
+                %%sequenceMaxLength%%, endpoint_plugin_qos);            
+            </template>
+            <template kind="sequence" typeKind="user" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = 
+                    new %%nativeTypeSeq%%(%%sequenceMaxLength%%);
+            }
+            
+            %%nativeType%%TypeSupport.get_instance().deserialize_sequence(
+                endpoint_data, %%userDataAccess%%%%name%%, src, 
+                %%sequenceMaxLength%%, endpoint_plugin_qos);            
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+            %%cardinalityArrayForLoopPre%%
+                src.readStringSequence(
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%,
+                    %%sequenceMaxLength%%);        
+            %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="string" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = new StringSeq%%cardinality%%;
+                
+                %%cardinalityArrayForLoopPre%%
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = 
+                        new StringSeq(%%sequenceMaxLength%%);        
+                %%cardinalityArrayForLoopPost%%                                          
+            }            
+            
+            %%cardinalityArrayForLoopPre%%
+                src.readStringSequence(
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%,
+                    %%sequenceMaxLength%%);        
+            %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+            %%cardinalityArrayForLoopPre%%
+                src.readWstringSequence(
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%,
+                    %%sequenceMaxLength%%);        
+            %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = new WstringSeq%%cardinality%%;
+                
+                %%cardinalityArrayForLoopPre%%
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = 
+                        new WstringSeq(%%sequenceMaxLength%%);        
+                %%cardinalityArrayForLoopPost%%                                          
+            }            
+            
+            %%cardinalityArrayForLoopPre%%
+                src.readWstringSequence(
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%,
+                    %%sequenceMaxLength%%);        
+            %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="builtin">
+            %%cardinalityArrayForLoopPre%%
+                src.%%sequenceDeserializeMethod%%(
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%,
+                    %%sequenceMaxLength%%);
+            %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                
+            <template kind="arraySequence" typeKind="builtin" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = new %%nativeTypeSeq%%%%cardinality%%;
+                
+                %%cardinalityArrayForLoopPre%%
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = 
+                        new %%nativeTypeSeq%%(%%sequenceMaxLength%%);        
+                %%cardinalityArrayForLoopPost%%                                          
+            }            
+            %%cardinalityArrayForLoopPre%%
+                src.%%sequenceDeserializeMethod%%(
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%,
+                    %%sequenceMaxLength%%);
+            %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                
+            <template kind="arraySequence" typeKind="user">
+            %%cardinalityArrayForLoopPre%%
+                %%nativeType%%TypeSupport.get_instance().deserialize_sequence(
+                    endpoint_data, %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%, 
+                    src, %%sequenceMaxLength%%, endpoint_plugin_qos);            
+            %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                                        
+            <template kind="arraySequence" typeKind="user" optional="true">
+            if (%%userDataAccess%%%%name%% == null) {
+                %%userDataAccess%%%%name%% = new %%nativeTypeSeq%%%%cardinality%%;
+                
+                %%cardinalityArrayForLoopPre%%
+                    %%userDataAccess%%%%name%%%%cardinalityCurrentElement%% = 
+                        new %%nativeTypeSeq%%(%%sequenceMaxLength%%);        
+                %%cardinalityArrayForLoopPost%%                                          
+            }            
+            
+            %%cardinalityArrayForLoopPre%%
+                %%nativeType%%TypeSupport.get_instance().deserialize_sequence(
+                    endpoint_data, %%userDataAccess%%%%name%%%%cardinalityCurrentElement%%, 
+                    src, %%sequenceMaxLength%%, endpoint_plugin_qos);            
+            %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                                        
+
+            <template kind="bitfield" bitKind="normal">
+            %%userDataAccess%%%%name%%=(%%nativeType%%)src.readBits(%%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+            %%userDataAccess%%%%name%%=(%%nativeType%%)src.readBits(%%bits%%);                
+            src.resetBitsBuffer();
+            </template>            
+        </method>
+
+
+        <!-- ============================== Skip ========================= -->
+
+        <method kind="skip">
+            <template kind="scalar" typeKind="builtin">
+            src.%%elementSkipMethod%%();
+            </template>
+            <template kind="scalar" typeKind="user">
+            %%nativeType%%TypeSupport.get_instance().skip(endpoint_data, src, false, true, endpoint_plugin_qos);
+            </template>
+            <template kind="string">
+            src.skipString();
+            </template>
+            <template kind="wstring">
+            src.skipWstring();
+            </template>
+            <template kind="array" typeKind="user" type="string">
+            %%cardinalityArrayForLoopPre%%
+            src.skipString();
+            %%cardinalityArrayForLoopPost%%  
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+            %%cardinalityArrayForLoopPre%%
+            src.skipWstring();
+            %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="builtin">
+            %%cardinalityArrayForLoopPre%%
+            src.%%elementSkipMethod%%();        
+            %%cardinalityArrayForLoopPost%%                                          
+            </template>
+            <template kind="array" typeKind="user">
+            %%cardinalityArrayForLoopPre%%
+                %%nativeType%%TypeSupport.get_instance().skip(endpoint_data, src, false, true, endpoint_plugin_qos);                    
+            %%cardinalityArrayForLoopPost%%                                          
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+            src.skipStringSequence();
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+            src.skipWstringSequence();                
+            </template>
+            <template kind="sequence" typeKind="builtin">
+            src.%%sequenceSkipMethod%%();
+            </template>
+            <template kind="sequence" typeKind="user">
+            %%nativeType%%TypeSupport.get_instance().skip_sequence(endpoint_data, src, endpoint_plugin_qos);
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+            %%cardinalityArrayForLoopPre%%
+            src.skipStringSequence();        
+            %%cardinalityArrayForLoopPost%%                                                                          
+            </template>
+            <template kind="arraySequence" typeKind="user" type="wstring">
+            %%cardinalityArrayForLoopPre%%
+                src.skipWstringSequence();        
+            %%cardinalityArrayForLoopPost%%                                                                          
+            </template>
+            <template kind="arraySequence" typeKind="builtin">
+            %%cardinalityArrayForLoopPre%%
+            src.%%sequenceSkipMethod%%();
+            %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>
+            <template kind="arraySequence" typeKind="user">
+            %%cardinalityArrayForLoopPre%%
+            %%nativeType%%TypeSupport.get_instance().skip_sequence(endpoint_data, src, endpoint_plugin_qos);
+            %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                                        
+            <template kind="bitfield" bitKind="normal">
+            src.skipBits(%%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+            src.skipBits(%%bits%%);
+            src.resetBitsBuffer();
+            </template>            
+        </method>
+
+    <!-- ============================== get_min_size_serialized ========================= -->    
+        <method kind="get_min_size_serialized">
+            <template kind="scalar" typeKind="builtin">
+        %%minSerializeLeading%% %%elementSizeMethod%%(%%currentAlignment%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="scalar" typeKind="user">
+        %%minSerializeLeading%% %%nativeType%%TypeSupport.get_instance().%%elementSizeMethod%%(endpoint_data,false, encapsulation_id,%%currentAlignment%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="string">
+        %%minSerializeLeading%% CdrPrimitiveType.getStringMaxSizeSerialized(%%currentAlignment%%, 1)%%minSerializeTrailing%%;
+            </template>
+            <template kind="wstring">
+        %%minSerializeLeading%% CdrPrimitiveType.getWstringMaxSizeSerialized(%%currentAlignment%%, 1)%%minSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user" type="string">
+        %%minSerializeLeading%% CdrPrimitiveType.getStringArrayMaxSizeSerialized(
+            %%currentAlignment%%,1,
+            %%multiDimensionalArraySize%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+        %%minSerializeLeading%% CdrPrimitiveType.getWstringArrayMaxSizeSerialized(
+            %%currentAlignment%%,1,
+            %%multiDimensionalArraySize%%)%%minSerializeTrailing%%;                
+            </template>                        
+            <template kind="array" typeKind="builtin">
+        %%minSerializeLeading%% %%arraySizeMethod%%(%%currentAlignment%%, %%multiDimensionalArraySize%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user">
+        %%minSerializeLeading%% %%nativeType%%TypeSupport.get_instance().get_array_max_size_serialized(endpoint_data, %%currentAlignment%%, %%multiDimensionalArraySize%%)%%minSerializeTrailing%%;
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+        %%minSerializeLeading%% CdrPrimitiveType.getStringSeqMaxSizeSerialized(
+            %%currentAlignment%%, 1,0) %%minSerializeTrailing%%;            
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+        %%minSerializeLeading%% CdrPrimitiveType.getWstringSeqMaxSizeSerialized(
+            %%currentAlignment%%, 1,0) %%minSerializeTrailing%%;
+            </template>            
+            <template kind="sequence" typeKind="builtin">
+        %%minSerializeLeading%% %%sequenceSizeMethod%%(%%currentAlignment%%, 0)%%minSerializeTrailing%%;
+            </template>
+            <template kind="sequence" typeKind="user">
+        %%minSerializeLeading%% %%nativeType%%TypeSupport.get_instance().get_sequence_max_size_serialized(endpoint_data, %%currentAlignment%%, 0)%%minSerializeTrailing%%;
+            </template>            
+            <template kind="arraySequence" typeKind="user" type="string">
+        %%minSerializeLeading%% %%multiDimensionalArraySize%%*CdrPrimitiveType.getStringSeqMaxSizeSerialized(
+            %%currentAlignment%%, 1,0) %%minSerializeTrailing%%;                    
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+        %%minSerializeLeading%% %%multiDimensionalArraySize%%*CdrPrimitiveType.getWstringSeqMaxSizeSerialized(
+            %%currentAlignment%%, 1,0) %%minSerializeTrailing%%;        
+            </template>                
+            <template kind="arraySequence" typeKind="builtin">
+        %%minSerializeLeading%% %%multiDimensionalArraySize%%*%%sequenceSizeMethod%%(%%currentAlignment%%, 0)%%minSerializeTrailing%%;                
+            </template>                                
+            <template kind="arraySequence" typeKind="user">
+        %%minSerializeLeading%% %%multiDimensionalArraySize%%*%%nativeType%%TypeSupport.get_instance().get_sequence_max_size_serialized(endpoint_data, %%currentAlignment%%, 0)%%minSerializeTrailing%%;                
+            </template>                                                                    
+            <template kind="bitfield" bitKind="normal">
+        %%minSerializeLeading%% CdrPrimitiveType.getBitsMaxSizeSerialized(%%currentAlignment%%,
+            currentBitsCount,%%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+        %%minSerializeLeading%% CdrPrimitiveType.getBitsMaxSizeSerialized(%%currentAlignment%%,
+            currentBitsCount,%%bits%%);
+        %%minSerializeLeading%% CdrPrimitiveType.flushBitsMaxSizeSerialized(%%currentAlignment%%,currentBitsCount);
+            </template>            
+        </method>
+
+    <!-- ============================== get_max_size_serialized ========================= -->    
+        <method kind="get_max_size_serialized">
+            <template kind="scalar" typeKind="builtin">
+        %%maxSerializeLeading%% %%elementSizeMethod%%(%%currentAlignment%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="scalar" typeKind="user">
+        %%maxSerializeLeading%% %%nativeType%%TypeSupport.get_instance().%%elementSizeMethod%%(endpoint_data,false, encapsulation_id,%%currentAlignment%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="string">
+        %%maxSerializeLeading%% CdrPrimitiveType.getStringMaxSizeSerialized(%%currentAlignment%%, (%%stringMaxLength%%) + 1)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="wstring">
+        %%maxSerializeLeading%% CdrPrimitiveType.getWstringMaxSizeSerialized(%%currentAlignment%%, (%%stringMaxLength%%) + 1)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user" type="string">
+        %%maxSerializeLeading%% CdrPrimitiveType.getStringArrayMaxSizeSerialized(
+            %%currentAlignment%%,
+            (%%stringMaxLength%%)+1,
+            %%multiDimensionalArraySize%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+        %%maxSerializeLeading%% CdrPrimitiveType.getWstringArrayMaxSizeSerialized(
+            %%currentAlignment%%,
+            (%%stringMaxLength%%)+1,
+            %%multiDimensionalArraySize%%)%%maxSerializeTrailing%%;                
+            </template>                        
+            <template kind="array" typeKind="builtin">
+        %%maxSerializeLeading%% %%arraySizeMethod%%(%%currentAlignment%%, %%multiDimensionalArraySize%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="array" typeKind="user">
+        %%maxSerializeLeading%% %%nativeType%%TypeSupport.get_instance().get_array_max_size_serialized(endpoint_data, %%currentAlignment%%, %%multiDimensionalArraySize%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+        %%maxSerializeLeading%% CdrPrimitiveType.getStringSeqMaxSizeSerialized(
+            %%currentAlignment%%, (%%stringMaxLength%%) + 1,(%%sequenceMaxLength%%)) %%maxSerializeTrailing%%;            
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+        %%maxSerializeLeading%% CdrPrimitiveType.getWstringSeqMaxSizeSerialized(
+            %%currentAlignment%%, (%%stringMaxLength%%) + 1,(%%sequenceMaxLength%%)) %%maxSerializeTrailing%%;
+            </template>            
+            <template kind="sequence" typeKind="builtin">
+        %%maxSerializeLeading%% %%sequenceSizeMethod%%(%%currentAlignment%%, %%sequenceMaxLength%%)%%maxSerializeTrailing%%;
+            </template>
+            <template kind="sequence" typeKind="user">
+        %%maxSerializeLeading%% %%nativeType%%TypeSupport.get_instance().get_sequence_max_size_serialized(endpoint_data, %%currentAlignment%%, %%sequenceMaxLength%%)%%maxSerializeTrailing%%;
+            </template>            
+            <template kind="arraySequence" typeKind="user" type="string">
+        %%maxSerializeLeading%% %%multiDimensionalArraySize%%*CdrPrimitiveType.getStringSeqMaxSizeSerialized(
+            %%currentAlignment%%, (%%stringMaxLength%%) + 1,(%%sequenceMaxLength%%)) %%maxSerializeTrailing%%;                    
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+        %%maxSerializeLeading%% %%multiDimensionalArraySize%%*CdrPrimitiveType.getWstringSeqMaxSizeSerialized(
+            %%currentAlignment%%, (%%stringMaxLength%%) + 1,(%%sequenceMaxLength%%)) %%maxSerializeTrailing%%;        
+            </template>                
+            <template kind="arraySequence" typeKind="builtin">
+        %%maxSerializeLeading%% %%multiDimensionalArraySize%%*%%sequenceSizeMethod%%(%%currentAlignment%%, %%sequenceMaxLength%%)%%maxSerializeTrailing%%;                
+            </template>                                
+            <template kind="arraySequence" typeKind="user">
+        %%maxSerializeLeading%% %%multiDimensionalArraySize%%*%%nativeType%%TypeSupport.get_instance().get_sequence_max_size_serialized(endpoint_data, %%currentAlignment%%, %%sequenceMaxLength%%)%%maxSerializeTrailing%%;                
+            </template>                                                                    
+            <template kind="bitfield" bitKind="normal">
+        %%maxSerializeLeading%% CdrPrimitiveType.getBitsMaxSizeSerialized(%%currentAlignment%%,
+            currentBitsCount,%%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+        %%maxSerializeLeading%% CdrPrimitiveType.getBitsMaxSizeSerialized(%%currentAlignment%%,
+            currentBitsCount,%%bits%%);
+        %%maxSerializeLeading%% CdrPrimitiveType.flushBitsMaxSizeSerialized(%%currentAlignment%%,currentBitsCount);
+            </template>            
+        </method>
+
+    <!-- ============================== get_serialized_sample_size ========================= -->    
+        <method kind="get_serialized_sample_size">
+            <template kind="scalar" typeKind="builtin">
+        currentAlignment += %%elementSizeMethod%%(%%currentAlignment%%);
+            </template>
+            <template kind="scalar" typeKind="user">
+        currentAlignment += %%nativeType%%TypeSupport.get_instance().get_serialized_sample_size(
+            endpoint_data,false,encapsulation_id,%%currentAlignment%%,typedSrc.%%name%%);
+            </template>
+            <template kind="string">
+        currentAlignment += CdrPrimitiveType.getStringSerializedSize(%%currentAlignment%%, typedSrc.%%name%%);
+            </template>
+            <template kind="wstring">
+        currentAlignment += CdrPrimitiveType.getWstringSerializedSize(%%currentAlignment%%, typedSrc.%%name%%);
+            </template>
+            <template kind="array" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            currentAlignment += CdrPrimitiveType.getStringSerializedSize(%%currentAlignment%%, typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            currentAlignment += CdrPrimitiveType.getWstringSerializedSize(%%currentAlignment%%, typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>                        
+            <template kind="array" typeKind="builtin">
+        currentAlignment += %%arraySizeMethod%%(%%currentAlignment%%, %%multiDimensionalArraySize%%);
+            </template>
+            <template kind="array" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            currentAlignment += %%nativeType%%TypeSupport.get_instance().get_serialized_sample_size(
+                endpoint_data,false,encapsulation_id,%%currentAlignment%%,typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+        currentAlignment += CdrPrimitiveType.getStringSeqSerializedSize(
+            %%currentAlignment%%, typedSrc.%%name%%);
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+        currentAlignment += CdrPrimitiveType.getWstringSeqSerializedSize(
+            %%currentAlignment%%, typedSrc.%%name%%);
+            </template>            
+            <template kind="sequence" typeKind="builtin">
+        currentAlignment += %%sequenceActualSizeMethod%%(%%currentAlignment%%, typedSrc.%%name%%);
+            </template>
+            <template kind="sequence" typeKind="user">
+        currentAlignment += %%nativeType%%TypeSupport.get_instance().get_sequence_serialized_size(
+            endpoint_data, %%currentAlignment%%, typedSrc.%%name%%);
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            currentAlignment += CdrPrimitiveType.getStringSeqSerializedSize(
+                %%currentAlignment%%, typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            currentAlignment += CdrPrimitiveType.getWstringSeqSerializedSize(
+                %%currentAlignment%%, typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="builtin">
+        %%cardinalityArrayForLoopPre%%
+            currentAlignment += %%sequenceActualSizeMethod%%(
+                %%currentAlignment%%, typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                                
+            <template kind="arraySequence" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            currentAlignment += %%nativeType%%TypeSupport.get_instance().get_sequence_serialized_size(
+                endpoint_data, %%currentAlignment%%, typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                                                                    
+            <template kind="bitfield" bitKind="normal">
+        currentAlignment += CdrPrimitiveType.getBitsMaxSizeSerialized(%%currentAlignment%%,
+            currentBitsCount,%%bits%%);
+            </template>
+            <template kind="bitfield" bitKind="lastBitField">
+        currentAlignment += CdrPrimitiveType.getBitsMaxSizeSerialized(%%currentAlignment%%,
+            currentBitsCount,%%bits%%);
+        currentAlignment += CdrPrimitiveType.flushBitsMaxSizeSerialized(%%currentAlignment%%,currentBitsCount);
+            </template>            
+        </method>
+
+    <!-- ============================== Print ========================= -->    
+
+        <method kind="print">
+            <template kind="scalar" typeKind="builtin">
+        CdrHelper.printIndent(strBuffer, indent+1);            
+        strBuffer.append("%%name%%: ").append(%%name%%).append("\n");
+            </template>
+            <template kind="scalar" typeKind="user">
+        strBuffer.append(%%name%%.toString("%%name%% ", indent+1));
+            </template>
+            <template kind="string">
+        CdrHelper.printIndent(strBuffer, indent+1);            
+        strBuffer.append("%%name%%: ").append(%%name%%).append("\n");
+            </template>
+            <template kind="wstring">
+        CdrHelper.printIndent(strBuffer, indent+1);            
+        strBuffer.append("%%name%%: ").append(%%name%%).append("\n");
+            </template>
+            <template kind="array" typeKind="user" type="string">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%: ");
+        %%cardinalityArrayForLoopPre%%
+        strBuffer.append(%%name%%%%cardinalityCurrentElement%%).append(", ");
+        %%cardinalityArrayForLoopPost%%                                    
+        strBuffer.append("\n");                      
+            </template>
+            <template kind="array" typeKind="user" type="wstring">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%: ");
+        %%cardinalityArrayForLoopPre%%
+        strBuffer.append(%%name%%%%cardinalityCurrentElement%%).append(", ");
+        %%cardinalityArrayForLoopPost%%                                    
+        strBuffer.append("\n");      
+            </template>            
+            <template kind="array" typeKind="builtin">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%: ");
+        %%cardinalityArrayForLoopPre%%
+        strBuffer.append(%%name%%%%cardinalityCurrentElement%%).append(", ");
+        %%cardinalityArrayForLoopPost%%                                    
+        strBuffer.append("\n");      
+            </template>
+            <template kind="array" typeKind="user">                                
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%:\n");
+        %%cardinalityArrayForLoopPre%%
+        strBuffer.append(%%name%%%%cardinalityCurrentElement%%.toString(
+            %%cardinalityCurrentElementToPrint%%,indent+2));
+        %%cardinalityArrayForLoopPost%%        
+            </template>
+            <template kind="sequence" typeKind="user" type="string">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%: ");
+        for(int i__ = 0; i__ &lt; %%name%%.size(); ++i__) {
+            if (i__!=0) strBuffer.append(", ");
+            strBuffer.append(%%name%%.get(i__));
+        }
+        strBuffer.append("\n");
+            </template>
+            <template kind="sequence" typeKind="user" type="wstring">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%: ");
+        for(int i__ = 0; i__ &lt; %%name%%.size(); ++i__) {
+            if (i__!=0) strBuffer.append(", ");
+            strBuffer.append(%%name%%.get(i__));
+        }
+        strBuffer.append("\n");
+            </template>            
+            <template kind="sequence" typeKind="builtin">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%: ");
+        for(int i__ = 0; i__ &lt; %%name%%.size(); ++i__) {
+            if (i__!=0) strBuffer.append(", ");        
+            strBuffer.append(%%name%%.get(i__));
+        }
+        strBuffer.append("\n");
+            </template>                        
+            <template kind="sequence" typeKind="user">                
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%:\n");
+        for(int i__ = 0; i__ &lt; %%name%%.size(); ++i__) {
+            strBuffer.append(((%%nativeType%%)%%name%%.get(i__)).toString(Integer.toString(i__),indent+2));
+        }
+            </template>                        
+            <template kind="arraySequence" typeKind="user" type="string">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%:\n");
+        %%cardinalityArrayForLoopPre%%
+            CdrHelper.printIndent(strBuffer, indent+2);
+            strBuffer.append(%%cardinalityCurrentElementToPrint%%+": ");
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                if (i__!=0) strBuffer.append(", ");
+                strBuffer.append(%%name%%%%cardinalityCurrentElement%%.get(i__));
+            }
+            strBuffer.append("\n");        
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="user" type="wstring">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%:\n");
+        %%cardinalityArrayForLoopPre%%
+            CdrHelper.printIndent(strBuffer, indent+2);
+            strBuffer.append(%%cardinalityCurrentElementToPrint%%+": ");
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                if (i__!=0) strBuffer.append(", ");
+                strBuffer.append(%%name%%%%cardinalityCurrentElement%%.get(i__));
+            }
+            strBuffer.append("\n");                
+        %%cardinalityArrayForLoopPost%%                                                                          
+            </template>                
+            <template kind="arraySequence" typeKind="builtin">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%:\n");
+        %%cardinalityArrayForLoopPre%%
+            CdrHelper.printIndent(strBuffer, indent+2);
+            strBuffer.append(%%cardinalityCurrentElementToPrint%%+": ");
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                if (i__!=0) strBuffer.append(", ");                
+                strBuffer.append(%%name%%%%cardinalityCurrentElement%%.get(i__));
+            }
+            strBuffer.append("\n");                        
+        %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                
+            <template kind="arraySequence" typeKind="user">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%:\n");                
+        %%cardinalityArrayForLoopPre%%
+            CdrHelper.printIndent(strBuffer, indent+2);
+            strBuffer.append(%%cardinalityCurrentElementToPrint%%+":\n");
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                strBuffer.append(((%%nativeType%%)%%name%%%%cardinalityCurrentElement%%.get(i__)).
+                    toString(Integer.toString(i__),indent+4));
+            }
+        %%cardinalityArrayForLoopPost%%                                                                                          
+            </template>                                                                    
+            <template kind="bitfield">
+        CdrHelper.printIndent(strBuffer, indent+1);
+        strBuffer.append("%%name%%: ");
+        bits=(long)%%name%%;                        
+        bits=bits &amp; ((((long)1) &lt;&lt; (%%bits%%))-1);        
+        strBuffer.append(bits).append("\n");                        
+            </template>
+        </method>
+
+    <!-- ============================== Copy ========================= -->
+
+        <method kind="copy">
+            <template kind="scalar" typeKind="builtin">
+        typedDst.%%name%% = typedSrc.%%name%%;
+            </template>
+
+            <template kind="scalar" typeKind="user">
+        typedDst.%%name%% = (%%nativeType%%) %%copyMethod%%;
+            </template>
+            
+            <template kind="scalar" typeKind="user">
+        typedDst.%%name%% = (%%nativeType%%) %%copyMethod%%;
+            </template>
+
+            <template kind="string">
+        typedDst.%%name%% = typedSrc.%%name%%;
+            </template>
+            
+            <template kind="wstring">
+        typedDst.%%name%% = typedSrc.%%name%%;
+            </template>
+                        
+            <template kind="array" typeKind="builtin">
+        %%cardinalityArrayForLoopMinus1Pre%%
+            System.arraycopy(typedSrc.%%name%%%%cardinalityCurrentElementMinus1%%, 0, 
+                             typedDst.%%name%%%%cardinalityCurrentElementMinus1%%, 0, 
+                             typedSrc.%%name%%%%cardinalityCurrentElementMinus1%%.length);
+        %%cardinalityArrayForLoopMinus1Post%%
+            </template>
+            
+            <template kind="array" typeKind="user" type="string">
+        %%cardinalityArrayForLoopMinus1Pre%%
+            System.arraycopy(typedSrc.%%name%%%%cardinalityCurrentElementMinus1%%, 0, 
+                             typedDst.%%name%%%%cardinalityCurrentElementMinus1%%, 0, 
+                             typedSrc.%%name%%%%cardinalityCurrentElementMinus1%%.length);
+        %%cardinalityArrayForLoopMinus1Post%%
+            </template>
+            
+            <template kind="array" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopMinus1Pre%%
+            System.arraycopy(typedSrc.%%name%%%%cardinalityCurrentElementMinus1%%, 0, 
+                             typedDst.%%name%%%%cardinalityCurrentElementMinus1%%, 0, 
+                             typedSrc.%%name%%%%cardinalityCurrentElementMinus1%%.length);
+        %%cardinalityArrayForLoopMinus1Post%%
+            </template>
+                                       
+            <template kind="array" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            typedDst.%%name%%%%cardinalityCurrentElement%% = (%%nativeType%%) %%copyMethod%%;
+        %%cardinalityArrayForLoopPost%%
+            </template>
+            
+            <template kind="sequence">
+        typedDst.%%name%%.copy_from(typedSrc.%%name%%);
+            </template>
+            
+            
+            <template kind="arraySequence">
+        %%cardinalityArrayForLoopPre%%
+            typedDst.%%name%%%%cardinalityCurrentElement%%.copy_from(typedSrc.%%name%%%%cardinalityCurrentElement%%);
+        %%cardinalityArrayForLoopPost%%
+            </template>
+            
+            
+            <template kind="bitfield">
+        //NOTE: copying all bits here but only %%bits%% are actually relevant
+        typedDst.%%name%% = typedSrc.%%name%%;
+            </template>
+            
+        </method>
+
+        <!-- ============================== hashCode ========================= -->    
+
+            <method kind="hashCode">
+                <template kind="scalar" typeKind="builtin" type="boolean">
+        __result += (%%name%% == true)?1:0;
+                </template>
+                <template kind="scalar" typeKind="builtin">
+        __result += (int)%%name%%;
+                </template>
+                <template kind="scalar" typeKind="builtin" optional="true">
+        __result += (int)%%name%%;                
+                </template>
+                <template kind="scalar" typeKind="user">
+        __result += %%name%%.hashCode();
+                </template>
+                <template kind="string">
+        __result += %%name%%.hashCode();
+                </template>
+                <template kind="wstring">
+        __result += %%name%%.hashCode();
+                </template>
+                <template kind="array" type="boolean">
+        %%cardinalityArrayForLoopPre%%
+            __result += (%%name%%%%cardinalityCurrentElement% == true)?1:0;
+        %%cardinalityArrayForLoopPost%%                                          
+                </template>
+                <template kind="array" typeKind="builtin" type="boolean">
+        %%cardinalityArrayForLoopPre%%
+            __result += (%%name%%%%cardinalityCurrentElement%% == true)?1:0;
+        %%cardinalityArrayForLoopPost%%                                          
+                </template>
+                <template kind="array" typeKind="builtin">
+        %%cardinalityArrayForLoopPre%%
+             __result += (int)%%name%%%%cardinalityCurrentElement%%;
+        %%cardinalityArrayForLoopPost%%                                          
+                </template>
+                <template kind="array" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+             __result += %%name%%%%cardinalityCurrentElement%%.hashCode();
+        %%cardinalityArrayForLoopPost%%                                          
+                </template>
+                <template kind="sequence">
+        __result += %%name%%.hashCode();
+                </template>            
+                <template kind="arraySequence">
+        %%cardinalityArrayForLoopPre%%
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                __result += %%name%%%%cardinalityCurrentElement%%.hashCode();
+            }
+        %%cardinalityArrayForLoopPost%%
+                </template>
+                <template kind="bitfield">
+        __result += (int)%%name%%;
+                </template>            
+            </method>
+
+    <!-- ============================== equals ========================= -->    
+
+        <method kind="equals">
+            <template kind="scalar" typeKind="builtin">
+        if(%%name%% != otherObj.%%name%%) {
+            return false;
+        }
+            </template>
+            <template kind="scalar" typeKind="builtin" optional="true">
+        if(!%%name%%.equals(otherObj.%%name%%)) {
+            return false;
+        }
+            </template>
+            <template kind="scalar" typeKind="user">
+        if(!%%name%%.equals(otherObj.%%name%%)) {
+            return false;
+        }
+            </template>
+            <template kind="string">
+        if(!%%name%%.equals(otherObj.%%name%%)) {
+            return false;
+        }
+            </template>
+            <template kind="wstring">
+        if(!%%name%%.equals(otherObj.%%name%%)) {
+            return false;
+        }
+            </template>
+            <template kind="array" typeKind="builtin">
+        %%cardinalityArrayForLoopPre%%
+        if(%%name%%%%cardinalityCurrentElement%% != otherObj.%%name%%%%cardinalityCurrentElement%%) {
+            return false;
+        }
+        %%cardinalityArrayForLoopPost%%                                          
+            </template>
+            <template kind="array" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+        if(!%%name%%%%cardinalityCurrentElement%%.equals(otherObj.%%name%%%%cardinalityCurrentElement%%)) {
+            return false;
+        }
+        %%cardinalityArrayForLoopPost%%                                          
+            </template>
+            <template kind="sequence">
+        if(!%%name%%.equals(otherObj.%%name%%)) {
+            return false;
+        }
+            </template>            
+            <template kind="arraySequence" typeKind="builtin">
+        %%cardinalityArrayForLoopPre%%
+            if(!%%name%%%%cardinalityCurrentElement%%.equals(otherObj.%%name%%%%cardinalityCurrentElement%%)) {
+                return false;
+            }
+        %%cardinalityArrayForLoopPost%%
+            </template>
+            <template kind="arraySequence" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                if (!%%name%%%%cardinalityCurrentElement%%.get(i__).equals(otherObj.%%name%%%%cardinalityCurrentElement%%.get(i__))){
+                    return false;
+                }
+            }
+        %%cardinalityArrayForLoopPost%%
+            </template>
+            
+            <template kind="arraySequence" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                if (!%%name%%%%cardinalityCurrentElement%%.get(i__).equals(otherObj.%%name%%%%cardinalityCurrentElement%%.get(i__))){
+                    return false;
+                }
+            }
+        %%cardinalityArrayForLoopPost%%
+            </template>
+            
+            <template kind="arraySequence" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            for(int i__ = 0; i__ &lt; %%name%%%%cardinalityCurrentElement%%.size(); ++i__) {
+                if (!%%name%%%%cardinalityCurrentElement%%.get(i__).equals(otherObj.%%name%%%%cardinalityCurrentElement%%.get(i__))){
+                    return false;
+                }
+            }
+        %%cardinalityArrayForLoopPost%%
+            </template>
+            
+            <template kind="bitfield">
+        bits=(long)%%name%%;                        
+        bitsOther=(long)otherObj.%%name%%;
+        bits=bits &amp; ((((long)1) &lt;&lt; (%%bits%%))-1);        
+        bitsOther=bitsOther &amp; ((((long)1) &lt;&lt; (%%bits%%))-1);        
+        if (bits!=bitsOther)
+            return false;
+            </template>            
+        </method>
+        
+    <!-- ========================== initialize =========================== -->    
+
+        <method kind="initialize">
+            <template kind="array" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = "";
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>                    
+            <template kind="array" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = "";
+        %%cardinalityArrayForLoopPost%%                                          
+            </template>            
+            <template kind="array" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = (%%nativeType%%) %%nativeType%%.create();
+        %%cardinalityArrayForLoopPost%%                                          
+            </template>            
+            <template kind="arraySequence" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = new WstringSeq(%%sequenceMaxLength%%);
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>                    
+            <template kind="arraySequence" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = new StringSeq(%%sequenceMaxLength%%);
+        %%cardinalityArrayForLoopPost%%                                          
+            </template>            
+            <template kind="arraySequence">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = new %%nativeTypeSeq%%(%%sequenceMaxLength%%);        
+        %%cardinalityArrayForLoopPost%%                                          
+            </template>                                   
+        </method>
+        
+    <!-- ========================== clear ==================== -->    
+
+        <method kind="clear">
+            <template optional="true">
+        %%name%% = null;
+            </template>
+            <template kind="scalar" typeKind="builtin">
+        %%name%% = %%initialValue%%;
+            </template>
+            <template kind="scalar" typeKind="builtin" optional="true">
+        %%name%% = null;
+            </template>
+            <template kind="scalar" typeKind="user" enum="yes">
+        %%name%% = %%nativeType%%.create();
+            </template>
+            <template kind="scalar" typeKind="user">
+        if (%%name%% != null) {
+            %%name%%.clear();
+        }
+            </template>
+            <template kind="string">
+        %%name%% = "";
+            </template>
+            <template kind="wstring">
+        %%name%% = "";
+            </template>
+            <template kind="array" typeKind="builtin">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = %%initialValue%%;
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="user" type="string">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = "";
+        %%cardinalityArrayForLoopPost%%                                                                      
+            </template>            
+            <template kind="array" typeKind="user" type="wstring">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = "";
+        %%cardinalityArrayForLoopPost%%                                                                      
+            </template>
+            <template kind="array" typeKind="user" enum="yes">
+        %%cardinalityArrayForLoopPre%%
+            %%name%%%%cardinalityCurrentElement%% = %%nativeType%%.create();
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="array" typeKind="user">
+        %%cardinalityArrayForLoopPre%%
+            if (%%name%%%%cardinalityCurrentElement%% != null) {
+                %%name%%%%cardinalityCurrentElement%%.clear();
+            }
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="sequence">
+        if (%%name%% != null) {
+            %%name%%.clear();
+        }
+            </template>            
+            <template kind="arraySequence">
+        %%cardinalityArrayForLoopPre%%
+            if (%%name%%%%cardinalityCurrentElement%% != null) {
+                %%name%%%%cardinalityCurrentElement%%.clear();
+            }
+        %%cardinalityArrayForLoopPost%%                                                          
+            </template>
+            <template kind="bitfield">
+            </template>            
+        </method>
+    </methodInfoMap>
+    
+        
+    <sourcePreamble kind="type-datatype-source">
+<![CDATA[
+import com.rti.dds.cdr.CdrEncapsulation;
+import com.rti.dds.cdr.CdrInputStream;
+import com.rti.dds.cdr.CdrOutputStream;
+import com.rti.dds.cdr.CdrPrimitiveType;
+import com.rti.dds.cdr.CdrBuffer;
+import com.rti.dds.cdr.CdrHelper;
+import com.rti.dds.cdr.CdrMemberInfo;
+import com.rti.dds.domain.DomainParticipant;
+import com.rti.dds.publication.DataWriter;
+import com.rti.dds.publication.DataWriterListener;
+import com.rti.dds.subscription.DataReader;
+import com.rti.dds.subscription.DataReaderListener;
+import com.rti.dds.topic.KeyHash_t;
+import com.rti.dds.topic.TypeSupportImpl;
+import com.rti.dds.topic.TypeSupportType;
+import com.rti.dds.util.Sequence;
+import com.rti.dds.topic.DefaultEndpointData;
+import com.rti.dds.infrastructure.RETCODE_ERROR;
+]]>
+    </sourcePreamble>
+    
+</generationInfo>    

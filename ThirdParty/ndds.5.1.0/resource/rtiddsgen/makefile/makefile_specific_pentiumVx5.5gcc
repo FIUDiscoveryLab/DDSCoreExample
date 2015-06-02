@@ -1,0 +1,8 @@
+c_cc_pentiumVx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ccpentium
+c_ld_pentiumVx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ldpentium
+c_ld_flags_pentiumVx5.5gcc =
+cxx_cc_pentiumVx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ccpentium
+cxx_ld_pentiumVx5.5gcc = \$(WIND_BASE)/host/sun4-solaris2/bin/ldpentium
+cxx_ld_flags_pentiumVx5.5gcc =
+syslibs_pentiumVx5.5gcc =
+DEFINES_ARCH_SPECIFIC = -DRTI_VXWORKS -march=pentium -nostdlib -fno-defer-pop -fno-builtin -DTOOL_FAMILY=gnu -DTOOL=gnu -DCPU=PENTIUM

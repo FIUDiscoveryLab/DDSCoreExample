@@ -1,0 +1,146 @@
+###############################################################################
+##         (c) Copyright, Real-Time Innovations, All rights reserved.        ##
+##                                                                           ##
+##         Permission to modify and use for internal purposes granted.       ##
+## This software is provided "as is", without warranty, express or implied.  ##
+##                                                                           ##
+###############################################################################
+
+# This Makefile contains the common rules to build for all the architectures.
+# It is included from the architecture-specific Makefile.
+# This Makefile requires the following variables:
+# - ARCH: Architecture to build (for example i86Linux2.6gcc4.1.1)
+#
+# Optional variables:
+# - DEBUG: If set to '1', it turns on debugging information
+# - SHAREDLIB: If set to '1', shared libraries will be used
+# - CC: compiler name. If not set, it will use 'gcc'
+# - CFLAGS: compiler flags: will be appended to $CC command-line
+# - CLD: linker name. If not set, it will use 'gcc'
+# - CLDFLAGS: linker flags: will be inserted at the beginning of CLD cmdline
+# - SYSLIBS: additional system libraries to append to the CLD command-line
+
+###############################################################################
+# Ensure this Makefile is invoked with the right variable set
+###############################################################################
+ifeq ($(ARCH), )
+all:
+	@echo "***************************************************************"
+	@echo "You cannot use this Makefile directly, instead use the"
+	@echo "architecture-specific Makefile. For example:"
+	@echo "         gmake -f make/Makefile.i86Linux2.6gcc4.1.1"
+	@echo "***************************************************************"
+	@false
+else
+###############################################################################
+# Ensure $NDDSHOME is defined
+###############################################################################
+ifeq ($(NDDSHOME), )
+all:
+	@echo "***************************************************************"
+	@echo "The environment variable 'NDDSHOME' is not set!"
+	@echo "To use this makefile you need to set NDDSHOME to the directory"
+	@echo "where you have RTI Connext installed."
+	@echo "***************************************************************"
+	@false
+endif
+endif
+
+
+# Define the sources and NDDS search path
+INCLUDES = -Isrc -Isrc/idl -I$(NDDSHOME)/include -I$(NDDSHOME)/include/ndds
+
+###############################################################################
+# Modify build flags for debug/release
+###############################################################################
+ifeq ($(DEBUG),1)
+CFLAGS += -g -O0
+ifeq ($(SHAREDLIB),1)
+NDDSLIBS = -lrticonnextmsgcd -lnddscd -lnddscored
+else
+NDDSLIBS = -lrticonnextmsgczd -lnddsczd -lnddscorezd
+endif
+else
+CFLAGS += -O2
+ifeq ($(SHAREDLIB),1)
+NDDSLIBS = -lrticonnextmsgc -lnddsc -lnddscore
+else
+NDDSLIBS = -lrticonnextmsgcz -lnddscz -lnddscorez
+endif
+endif
+
+LIBS = -L$(NDDSHOME)/lib/$(ARCH) $(NDDSLIBS) $(SYSLIBS)
+
+
+SOURCES = 
+
+SOURCES_IDL = src/idl/Primes.c      \
+          src/idl/PrimesPlugin.c    \
+          src/idl/PrimesSupport.c
+
+HEADERS = 
+
+HEADERS_IDL = src/idl/Primes.h      \
+          src/idl/PrimesPlugin.h    \
+          src/idl/PrimesSupport.h
+
+DIRECTORIES   = objs.dir objs/$(ARCH).dir
+EXECUTABLE    = PrimeNumberRequester PrimeNumberReplier
+SOURCES_NODIR = $(notdir $(SOURCES)) $(notdir $(SOURCES_IDL))
+OBJECTS       = $(SOURCES_NODIR:%.c=objs/$(ARCH)/%.o)
+
+
+###############################################################################
+# Build Rules
+###############################################################################
+$(ARCH): $(DIRECTORIES) $(OBJECTS) \
+         $(foreach exec, $(EXECUTABLE),objs/$(ARCH)/$(exec).o) \
+         $(foreach exec, $(EXECUTABLE),objs/$(ARCH)/$(exec).out)
+
+objs/$(ARCH)/%.out: objs/$(ARCH)/%.o 
+	$(CLD) $(CLDFLAGS) -o $(@:%.out=%) $(OBJECTS) $(@:%.out=%.o) $(LIBS)
+
+objs/$(ARCH)/Primes.o: src/idl/Primes.c $(HEADERS_IDL)
+	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+objs/$(ARCH)/PrimesPlugin.o: src/idl/PrimesPlugin.c $(HEADERS_IDL)
+	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+objs/$(ARCH)/PrimesSupport.o: src/idl/PrimesSupport.c $(HEADERS_IDL)
+	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+objs/$(ARCH)/%.o: src/%.c $(HEADERS) $(HEADERS_IDL)
+	$(CC) $(CFLAGS) -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+
+# Rule to rebuild the generated files when the .idl file change
+$(SOURCES_IDL) $(HEADERS_IDL): src/Primes.idl
+	@mkdir -p src/idl
+ifeq ($(OS_ARCH), i86Win32)
+	call $(NDDSHOME)/scripts/rtiddsgen.bat -d src/idl src/Primes.idl -replace -language C
+else
+	$(NDDSHOME)/scripts/rtiddsgen -d src/idl src/Primes.idl -replace -language C
+endif
+
+generate: $(SOURCES_IDL) $(HEADERS_IDL)
+
+# Here is how we create those subdirectories automatically.
+%.dir : 
+	@echo "Checking directory $*"
+	@if [ ! -d $* ]; then \
+		echo "Making directory $*"; \
+		mkdir -p $* ; \
+	fi;
+
+###############################################################################
+# Clean target: removes the objs dir
+###############################################################################
+clean:
+	@rm -Rf objs/$(ARCH)
+	@echo "Successfully deleted object and executable files for architecture $(ARCH)"
+	@echo "To delete ALL the architectures and any generated file use target 'veryclean'"
+
+veryclean:
+	@rm -Rf objs
+	@rm -Rf src/idl
+	@echo "Deleted all executables, objects and generated files"
