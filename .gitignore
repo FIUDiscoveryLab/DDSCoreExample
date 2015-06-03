@@ -1,2 +1,5 @@
 .settings/
-/bin/
+.settings/*
+.classpath
+bin/*
+bin/
