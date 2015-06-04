@@ -3,6 +3,9 @@ This project contains the sample HelloWorld DDS publisher and Subscriber impleme
 
 ##Installation
 
+###Git
+`git clone https://github.com/FIUDiscoveryLab/DDSCore.git`
+
 ###Eclipse IDE
 
 #### Linux - Ubuntu 64x
